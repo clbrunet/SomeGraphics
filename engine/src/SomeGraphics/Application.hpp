@@ -2,10 +2,14 @@
 
 #include <string>
 
+namespace sg {
+
 class Application {
 public:
     Application(const std::string& name);
-    ~Application();
-private:
+    virtual ~Application();
+protected:
     std::string m_name;
 };
+
+}
