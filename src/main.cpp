@@ -1,7 +1,9 @@
 #include <iostream>
 
+#include "Application.hpp"
+
 int main()
 {
-    std::cout << "SomeGraphics" << std::endl;
+    Application app("SomeGraphics");
     return 0;
 }
