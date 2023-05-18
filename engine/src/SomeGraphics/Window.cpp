@@ -1,6 +1,7 @@
 #include <cstdlib>
 
-#include "GLFW/glfw3.h"
+#include <glad/gl.h>
+
 #include "SomeGraphics/Window.hpp"
 
 namespace sg {
@@ -12,12 +13,17 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
             std::abort();
         }
     }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     m_window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (m_window == nullptr) {
         std::abort();
     }
-    windows_count++;
     glfwMakeContextCurrent(m_window);
+    if (windows_count == 0) {
+        gladLoadGL(glfwGetProcAddress);
+    }
+    windows_count++;
 }
 
 Window::~Window()
