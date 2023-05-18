@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "GLFW/glfw3.h"
+#include "SomeGraphics/Window.hpp"
 
 namespace sg {
 
@@ -15,7 +15,7 @@ public:
     virtual void on_render();
 protected:
     std::string m_name;
-    GLFWwindow* m_window;
+    Window m_window;
 };
 
 }

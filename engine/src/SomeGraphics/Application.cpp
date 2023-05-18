@@ -1,36 +1,25 @@
-#include <cstdlib>
-
 #include "SomeGraphics/Application.hpp"
 
 namespace sg {
 
 Application::Application(const std::string& name) :
-    m_name(name)
+    m_name(name),
+    m_window(name.c_str(), 800, 450)
 {
-    if (!glfwInit()) {
-        std::abort();
-    }
-    m_window = glfwCreateWindow(800, 450, name.c_str(), NULL, NULL);
-    if (m_window == nullptr) {
-        std::abort();
-    }
-    glfwMakeContextCurrent(m_window);
 }
 
 Application::~Application()
 {
-    glfwDestroyWindow(m_window);
-    glfwTerminate();
 }
 
 void Application::run()
 {
-    while (!glfwWindowShouldClose(m_window))
+    while (!m_window.should_close())
     {
-        glfwPollEvents();
+        m_window.poll_event();
         on_update();
         on_render();
-        glfwSwapBuffers(m_window);
+        m_window.swap_buffers();
     }
 }
 
