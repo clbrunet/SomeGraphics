@@ -28,8 +28,18 @@ void Application::run()
     while (!glfwWindowShouldClose(m_window))
     {
         glfwPollEvents();
+        on_update();
+        on_render();
         glfwSwapBuffers(m_window);
     }
+}
+
+void Application::on_update()
+{
+}
+
+void Application::on_render()
+{
 }
 
 }
