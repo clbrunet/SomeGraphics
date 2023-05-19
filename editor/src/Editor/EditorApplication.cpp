@@ -1,5 +1,3 @@
-#include <glad/gl.h>
-
 #include "Editor/EditorApplication.hpp"
 #include "SomeGraphics.hpp"
 
@@ -13,7 +11,7 @@ namespace sg {
 EditorApplication::EditorApplication(const std::string& name) :
     Application(name)
 {
-    glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+    m_renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
 }
 
 EditorApplication::~EditorApplication()
@@ -26,7 +24,7 @@ void EditorApplication::on_update()
 
 void EditorApplication::on_render()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    m_renderer.clear();
 }
 
 }

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "SomeGraphics/Window.hpp"
+#include "SomeGraphics/Renderer.hpp"
 
 namespace sg {
 
@@ -16,6 +17,7 @@ public:
 protected:
     std::string m_name;
     Window m_window;
+    Renderer m_renderer;
 };
 
 }
