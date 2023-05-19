@@ -15,7 +15,9 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+#if SG_DEBUG
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+#endif
     m_window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (m_window == nullptr) {
         std::abort();

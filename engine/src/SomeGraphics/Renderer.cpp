@@ -22,6 +22,7 @@ static void GLAPIENTRY gl_debug_message_callback(
 
 Renderer::Renderer()
 {
+#if SG_DEBUG
     GLint flags;
     glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
@@ -30,6 +31,7 @@ Renderer::Renderer()
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(gl_debug_message_callback, nullptr);
     }
+#endif
 }
 
 Renderer::~Renderer()
