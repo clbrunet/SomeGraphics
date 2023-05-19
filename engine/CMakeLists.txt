@@ -13,6 +13,12 @@ target_compile_definitions(SomeGraphicsEngine PUBLIC
   GLFW_INCLUDE_NONE
   $<$<CONFIG:Debug>:SG_DEBUG=1>
   )
+target_compile_options(SomeGraphicsEngine PRIVATE
+  "-Wall"
+  "-Wextra"
+  "-Werror"
+  $<$<CONFIG:Debug>:-g3>
+  )
 target_include_directories(SomeGraphicsEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(SomeGraphicsEngine PUBLIC
   glfw

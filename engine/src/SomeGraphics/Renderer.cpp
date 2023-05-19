@@ -16,6 +16,8 @@ static void GLAPIENTRY gl_debug_message_callback(
     const void* user_param
 )
 {
+    static_cast<void>(length);
+    static_cast<void>(user_param);
     std::cout << "OpenGL debug message :\nSource : " << source << ", type : " << type
         << ", id : " << id << ", severity : " << severity << '\n' << message << std::endl;
 }
