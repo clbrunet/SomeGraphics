@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include "SomeGraphics.hpp"
+#include "SomeGraphics/Program.hpp"
 
 namespace sg {
 
@@ -10,6 +13,8 @@ public:
     ~EditorApplication() final;
     void on_update() final override;
     void on_render() final override;
+private:
+    std::unique_ptr<Program> m_program;
 };
 
 }
