@@ -9,11 +9,6 @@
 
 namespace sg {
 
-Program::~Program()
-{
-    glDeleteProgram(m_id);
-}
-
 std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filename,
                                                         const char* frag_filename)
 {
@@ -35,6 +30,16 @@ std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filenam
         return std::nullopt;
     }
     return std::unique_ptr<Program>(new Program(program.value()));
+}
+
+Program::~Program()
+{
+    glDeleteProgram(m_id);
+}
+
+void Program::use() const
+{
+    glUseProgram(m_id);
 }
 
 Program::Program(uint id) :

@@ -15,6 +15,8 @@ public:
     void on_render() final override;
 private:
     std::unique_ptr<Program> m_program;
+    uint m_vertex_array;
+    uint m_element_buffer;
 };
 
 }
