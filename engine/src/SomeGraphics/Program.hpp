@@ -1,14 +1,14 @@
 #pragma once
 
+#include <sys/types.h>
 #include <memory>
 #include <optional>
-#include <sys/types.h>
 
 #include "glad/gl.h"
 
-#include "SomeGraphics/Shader.hpp"
-
 namespace sg {
+
+class Shader;
 
 class Program {
 public:

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "SomeGraphics/Program.hpp"
+#include "SomeGraphics/Shader.hpp"
 
 namespace sg {
 
