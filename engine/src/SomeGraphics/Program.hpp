@@ -13,7 +13,7 @@ namespace sg {
 class Program {
 public:
     static std::optional<std::unique_ptr<Program>> create(const char* vert_filename,
-                                                          const char* frag_filename);
+        const char* frag_filename);
     ~Program();
     void use() const;
 private:

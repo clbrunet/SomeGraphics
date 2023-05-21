@@ -10,12 +10,12 @@
 namespace sg {
 
 std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filename,
-                                                        const char* frag_filename)
+    const char* frag_filename)
 {
     std::optional<std::unique_ptr<Shader>> vert_optional = Shader::create(GL_VERTEX_SHADER,
-                                                                          vert_filename);
+        vert_filename);
     std::optional<std::unique_ptr<Shader>> frag_optional = Shader::create(GL_FRAGMENT_SHADER,
-                                                                          frag_filename);
+        frag_filename);
     if (!vert_optional.has_value() || !frag_optional.has_value()) {
         return std::nullopt;
     }
