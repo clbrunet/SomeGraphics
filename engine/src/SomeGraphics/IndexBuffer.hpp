@@ -7,7 +7,7 @@ namespace sg {
 
 class IndexBuffer {
 public:
-    IndexBuffer(std::vector<uint> indices);
+    IndexBuffer(const std::vector<uint>& indices);
     ~IndexBuffer();
     uint count() const;
 private:
