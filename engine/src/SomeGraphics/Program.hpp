@@ -6,6 +6,8 @@
 
 #include "glad/gl.h"
 
+#include "SomeGraphics/Shader.hpp"
+
 namespace sg {
 
 class Program {
@@ -18,8 +20,7 @@ private:
     Program(uint id);
 
     uint m_id = 0;
-    static std::optional<uint> create_shader(GLenum type, const char* filename);
-    static std::optional<uint> create_program(uint vert, uint frag);
+    static std::optional<uint> create_program(const Shader& vert, const Shader& frag);
 };
 
 }
