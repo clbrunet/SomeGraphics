@@ -47,11 +47,11 @@ Program::Program(uint id) :
 std::optional<uint> Program::create_program(const Shader& vert, const Shader& frag)
 {
     uint program = glCreateProgram();
-    glAttachShader(program, vert.m_id);
-    glAttachShader(program, frag.m_id);
+    vert.attach(program);
+    frag.attach(program);
     glLinkProgram(program);
-    glDetachShader(program, vert.m_id);
-    glDetachShader(program, frag.m_id);
+    vert.detach(program);
+    frag.detach(program);
     int success;
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (success)

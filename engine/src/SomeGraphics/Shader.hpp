@@ -12,7 +12,9 @@ class Shader {
 public:
     static std::optional<std::unique_ptr<Shader>> create(GLenum type, const char* filename);
     ~Shader();
-    friend class Program;
+
+    void attach(uint program) const;
+    void detach(uint program) const;
 private:
     Shader(uint id);
 

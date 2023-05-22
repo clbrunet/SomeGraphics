@@ -43,6 +43,16 @@ Shader::~Shader()
     glDeleteShader(m_id);
 }
 
+void Shader::attach(uint program) const
+{
+    glAttachShader(program, m_id);
+}
+
+void Shader::detach(uint program) const
+{
+    glDetachShader(program, m_id);
+}
+
 Shader::Shader(uint id) :
     m_id(id)
 {
