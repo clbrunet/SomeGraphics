@@ -7,6 +7,7 @@
 #include "Editor/EditorApplication.hpp"
 #include "SomeGraphics/Program.hpp"
 #include "SomeGraphics/IndexBuffer.hpp"
+#include "SomeGraphics/VertexBuffer.hpp"
 
 std::unique_ptr<sg::Application> create_app()
 {
@@ -25,21 +26,16 @@ EditorApplication::EditorApplication(const std::string& name) :
         abort();
     }
     m_program = std::move(program_optional.value());
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        +0.5f, -0.5f, 0.0f,
-    };
-    uint vertex_buffer;
     glCreateVertexArrays(1, &m_vertex_array);
-    glCreateBuffers(1, &vertex_buffer);
-    glCreateBuffers(1, &m_element_buffer);
     glBindVertexArray(m_vertex_array);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    m_index_buffer = std::make_unique<IndexBuffer>(std::vector<uint>({ 0, 1, 2 }));
+    m_vertex_buffer = std::make_unique<VertexBuffer>(std::vector<float>({
+            -0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f,
+            +0.5f, -0.5f, 0.0f,
+            }));
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
     glEnableVertexAttribArray(0);
+    m_index_buffer = std::make_unique<IndexBuffer>(std::vector<uint>({ 0, 1, 2 }));
 }
 
 EditorApplication::~EditorApplication()
