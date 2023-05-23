@@ -1,5 +1,4 @@
 #include "SomeGraphics/VertexAttribute.hpp"
-#include <iostream>
 
 namespace sg {
 
@@ -15,7 +14,7 @@ VertexAttribute::VertexAttribute(VertexAttributeType type)
         case VertexAttributeType::Vec3:
             m_count = 3;
             break;
-        }
+    }
     switch (type) {
         case VertexAttributeType::Float:
         case VertexAttributeType::Vec2:
