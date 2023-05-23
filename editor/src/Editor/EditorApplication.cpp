@@ -52,7 +52,7 @@ void EditorApplication::on_render()
     m_renderer.clear();
     m_program->use();
     glBindVertexArray(m_vertex_array);
-    glDrawElements(GL_TRIANGLES, m_index_buffer->count(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_index_buffer->count(), m_index_buffer->format(), 0);
 }
 
 }
