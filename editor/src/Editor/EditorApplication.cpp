@@ -9,6 +9,7 @@
 #include "SomeGraphics/IndexBuffer.hpp"
 #include "SomeGraphics/VertexAttribute.hpp"
 #include "SomeGraphics/VertexBuffer.hpp"
+#include "SomeGraphics/VertexFormat.hpp"
 
 std::unique_ptr<sg::Application> create_app()
 {
@@ -34,9 +35,9 @@ EditorApplication::EditorApplication(const std::string& name) :
             0.0f, 0.5f, 0.0f,
             +0.5f, -0.5f, 0.0f,
             }));
-    VertexAttribute vertex_attribute(VertexAttributeType::Float);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-    glEnableVertexAttribArray(0);
+    VertexFormat vertex_format({
+        VertexAttribute(VertexAttributeType::Vec3),
+        });
     m_index_buffer = std::make_unique<IndexBuffer>(std::vector<uint>({ 0, 1, 2 }));
 }
 
