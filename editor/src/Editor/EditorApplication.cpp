@@ -4,6 +4,8 @@
 #include <optional>
 #include <vector>
 
+#include <glm/vec3.hpp>
+
 #include "Editor/EditorApplication.hpp"
 #include "SomeGraphics/Program.hpp"
 #include "SomeGraphics/IndexBuffer.hpp"
@@ -28,10 +30,10 @@ EditorApplication::EditorApplication(const std::string& name) :
         abort();
     }
     m_program = std::move(program_optional.value());
-    m_vertex_array = std::make_unique<VertexArray>(std::vector<float>({
-        -0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        +0.5f, -0.5f, 0.0f,
+    m_vertex_array = std::make_unique<VertexArray>(std::vector<glm::vec3>({
+        glm::vec3(-0.5f, -0.5f, 0.0f),
+        glm::vec3(0.0f, 0.5f, 0.0f),
+        glm::vec3(0.5f, -0.5f, 0.0f),
     }), std::initializer_list<VertexAttribute>({
         VertexAttribute(VertexAttributeType::Vec3),
     }), std::vector<uint>({ 0, 1, 2 }));
