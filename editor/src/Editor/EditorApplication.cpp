@@ -7,6 +7,7 @@
 #include "Editor/EditorApplication.hpp"
 #include "SomeGraphics/Program.hpp"
 #include "SomeGraphics/IndexBuffer.hpp"
+#include "SomeGraphics/VertexArray.hpp"
 #include "SomeGraphics/VertexAttribute.hpp"
 #include "SomeGraphics/VertexBuffer.hpp"
 
@@ -27,16 +28,13 @@ EditorApplication::EditorApplication(const std::string& name) :
         abort();
     }
     m_program = std::move(program_optional.value());
-    glCreateVertexArrays(1, &m_vertex_array);
-    glBindVertexArray(m_vertex_array);
-    m_vertex_buffer = std::make_unique<VertexBuffer>(std::vector<float>({
+    m_vertex_array = std::make_unique<VertexArray>(std::vector<float>({
         -0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f,
         +0.5f, -0.5f, 0.0f,
     }), std::initializer_list<VertexAttribute>({
         VertexAttribute(VertexAttributeType::Vec3),
-    }));
-    m_index_buffer = std::make_unique<IndexBuffer>(std::vector<uint>({ 0, 1, 2 }));
+    }), std::vector<uint>({ 0, 1, 2 }));
 }
 
 EditorApplication::~EditorApplication()
@@ -51,9 +49,9 @@ void EditorApplication::on_render()
 {
     m_renderer.clear();
     m_program->use();
-    glBindVertexArray(m_vertex_array);
-    glDrawElements(GL_TRIANGLES, m_index_buffer->count(), m_index_buffer->format(), 0);
+    m_vertex_array->bind();
+    glDrawElements(GL_TRIANGLES, m_vertex_array->index_buffer().count(),
+        m_vertex_array->index_buffer().format(), 0);
 }
 
 }
-
