@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "SomeGraphics/Application.hpp"
+#include "SomeGraphics.hpp"
 
 namespace sg {
 
