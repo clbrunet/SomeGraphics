@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 
 #include "SomeGraphics/Renderer.hpp"
+#include "SomeGraphics/VertexArray.hpp"
 
 namespace sg {
 
@@ -38,6 +39,13 @@ void Renderer::clear() const
 void Renderer::set_clear_color(float red, float green, float blue, float opacity)
 {
     glClearColor(red, green, blue, opacity);
+}
+
+void Renderer::draw(const VertexArray& vertex_array) const
+{
+    vertex_array.bind();
+    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer().count(),
+        vertex_array.index_buffer().format(), 0);
 }
 
 static void GLAPIENTRY gl_debug_message_callback(

@@ -46,9 +46,7 @@ void EditorApplication::on_render()
 {
     m_renderer.clear();
     m_program->use();
-    m_vertex_array->bind();
-    glDrawElements(GL_TRIANGLES, m_vertex_array->index_buffer().count(),
-        m_vertex_array->index_buffer().format(), 0);
+    m_renderer.draw(*m_vertex_array);
 }
 
 }
