@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
 #include "SomeGraphics/Window.hpp"
 

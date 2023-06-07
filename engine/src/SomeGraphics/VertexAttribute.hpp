@@ -1,7 +1,8 @@
 #pragma once
 
 #include <concepts>
-#include <glad/gl.h>
+
+#include "glad/gl.h"
 
 namespace sg {
 

@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <vector>
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"

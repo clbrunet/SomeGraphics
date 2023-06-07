@@ -4,7 +4,7 @@
 #include <vector>
 #include <initializer_list>
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
 #include "SomeGraphics/VertexAttribute.hpp"
 

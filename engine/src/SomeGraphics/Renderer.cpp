@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <glad/gl.h>
+#include "glad/gl.h"
 
 #include "SomeGraphics/Renderer.hpp"
 #include "SomeGraphics/VertexArray.hpp"
