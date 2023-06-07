@@ -4,7 +4,7 @@
 #include <memory>
 #include <optional>
 
-#include <glad/gl.h>
+#include "glm/ext/matrix_float4x4.hpp"
 
 namespace sg {
 
@@ -15,7 +15,9 @@ public:
     static std::optional<std::unique_ptr<Program>> create(const char* vert_filename,
         const char* frag_filename);
     ~Program();
+
     void use() const;
+    void set_mat4(const char* name, const glm::mat4& mat4) const;
 private:
     Program(uint id);
 

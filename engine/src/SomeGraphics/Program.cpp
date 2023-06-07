@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "SomeGraphics/Program.hpp"
 #include "SomeGraphics/Shader.hpp"
 
@@ -37,6 +39,11 @@ Program::~Program()
 void Program::use() const
 {
     glUseProgram(m_id);
+}
+
+void Program::set_mat4(const char* name, const glm::mat4& mat4) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
 }
 
 Program::Program(uint id) :

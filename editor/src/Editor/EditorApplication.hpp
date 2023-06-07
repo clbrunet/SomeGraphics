@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <glm/mat4x4.hpp>
+
 #include "SomeGraphics.hpp"
 
 namespace sg {
@@ -18,6 +20,8 @@ public:
 private:
     std::unique_ptr<Program> m_program;
     std::unique_ptr<VertexArray> m_vertex_array;
+    glm::mat4 m_view;
+    glm::mat4 m_projection;
 };
 
 }
