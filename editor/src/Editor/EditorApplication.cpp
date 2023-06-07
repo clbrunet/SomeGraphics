@@ -47,9 +47,8 @@ EditorApplication::EditorApplication(const std::string& name) :
         4, 6, 0, 6, 2, 0,
         4, 5, 6, 5, 7, 6,
     }));
-    m_view = glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f));
-    m_projection = glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.001f, 1000.0f);
+    m_camera = std::make_unique<Camera>(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0f, -1.0f, -1.0f),
+        glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.001f, 1000.0f));
 }
 
 EditorApplication::~EditorApplication()
@@ -64,8 +63,7 @@ void EditorApplication::on_render()
 {
     m_renderer.clear();
     m_program->use();
-    m_program->set_mat4("view", m_view);
-    m_program->set_mat4("projection", m_projection);
+    m_program->set_mat4("view_projection", m_camera->view_projection());
     m_renderer.draw(*m_vertex_array);
 }
 
