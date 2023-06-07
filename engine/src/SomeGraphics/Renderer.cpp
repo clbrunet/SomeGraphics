@@ -25,6 +25,7 @@ Renderer::Renderer()
             0, nullptr, GL_FALSE);
     }
 #endif
+    glEnable(GL_CULL_FACE);
 }
 
 Renderer::~Renderer()

@@ -29,13 +29,26 @@ EditorApplication::EditorApplication(const std::string& name) :
     }
     m_program = std::move(program_optional.value());
     m_vertex_array = std::make_unique<VertexArray>(std::vector<glm::vec3>({
-        glm::vec3(-0.5f, -0.5f, 0.0f),
-        glm::vec3(0.0f, 0.5f, 0.0f),
-        glm::vec3(0.5f, -0.5f, 0.0f),
+        glm::vec3(-0.5f, -0.5f, 0.5f),
+        glm::vec3(-0.5f, 0.5f, 0.5f),
+        glm::vec3(0.5f, -0.5f, 0.5f),
+        glm::vec3(0.5f, 0.5f, 0.5f),
+        glm::vec3(-0.5f, -0.5f, -0.5f),
+        glm::vec3(-0.5f, 0.5f, -0.5f),
+        glm::vec3(0.5f, -0.5f, -0.5f),
+        glm::vec3(0.5f, 0.5f, -0.5f),
     }), std::initializer_list<VertexAttribute>({
         VertexAttribute(VertexAttributeType::Vec3),
-    }), std::vector<uint>({ 0, 1, 2 }));
-    m_view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    }), std::vector<uint>({
+        2, 1, 0, 2, 3, 1,
+        1, 3, 5, 3, 7, 5,
+        2, 6, 3, 6, 7, 3,
+        4, 0, 5, 0, 1, 5,
+        4, 6, 0, 6, 2, 0,
+        4, 5, 6, 5, 7, 6,
+    }));
+    m_view = glm::lookAt(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
     m_projection = glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.001f, 1000.0f);
 }
 
