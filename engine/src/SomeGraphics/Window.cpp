@@ -1,5 +1,6 @@
 #include <cstdlib>
 
+#include "GLFW/glfw3.h"
 #include "glad/gl.h"
 
 #include "SomeGraphics/Window.hpp"
@@ -51,6 +52,21 @@ void Window::poll_event() const
 void Window::swap_buffers() const
 {
     glfwSwapBuffers(m_window);
+}
+
+void Window::reset_time() const
+{
+    return glfwSetTime(0.0);
+}
+
+float Window::get_time() const
+{
+    return glfwGetTime();
+}
+
+bool Window::get_key(int key) const
+{
+    return glfwGetKey(m_window, key) == GLFW_PRESS;
 }
 
 uint8_t Window::windows_count = 0;

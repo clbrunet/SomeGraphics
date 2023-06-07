@@ -47,16 +47,18 @@ EditorApplication::EditorApplication(const std::string& name) :
         4, 6, 0, 6, 2, 0,
         4, 5, 6, 5, 7, 6,
     }));
-    m_camera = std::make_unique<Camera>(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0f, -1.0f, -1.0f),
-        glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.001f, 1000.0f));
+    m_camera = std::make_unique<EditorCamera>(glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::radians(glm::vec3(-45.0f, 45.0f, 0.0f)),
+        glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.01f, 1000.0f));
 }
 
 EditorApplication::~EditorApplication()
 {
 }
 
-void EditorApplication::on_update()
+void EditorApplication::on_update(float delta_time)
 {
+    m_camera->on_update(m_window, delta_time);
 }
 
 void EditorApplication::on_render()

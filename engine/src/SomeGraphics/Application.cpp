@@ -14,17 +14,23 @@ Application::~Application()
 
 void Application::run()
 {
+    m_window.reset_time();
+    float time = m_window.get_time();
     while (!m_window.should_close())
     {
         m_window.poll_event();
-        on_update();
+        float new_time = m_window.get_time();
+        float delta_time = new_time - time;
+        time = new_time;
+        on_update(delta_time);
         on_render();
         m_window.swap_buffers();
     }
 }
 
-void Application::on_update()
+void Application::on_update(float delta_time)
 {
+    static_cast<void>(delta_time);
 }
 
 void Application::on_render()
