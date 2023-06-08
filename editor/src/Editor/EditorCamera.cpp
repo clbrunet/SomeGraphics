@@ -1,11 +1,11 @@
 #include <iostream>
 
 #include "GLFW/glfw3.h"
-
-#include "Editor/EditorCamera.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/gtc/constants.hpp"
+
+#include "Editor/EditorCamera.hpp"
 
 namespace sg {
 
@@ -21,7 +21,7 @@ EditorCamera::~EditorCamera()
 
 void EditorCamera::on_update(const Window& window, float delta_time)
 {
-    glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 direction = glm::vec3(0.0f);
     if (window.get_key(GLFW_KEY_W)) {
         direction.z -= 1.0f;
     }
@@ -34,6 +34,10 @@ void EditorCamera::on_update(const Window& window, float delta_time)
     if (window.get_key(GLFW_KEY_D)) {
         direction.x += 1.0f;
     }
+    if (direction == glm::vec3(0.0f)) {
+        return;
+    }
+    direction = glm::normalize(direction);
     set_position(m_position + m_rotation * (delta_time * SPEED * direction));
 }
 
