@@ -4,6 +4,7 @@
 
 #include "GLFW/glfw3.h"
 #include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 
 namespace sg {
 
@@ -16,6 +17,7 @@ public:
     void poll_event() const;
     void swap_buffers() const;
 
+    glm::ivec2 get_dimension() const;
     void reset_time() const;
     float get_time() const;
     bool is_key_pressed(int key) const;

@@ -55,6 +55,13 @@ void Window::swap_buffers() const
     glfwSwapBuffers(m_window);
 }
 
+glm::ivec2 Window::get_dimension() const
+{
+    int width, height;
+    glfwGetWindowSize(m_window, &width, &height);
+    return glm::ivec2(width, height);
+}
+
 void Window::reset_time() const
 {
     return glfwSetTime(0.0);

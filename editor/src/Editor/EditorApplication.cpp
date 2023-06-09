@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 
+#include "glm/ext/vector_int2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -47,8 +48,9 @@ EditorApplication::EditorApplication(const std::string& name) :
         4, 6, 0, 6, 2, 0,
         4, 5, 6, 5, 7, 6,
     }));
+    glm::vec2 dimension = m_window.get_dimension();
     m_camera = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec2(-35.0f, 45.0f),
-        glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.01f, 1000.0f));
+        glm::perspective(glm::radians(60.0f), dimension.x / dimension.y, 0.01f, 1000.0f));
 }
 
 EditorApplication::~EditorApplication()
