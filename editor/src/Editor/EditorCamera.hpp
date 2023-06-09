@@ -13,6 +13,7 @@ public:
 
     void on_update(const Window& window, float delta_time);
 private:
+    static constexpr float SENSITIVITY = 0.5f;
     static constexpr float SPEED = 5.0f;
     float m_pitch = 0.0f;
     float m_yaw = 0.0f;

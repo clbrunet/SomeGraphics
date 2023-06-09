@@ -46,10 +46,10 @@ void EditorCamera::on_update(const Window& window, float delta_time)
 void EditorCamera::look(const Window& window)
 {
     glm::vec2 cursor_position = window.get_cursor_position();
-    glm::vec2 cursor_position_offset = cursor_position - m_last_cursor_position;
+    glm::vec2 change = -SENSITIVITY * (cursor_position - m_last_cursor_position);
     m_last_cursor_position = cursor_position;
-    m_pitch = glm::clamp(m_pitch - cursor_position_offset.y, -89.0f, 89.0f);
-    m_yaw -= cursor_position_offset.x;
+    m_pitch = glm::clamp(m_pitch + change.y, -89.0f, 89.0f);
+    m_yaw += change.x;
     set_rotation(glm::quat(glm::radians(glm::vec3(m_pitch, m_yaw, 0.0f))));
 }
 
