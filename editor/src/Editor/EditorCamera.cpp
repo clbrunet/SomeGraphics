@@ -68,11 +68,16 @@ void EditorCamera::move(const Window& window, float delta_time)
     if (window.is_key_pressed(GLFW_KEY_D)) {
         direction.x += 1.0f;
     }
+    if (window.is_key_pressed(GLFW_KEY_Q)) {
+        direction.y -= 1.0f;
+    }
+    if (window.is_key_pressed(GLFW_KEY_E)) {
+        direction.y += 1.0f;
+    }
     if (direction == glm::vec3(0.0f)) {
         return;
     }
-    direction = glm::normalize(direction);
-    set_position(m_position + m_rotation * (delta_time * SPEED * direction));
+    set_position(m_position + delta_time * SPEED * (m_rotation * glm::normalize(direction)));
 }
 
 }
