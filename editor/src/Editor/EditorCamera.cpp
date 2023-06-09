@@ -30,12 +30,6 @@ EditorCamera::~EditorCamera()
 
 void EditorCamera::on_update(const Window& window, float delta_time)
 {
-    look(window);
-    move(window, delta_time);
-}
-
-void EditorCamera::look(const Window& window)
-{
     if (!window.is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {
         m_is_free_flying = false;
         return;
@@ -45,6 +39,12 @@ void EditorCamera::look(const Window& window)
         m_last_cursor_position = window.get_cursor_position();
         return;
     }
+    look(window);
+    move(window, delta_time);
+}
+
+void EditorCamera::look(const Window& window)
+{
     glm::vec2 cursor_position = window.get_cursor_position();
     glm::vec2 cursor_position_offset = cursor_position - m_last_cursor_position;
     m_last_cursor_position = cursor_position;
