@@ -5,7 +5,7 @@ add_executable(SomeGraphicsEditor ${SRCS})
 target_compile_options(SomeGraphicsEditor PRIVATE
   "-Wall"
   "-Wextra"
-  "-Werror"
+  "-Wpedantic"
   $<$<CONFIG:Debug>:-g3>
   )
 target_include_directories(SomeGraphicsEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

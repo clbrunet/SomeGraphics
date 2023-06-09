@@ -47,8 +47,7 @@ EditorApplication::EditorApplication(const std::string& name) :
         4, 6, 0, 6, 2, 0,
         4, 5, 6, 5, 7, 6,
     }));
-    m_camera = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f),
-        glm::quat(glm::radians(glm::vec3(-35.0f, 45.0f, 0.0f))),
+    m_camera = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec2(-35.0f, 45.0f),
         glm::perspective(glm::radians(45.0f), 800.0f / 450.0f, 0.01f, 1000.0f));
 }
 

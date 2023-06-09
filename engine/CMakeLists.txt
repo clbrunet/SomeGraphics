@@ -18,7 +18,7 @@ target_compile_definitions(SomeGraphicsEngine PUBLIC
 target_compile_options(SomeGraphicsEngine PRIVATE
   "-Wall"
   "-Wextra"
-  "-Werror"
+  "-Wpedantic"
   $<$<CONFIG:Debug>:-g3>
   )
 target_include_directories(SomeGraphicsEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

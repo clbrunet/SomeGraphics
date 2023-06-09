@@ -1,18 +1,27 @@
+#include <cassert>
 #include <iostream>
 
 #include "GLFW/glfw3.h"
+#include "glm/common.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/ext/quaternion_float.hpp"
+#include "glm/ext/quaternion_transform.hpp"
+#include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/gtc/constants.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 #include "Editor/EditorCamera.hpp"
 
 namespace sg {
 
-EditorCamera::EditorCamera(const glm::vec3& position, const glm::quat& rotation,
+EditorCamera::EditorCamera(const glm::vec3& position, const glm::vec2& euler_angles,
     const glm::mat4& projection) :
-    Camera(position, rotation, projection)
+    Camera(position, glm::quat(glm::radians(glm::vec3(euler_angles, 0.0f))), projection),
+    m_pitch(euler_angles.x),
+    m_yaw(euler_angles.y)
 {
+    assert(-89.0f <= euler_angles.x && euler_angles.x <= 89.0f);
 }
 
 EditorCamera::~EditorCamera()
@@ -21,17 +30,42 @@ EditorCamera::~EditorCamera()
 
 void EditorCamera::on_update(const Window& window, float delta_time)
 {
+    look(window);
+    move(window, delta_time);
+}
+
+void EditorCamera::look(const Window& window)
+{
+    if (!window.is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+        m_is_free_flying = false;
+        return;
+    }
+    if (!m_is_free_flying) {
+        m_is_free_flying = true;
+        m_last_cursor_position = window.get_cursor_position();
+        return;
+    }
+    glm::vec2 cursor_position = window.get_cursor_position();
+    glm::vec2 cursor_position_offset = cursor_position - m_last_cursor_position;
+    m_last_cursor_position = cursor_position;
+    m_pitch = glm::clamp(m_pitch - cursor_position_offset.y, -89.0f, 89.0f);
+    m_yaw -= cursor_position_offset.x;
+    set_rotation(glm::quat(glm::radians(glm::vec3(m_pitch, m_yaw, 0.0f))));
+}
+
+void EditorCamera::move(const Window& window, float delta_time)
+{
     glm::vec3 direction = glm::vec3(0.0f);
-    if (window.get_key(GLFW_KEY_W)) {
+    if (window.is_key_pressed(GLFW_KEY_W)) {
         direction.z -= 1.0f;
     }
-    if (window.get_key(GLFW_KEY_S)) {
+    if (window.is_key_pressed(GLFW_KEY_S)) {
         direction.z += 1.0f;
     }
-    if (window.get_key(GLFW_KEY_A)) {
+    if (window.is_key_pressed(GLFW_KEY_A)) {
         direction.x -= 1.0f;
     }
-    if (window.get_key(GLFW_KEY_D)) {
+    if (window.is_key_pressed(GLFW_KEY_D)) {
         direction.x += 1.0f;
     }
     if (direction == glm::vec3(0.0f)) {

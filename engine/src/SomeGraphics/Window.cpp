@@ -2,6 +2,7 @@
 
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
+#include "glm/ext/vector_float2.hpp"
 
 #include "SomeGraphics/Window.hpp"
 
@@ -64,9 +65,21 @@ float Window::get_time() const
     return glfwGetTime();
 }
 
-bool Window::get_key(int key) const
+bool Window::is_key_pressed(int key) const
 {
     return glfwGetKey(m_window, key) == GLFW_PRESS;
+}
+
+bool Window::is_mouse_button_pressed(int button) const
+{
+    return glfwGetMouseButton(m_window, button) == GLFW_PRESS;
+}
+
+glm::vec2 Window::get_cursor_position() const
+{
+    double xpos, ypos;
+    glfwGetCursorPos(m_window, &xpos, &ypos);
+    return glm::vec2(xpos, ypos);
 }
 
 uint8_t Window::windows_count = 0;

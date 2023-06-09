@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "GLFW/glfw3.h"
+#include "glm/ext/vector_float2.hpp"
 
 namespace sg {
 
@@ -17,7 +18,9 @@ public:
 
     void reset_time() const;
     float get_time() const;
-    bool get_key(int key) const;
+    bool is_key_pressed(int key) const;
+    bool is_mouse_button_pressed(int button) const;
+    glm::vec2 get_cursor_position() const;
 private:
     GLFWwindow* m_window = nullptr;
     static uint8_t windows_count;
