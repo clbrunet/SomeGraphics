@@ -15,6 +15,8 @@ public:
 
     bool should_close() const;
     void poll_event() const;
+    void begin_frame() const;
+    void end_frame() const;
     void swap_buffers() const;
 
     glm::ivec2 get_dimension() const;
