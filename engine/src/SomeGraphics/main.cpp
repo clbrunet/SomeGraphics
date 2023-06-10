@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "SomeGraphics.hpp"
 
 int main()

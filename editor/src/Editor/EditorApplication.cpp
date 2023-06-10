@@ -1,5 +1,4 @@
 #include <cstdlib>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -9,6 +8,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/ext/vector_float3.hpp"
+#include "imgui.h"
 
 #include "Editor/EditorApplication.hpp"
 
@@ -64,6 +64,8 @@ void EditorApplication::on_update(float delta_time)
 
 void EditorApplication::on_render()
 {
+    bool show_demo_window = true;
+    ImGui::ShowDemoWindow(&show_demo_window);
     m_renderer.clear();
     m_program->use();
     m_program->set_mat4("view_projection", m_camera->view_projection());

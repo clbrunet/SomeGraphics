@@ -7,6 +7,8 @@ add_subdirectory("./ext/glad")
 
 add_subdirectory("./ext/glm")
 
+add_subdirectory("./ext/imgui")
+
 file(GLOB_RECURSE SRCS "src/*.cpp")
 
 add_library(SomeGraphicsEngine STATIC ${SRCS})
@@ -26,4 +28,5 @@ target_link_libraries(SomeGraphicsEngine PUBLIC
   glfw
   glad
   glm
+  imgui
   )

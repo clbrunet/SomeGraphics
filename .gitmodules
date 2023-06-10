@@ -4,3 +4,6 @@
 [submodule "engine/ext/glm"]
 	path = engine/ext/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "engine/ext/imgui/imgui"]
+	path = engine/ext/imgui/imgui
+	url = git@github.com:ocornut/imgui.git

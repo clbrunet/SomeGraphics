@@ -3,6 +3,9 @@
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
 #include "glm/ext/vector_float2.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include "SomeGraphics/Window.hpp"
 
@@ -17,6 +20,7 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #if SG_DEBUG
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
@@ -28,16 +32,30 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     if (windows_count == 0) {
         gladLoadGL(glfwGetProcAddress);
     }
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init("#version 450");
     windows_count++;
 }
 
 Window::~Window()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwDestroyWindow(m_window);
-    windows_count--;
-    if (windows_count == 0) {
+    if (windows_count == 1) {
         glfwTerminate();
     }
+    windows_count--;
 }
 
 bool Window::should_close() const
