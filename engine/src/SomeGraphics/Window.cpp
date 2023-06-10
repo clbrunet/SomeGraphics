@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <iostream>
 
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
@@ -14,6 +15,7 @@ namespace sg {
 Window::Window(const char* title, uint16_t width, uint16_t height)
 {
     if (windows_count == 0) {
+        glfwSetErrorCallback(glfw_error_callback);
         if (!glfwInit()) {
             std::abort();
         }
@@ -128,5 +130,10 @@ glm::vec2 Window::get_cursor_position() const
 }
 
 uint8_t Window::windows_count = 0;
+
+void Window::glfw_error_callback(int error, const char* description)
+{
+    std::cerr << "GLFW error " << error << ": " << description << std::endl;
+}
 
 }

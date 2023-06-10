@@ -28,6 +28,8 @@ public:
 private:
     GLFWwindow* m_window = nullptr;
     static uint8_t windows_count;
+
+    static void glfw_error_callback(int error, const char* description);
 };
 
 }
