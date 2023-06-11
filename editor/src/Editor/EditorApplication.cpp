@@ -66,6 +66,8 @@ void EditorApplication::on_render()
 {
     bool show_demo_window = true;
     ImGui::ShowDemoWindow(&show_demo_window);
+    ImGui::Begin("Viewport");
+    ImGui::End();
     m_renderer.clear();
     m_program->use();
     m_program->set_mat4("view_projection", m_camera->view_projection());
