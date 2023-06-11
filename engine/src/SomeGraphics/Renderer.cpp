@@ -22,6 +22,7 @@ Renderer::Renderer()
     }
 #endif
     glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 }
 
 Renderer::~Renderer()
@@ -30,7 +31,7 @@ Renderer::~Renderer()
 
 void Renderer::clear() const
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::set_clear_color(float red, float green, float blue, float opacity)
