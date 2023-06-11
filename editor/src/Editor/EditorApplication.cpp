@@ -3,6 +3,8 @@
 #include <optional>
 #include <vector>
 
+#include "SomeGraphics/FrameBuffer.hpp"
+#include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
@@ -23,6 +25,7 @@ EditorApplication::EditorApplication(const std::string& name) :
     Application(name)
 {
     m_renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
+    m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(800, 450));
     std::optional<std::unique_ptr<Program>> program_optional
         = Program::create("assets/shaders/flat_color.vert", "assets/shaders/flat_color.frag");
     if (!program_optional.has_value()) {
