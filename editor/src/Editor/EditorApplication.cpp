@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "SomeGraphics/FrameBuffer.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "glm/vec3.hpp"
@@ -85,6 +86,9 @@ void EditorApplication::on_render()
     m_renderer.clear();
     m_program->use();
     m_program->set_mat4("view_projection", m_camera->view_projection());
+    m_program->set_mat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
+    m_renderer.draw(*m_vertex_array);
+    m_program->set_mat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f)));
     m_renderer.draw(*m_vertex_array);
 }
 
