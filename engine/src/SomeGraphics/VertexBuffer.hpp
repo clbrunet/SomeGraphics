@@ -19,11 +19,15 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, m_id);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T), vertices.data(), GL_STATIC_DRAW);
 
+        uint stride = 0;
+        for (const VertexAttribute& attribute : attributes) {
+            stride += attribute.size();
+        }
         uint index = 0;
         uint64_t offset = 0;
         for (const VertexAttribute& attribute : attributes) {
             glVertexAttribPointer(index, attribute.count(), attribute.type(), GL_FALSE,
-                attribute.size(), (const void*)offset);
+                stride, (const void*)offset);
             glEnableVertexAttribArray(index);
             index++;
             offset += attribute.size();

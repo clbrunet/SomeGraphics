@@ -27,21 +27,32 @@ EditorApplication::EditorApplication(const std::string& name) :
     m_renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
     m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(800, 450));
     std::optional<std::unique_ptr<Program>> program_optional
-        = Program::create("assets/shaders/flat_color.vert", "assets/shaders/flat_color.frag");
+        = Program::create("assets/shaders/color.vert", "assets/shaders/color.frag");
     if (!program_optional.has_value()) {
         abort();
     }
     m_program = std::move(program_optional.value());
-    m_vertex_array = std::make_unique<VertexArray>(std::vector<glm::vec3>({
-        glm::vec3(-0.5f, -0.5f, 0.5f),
-        glm::vec3(-0.5f, 0.5f, 0.5f),
-        glm::vec3(0.5f, -0.5f, 0.5f),
-        glm::vec3(0.5f, 0.5f, 0.5f),
-        glm::vec3(-0.5f, -0.5f, -0.5f),
-        glm::vec3(-0.5f, 0.5f, -0.5f),
-        glm::vec3(0.5f, -0.5f, -0.5f),
-        glm::vec3(0.5f, 0.5f, -0.5f),
+    struct Vertex {
+        glm::vec3 position;
+        glm::vec3 color;
+
+        Vertex(const glm::vec3& position, const glm::vec3& color) :
+            position(position),
+            color(color)
+        {
+        }
+    };
+    m_vertex_array = std::make_unique<VertexArray>(std::vector<Vertex>({
+        Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 0.0f)),
+        Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 1.0f)),
+        Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 1.0f)),
+        Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 0.0f)),
+        Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f)),
     }), std::initializer_list<VertexAttribute>({
+        VertexAttribute(VertexAttributeType::Vec3),
         VertexAttribute(VertexAttributeType::Vec3),
     }), std::vector<uint>({
         2, 1, 0, 2, 3, 1,
