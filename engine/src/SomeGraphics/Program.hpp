@@ -17,6 +17,7 @@ public:
     ~Program();
 
     void use() const;
+    void set_int(const char* name, int i) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
 private:
     Program(uint id);

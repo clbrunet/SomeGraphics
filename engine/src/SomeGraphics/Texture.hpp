@@ -13,7 +13,8 @@ public:
     ~Texture();
 
     void bind() const;
-
+    void activate(uint index) const;
+    uint id() const;
     void attach_to_framebuffer(GLenum attachment) const;
 private:
     GLenum m_target;

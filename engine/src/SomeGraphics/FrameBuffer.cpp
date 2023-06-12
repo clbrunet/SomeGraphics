@@ -13,7 +13,6 @@ FrameBuffer::FrameBuffer(const glm::vec2& dimension) :
     bind();
     m_color_texture.attach_to_framebuffer(GL_COLOR_ATTACHMENT0);
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-    bind_default();
 }
 
 FrameBuffer::~FrameBuffer()
@@ -29,6 +28,11 @@ void FrameBuffer::bind_default()
 void FrameBuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+}
+
+const Texture& FrameBuffer::color_texture() const
+{
+    return m_color_texture;
 }
 
 }

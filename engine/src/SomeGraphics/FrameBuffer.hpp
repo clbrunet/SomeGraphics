@@ -14,6 +14,7 @@ public:
 
     static void bind_default();
     void bind() const;
+    const Texture& color_texture() const;
 private:
     Texture m_color_texture;
     uint m_id = 0;

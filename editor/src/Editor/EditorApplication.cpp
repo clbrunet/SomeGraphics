@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -63,6 +64,33 @@ EditorApplication::EditorApplication(const std::string& name) :
         4, 6, 0, 6, 2, 0,
         4, 5, 6, 5, 7, 6,
     }));
+    program_optional = Program::create("assets/shaders/quad.vert", "assets/shaders/quad.frag");
+    if (!program_optional.has_value()) {
+        abort();
+    }
+    m_quad_program = std::move(program_optional.value());
+    struct QuadVertex {
+        glm::vec2 position;
+        glm::vec2 texture_coordinates;
+
+        QuadVertex(const glm::vec2& position, const glm::vec2& texture_coordinates) :
+            position(position),
+            texture_coordinates(texture_coordinates)
+        {
+        }
+    };
+    m_quad_vertex_array = std::make_unique<VertexArray>(std::vector<QuadVertex>({
+        QuadVertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
+        QuadVertex(glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
+        QuadVertex(glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
+        QuadVertex(glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+    }), std::initializer_list<VertexAttribute>({
+        VertexAttribute(VertexAttributeType::Vec2),
+        VertexAttribute(VertexAttributeType::Vec2),
+    }), std::vector<uint>({
+        0, 1, 2,
+        0, 2, 3,
+    }));
     glm::vec2 dimension = m_window.get_dimension();
     m_camera = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec2(-35.0f, 45.0f),
         glm::perspective(glm::radians(60.0f), dimension.x / dimension.y, 0.01f, 1000.0f));
@@ -79,17 +107,27 @@ void EditorApplication::on_update(float delta_time)
 
 void EditorApplication::on_render()
 {
-    bool show_demo_window = true;
-    ImGui::ShowDemoWindow(&show_demo_window);
-    ImGui::Begin("Viewport");
-    ImGui::End();
+    m_frame_buffer->bind();
     m_renderer.clear();
     m_program->use();
-    m_program->set_mat4("view_projection", m_camera->view_projection());
-    m_program->set_mat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
+    m_program->set_mat4("u_view_projection", m_camera->view_projection());
+    m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
     m_renderer.draw(*m_vertex_array);
     m_program->set_mat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f)));
     m_renderer.draw(*m_vertex_array);
+
+    FrameBuffer::bind_default();
+    m_renderer.clear();
+    m_quad_program->use();
+    m_frame_buffer->color_texture().activate(0);
+    m_quad_program->set_int("u_texture", 0);
+    m_renderer.draw(*m_quad_vertex_array);
+
+    // bool show_demo_window = true;
+    // ImGui::ShowDemoWindow(&show_demo_window);
+    // ImGui::Begin("Viewport");
+    // ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture().id(), ImVec2(800, 450));
+    // ImGui::End();
 }
 
 }
