@@ -25,10 +25,9 @@ void Texture::bind() const
     glBindTexture(m_target, m_id);
 }
 
-void Texture::activate(uint index) const
+void Texture::bind_to_unit(uint unit) const
 {
-    glActiveTexture(GL_TEXTURE0 + index);
-    bind();
+    glBindTextureUnit(unit, m_id);
 }
 
 uint Texture::id() const
