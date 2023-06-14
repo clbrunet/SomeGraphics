@@ -15,8 +15,8 @@ public:
     template<typename T>
     VertexBuffer(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes)
     {
-        glCreateBuffers(1, &m_id);
-        glBindBuffer(GL_ARRAY_BUFFER, m_id);
+        glCreateBuffers(1, &m_renderer_id);
+        glBindBuffer(GL_ARRAY_BUFFER, m_renderer_id);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T), vertices.data(), GL_STATIC_DRAW);
 
         uint stride = 0;
@@ -35,7 +35,7 @@ public:
     }
     ~VertexBuffer();
 private:
-    uint m_id = 0;
+    uint m_renderer_id = 0;
 };
 
 }

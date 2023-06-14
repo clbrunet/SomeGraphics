@@ -40,21 +40,21 @@ std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* f
 
 Shader::~Shader()
 {
-    glDeleteShader(m_id);
+    glDeleteShader(m_renderer_id);
 }
 
 void Shader::attach(uint program) const
 {
-    glAttachShader(program, m_id);
+    glAttachShader(program, m_renderer_id);
 }
 
 void Shader::detach(uint program) const
 {
-    glDetachShader(program, m_id);
+    glDetachShader(program, m_renderer_id);
 }
 
-Shader::Shader(uint id) :
-    m_id(id)
+Shader::Shader(uint renderer_id) :
+    m_renderer_id(renderer_id)
 {
 }
 

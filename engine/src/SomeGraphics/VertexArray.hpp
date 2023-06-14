@@ -19,7 +19,7 @@ public:
     VertexArray(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes,
         const std::vector<uint> indices)
     {
-        glCreateVertexArrays(1, &m_id);
+        glCreateVertexArrays(1, &m_renderer_id);
         bind();
         m_vertex_buffer = std::make_unique<VertexBuffer>(vertices, attributes);
         m_index_buffer = std::make_unique<IndexBuffer>(indices);
@@ -29,7 +29,7 @@ public:
     void bind() const;
     const IndexBuffer& index_buffer() const;
 private:
-    uint m_id = 0;
+    uint m_renderer_id = 0;
     std::unique_ptr<VertexBuffer> m_vertex_buffer;
     std::unique_ptr<IndexBuffer> m_index_buffer;
 };

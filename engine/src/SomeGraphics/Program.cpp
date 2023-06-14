@@ -33,26 +33,26 @@ std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filenam
 
 Program::~Program()
 {
-    glDeleteProgram(m_id);
+    glDeleteProgram(m_renderer_id);
 }
 
 void Program::use() const
 {
-    glUseProgram(m_id);
+    glUseProgram(m_renderer_id);
 }
 
 void Program::set_int(const char* name, int i) const
 {
-    glUniform1i(glGetUniformLocation(m_id, name), i);
+    glUniform1i(glGetUniformLocation(m_renderer_id, name), i);
 }
 
 void Program::set_mat4(const char* name, const glm::mat4& mat4) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
+    glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
 }
 
-Program::Program(uint id) :
-    m_id(id)
+Program::Program(uint renderer_id) :
+    m_renderer_id(renderer_id)
 {
 }
 

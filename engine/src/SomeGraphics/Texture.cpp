@@ -8,7 +8,7 @@ namespace sg {
 Texture::Texture(const glm::vec2& dimension) :
     m_target(GL_TEXTURE_2D)
 {
-    glCreateTextures(m_target, 1, &m_id);
+    glCreateTextures(m_target, 1, &m_renderer_id);
     bind();
     glTexImage2D(m_target, 0, GL_RGB, dimension.x, dimension.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -17,27 +17,27 @@ Texture::Texture(const glm::vec2& dimension) :
 
 Texture::~Texture()
 {
-    glDeleteFramebuffers(1, &m_id);
+    glDeleteFramebuffers(1, &m_renderer_id);
 }
 
 void Texture::bind() const
 {
-    glBindTexture(m_target, m_id);
+    glBindTexture(m_target, m_renderer_id);
 }
 
 void Texture::bind_to_unit(uint unit) const
 {
-    glBindTextureUnit(unit, m_id);
+    glBindTextureUnit(unit, m_renderer_id);
 }
 
-uint Texture::id() const
+uint Texture::renderer_id() const
 {
-    return m_id;
+    return m_renderer_id;
 }
 
 void Texture::attach_to_framebuffer(GLenum attachment) const
 {
-    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, m_target, m_id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, m_target, m_renderer_id, 0);
 }
 
 }

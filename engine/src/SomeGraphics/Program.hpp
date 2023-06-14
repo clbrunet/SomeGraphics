@@ -20,9 +20,9 @@ public:
     void set_int(const char* name, int i) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
 private:
-    Program(uint id);
+    Program(uint renderer_id);
 
-    uint m_id = 0;
+    uint m_renderer_id = 0;
     static std::optional<uint> create_program(const Shader& vert, const Shader& frag);
 };
 

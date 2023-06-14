@@ -17,7 +17,7 @@ public:
     const Texture& color_texture() const;
 private:
     Texture m_color_texture;
-    uint m_id = 0;
+    uint m_renderer_id = 0;
 };
 
 }

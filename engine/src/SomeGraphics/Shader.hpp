@@ -16,9 +16,9 @@ public:
     void attach(uint program) const;
     void detach(uint program) const;
 private:
-    Shader(uint id);
+    Shader(uint renderer_id);
 
-    uint m_id = 0;
+    uint m_renderer_id = 0;
     static std::optional<std::string> read_file(const char* filename);
 };
 

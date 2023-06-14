@@ -9,7 +9,7 @@ namespace sg {
 FrameBuffer::FrameBuffer(const glm::vec2& dimension) :
     m_color_texture(dimension)
 {
-    glCreateFramebuffers(1, &m_id);
+    glCreateFramebuffers(1, &m_renderer_id);
     bind();
     m_color_texture.attach_to_framebuffer(GL_COLOR_ATTACHMENT0);
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
@@ -17,7 +17,7 @@ FrameBuffer::FrameBuffer(const glm::vec2& dimension) :
 
 FrameBuffer::~FrameBuffer()
 {
-    glDeleteFramebuffers(1, &m_id);
+    glDeleteFramebuffers(1, &m_renderer_id);
 }
 
 void FrameBuffer::bind_default()
@@ -27,7 +27,7 @@ void FrameBuffer::bind_default()
 
 void FrameBuffer::bind() const
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_renderer_id);
 }
 
 const Texture& FrameBuffer::color_texture() const

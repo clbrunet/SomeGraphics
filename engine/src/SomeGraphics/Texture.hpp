@@ -14,11 +14,11 @@ public:
 
     void bind() const;
     void bind_to_unit(uint unit) const;
-    uint id() const;
+    uint renderer_id() const;
     void attach_to_framebuffer(GLenum attachment) const;
 private:
     GLenum m_target;
-    uint m_id = 0;
+    uint m_renderer_id = 0;
 };
 
 }
