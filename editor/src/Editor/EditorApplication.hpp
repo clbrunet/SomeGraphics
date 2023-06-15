@@ -23,6 +23,7 @@ private:
     std::unique_ptr<Program> m_program;
     std::unique_ptr<VertexArray> m_vertex_array;
     std::unique_ptr<EditorCamera> m_camera;
+    bool m_is_viewport_hovered;
 };
 
 }

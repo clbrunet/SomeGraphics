@@ -75,7 +75,9 @@ EditorApplication::~EditorApplication()
 
 void EditorApplication::on_update(float delta_time)
 {
-    m_camera->on_update(m_window, delta_time);
+    if (m_is_viewport_hovered) {
+        m_camera->on_update(m_window, delta_time);
+    }
 }
 
 void EditorApplication::on_render()
@@ -93,6 +95,7 @@ void EditorApplication::on_render()
     bool show_demo_window = true;
     ImGui::ShowDemoWindow(&show_demo_window);
     ImGui::Begin("Viewport");
+    m_is_viewport_hovered = ImGui::IsWindowHovered();
     ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture().renderer_id(),
         ImVec2(800.0f, 450.0f), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
     ImGui::End();
