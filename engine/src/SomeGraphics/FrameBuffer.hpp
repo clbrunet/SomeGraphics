@@ -1,9 +1,12 @@
 #pragma once
 
 #include <sys/types.h>
+#include <memory>
+
+#include "glm/ext/vector_float2.hpp"
 
 #include "SomeGraphics/Texture.hpp"
-#include "glm/ext/vector_float2.hpp"
+#include "SomeGraphics/RenderBuffer.hpp"
 
 namespace sg {
 
@@ -16,8 +19,9 @@ public:
     void bind() const;
     const Texture& color_texture() const;
 private:
-    Texture m_color_texture;
     uint m_renderer_id = 0;
+    std::unique_ptr<Texture> m_color_texture;
+    std::unique_ptr<RenderBuffer> m_depth_and_stencil_render_buffer;
 };
 
 }

@@ -1,17 +1,21 @@
 #include "glad/gl.h"
 
-#include "SomeGraphics/FrameBuffer.hpp"
 #include <cassert>
 #include <iostream>
+#include <memory>
+
+#include "SomeGraphics/FrameBuffer.hpp"
 
 namespace sg {
 
-FrameBuffer::FrameBuffer(const glm::vec2& dimension) :
-    m_color_texture(dimension)
+FrameBuffer::FrameBuffer(const glm::vec2& dimension)
 {
     glCreateFramebuffers(1, &m_renderer_id);
     bind();
-    m_color_texture.attach_to_framebuffer(GL_COLOR_ATTACHMENT0);
+    m_color_texture = std::make_unique<Texture>(dimension);
+    m_color_texture->attach_to_framebuffer(GL_COLOR_ATTACHMENT0);
+    m_depth_and_stencil_render_buffer = std::make_unique<RenderBuffer>(dimension);
+    m_depth_and_stencil_render_buffer->attach_to_framebuffer(GL_DEPTH_STENCIL_ATTACHMENT);
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
@@ -32,7 +36,7 @@ void FrameBuffer::bind() const
 
 const Texture& FrameBuffer::color_texture() const
 {
-    return m_color_texture;
+    return *m_color_texture;
 }
 
 }
