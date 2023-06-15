@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <algorithm>
 #include <iostream>
 
 #include "GLFW/glfw3.h"
@@ -45,6 +46,7 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w = 1.0f;
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
+    ImGui_ImplGlfw_SetCallbacksChainForAllWindows(true);
     windows_count++;
 }
 
@@ -114,12 +116,19 @@ float Window::get_time() const
 
 bool Window::is_key_pressed(int key) const
 {
-    return glfwGetKey(m_window, key) == GLFW_PRESS;
+    const ImVector<ImGuiViewport*>& viewports = ImGui::GetPlatformIO().Viewports;
+    return std::any_of(viewports.begin(), viewports.end(), [key](ImGuiViewport* viewport) {
+        return glfwGetKey(static_cast<GLFWwindow*>(viewport->PlatformHandle), key) == GLFW_PRESS;
+    });
 }
 
 bool Window::is_mouse_button_pressed(int button) const
 {
-    return glfwGetMouseButton(m_window, button) == GLFW_PRESS;
+    const ImVector<ImGuiViewport*>& viewports = ImGui::GetPlatformIO().Viewports;
+    return std::any_of(viewports.begin(), viewports.end(), [button](ImGuiViewport* viewport) {
+        return glfwGetMouseButton(static_cast<GLFWwindow*>(viewport->PlatformHandle), button)
+            == GLFW_PRESS;
+    });
 }
 
 glm::vec2 Window::get_cursor_position() const

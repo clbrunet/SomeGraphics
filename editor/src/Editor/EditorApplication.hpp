@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "SomeGraphics/FrameBuffer.hpp"
 #include "glm/mat4x4.hpp"
 
 #include "SomeGraphics.hpp"

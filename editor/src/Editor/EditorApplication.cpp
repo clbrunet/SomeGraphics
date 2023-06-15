@@ -1,10 +1,10 @@
 #include <cstdint>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "SomeGraphics/FrameBuffer.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_int2.hpp"
@@ -88,6 +88,7 @@ void EditorApplication::on_render()
     m_renderer.draw(*m_vertex_array);
     m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, -2.0f)));
     m_renderer.draw(*m_vertex_array);
+    FrameBuffer::bind_default();
 
     bool show_demo_window = true;
     ImGui::ShowDemoWindow(&show_demo_window);
