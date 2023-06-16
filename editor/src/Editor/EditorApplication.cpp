@@ -2,6 +2,7 @@
 
 #include "Editor/EditorApplication.hpp"
 #include "Editor/Viewport.hpp"
+#include "imgui.h"
 
 std::unique_ptr<sg::Application> create_app()
 {
@@ -28,6 +29,7 @@ void EditorApplication::on_update(float delta_time)
 
 void EditorApplication::on_render()
 {
+    ImGui::DockSpaceOverViewport();
     m_viewport->on_render(m_renderer);
 }
 
