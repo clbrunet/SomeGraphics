@@ -10,5 +10,6 @@
 #include "SomeGraphics/FrameBuffer.hpp"
 #include "SomeGraphics/Texture.hpp"
 #include "SomeGraphics/Camera.hpp"
+#include "SomeGraphics/Renderer.hpp"
 
 extern std::unique_ptr<sg::Application> create_app();

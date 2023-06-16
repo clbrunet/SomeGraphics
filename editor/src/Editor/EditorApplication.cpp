@@ -13,9 +13,8 @@ namespace sg {
 
 EditorApplication::EditorApplication(const std::string& name) :
     Application(name),
-    m_viewport(std::make_unique<Viewport>())
+    m_viewport(std::make_unique<Viewport>(m_renderer))
 {
-    m_renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
 }
 
 EditorApplication::~EditorApplication()

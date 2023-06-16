@@ -6,8 +6,9 @@
 
 namespace sg {
 
-Viewport::Viewport()
+Viewport::Viewport(const Renderer& renderer)
 {
+    renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
     m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(800, 450));
     std::optional<std::unique_ptr<Program>> program_optional
         = Program::create("assets/shaders/color.vert", "assets/shaders/color.frag");

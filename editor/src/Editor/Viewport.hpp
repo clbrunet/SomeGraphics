@@ -4,6 +4,7 @@
 
 namespace sg {
 
+class Renderer;
 class Window;
 class Renderer;
 class FrameBuffer;
@@ -13,7 +14,7 @@ class EditorCamera;
 
 class Viewport {
 public:
-    Viewport();
+    Viewport(const Renderer& renderer);
     ~Viewport();
 
     void on_update(const Window& window, float delta_time);
