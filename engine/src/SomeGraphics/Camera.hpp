@@ -12,6 +12,7 @@ public:
     const glm::mat4& view_projection() const;
     void set_position(const glm::vec3& position);
     void set_rotation(const glm::quat& rotation);
+    void set_projection(const glm::mat4& projection);
 protected:
     glm::vec3 m_position;
     glm::quat m_rotation;

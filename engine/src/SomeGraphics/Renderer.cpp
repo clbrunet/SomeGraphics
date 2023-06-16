@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
 #include "SomeGraphics/Renderer.hpp"
@@ -27,6 +28,11 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+}
+
+void Renderer::set_viewport(glm::ivec2 dimension) const
+{
+    glViewport(0, 0, dimension.x, dimension.y);
 }
 
 void Renderer::clear() const

@@ -17,7 +17,7 @@ Texture::Texture(const glm::vec2& dimension) :
 
 Texture::~Texture()
 {
-    glDeleteFramebuffers(1, &m_renderer_id);
+    glDeleteTextures(1, &m_renderer_id);
 }
 
 void Texture::bind() const

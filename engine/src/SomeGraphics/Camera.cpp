@@ -38,6 +38,12 @@ void Camera::set_rotation(const glm::quat& rotation)
     set_view_projection();
 }
 
+void Camera::set_projection(const glm::mat4& projection)
+{
+    m_projection = projection;
+    set_view_projection();
+}
+
 void Camera::set_view_projection()
 {
     m_view_projection = m_projection
