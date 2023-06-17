@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "SomeGraphics/Shader.hpp"
+#include "SomeGraphics/Rendering/Shader.hpp"
 
 namespace sg {
 

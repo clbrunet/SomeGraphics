@@ -1,4 +1,4 @@
-#include "SomeGraphics/VertexArray.hpp"
+#include "SomeGraphics/Rendering/VertexArray.hpp"
 
 namespace sg {
 

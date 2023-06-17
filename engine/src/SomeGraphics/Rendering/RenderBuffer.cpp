@@ -1,7 +1,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "glad/gl.h"
 
-#include "SomeGraphics/RenderBuffer.hpp"
+#include "SomeGraphics/Rendering/RenderBuffer.hpp"
 
 namespace sg {
 

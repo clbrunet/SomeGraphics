@@ -3,8 +3,8 @@
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
-#include "SomeGraphics/Renderer.hpp"
-#include "SomeGraphics/VertexArray.hpp"
+#include "SomeGraphics/Rendering/Renderer.hpp"
+#include "SomeGraphics/Rendering/VertexArray.hpp"
 
 namespace sg {
 

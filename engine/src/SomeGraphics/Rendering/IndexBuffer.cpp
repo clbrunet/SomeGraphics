@@ -1,6 +1,6 @@
 #include "glad/gl.h"
 
-#include "SomeGraphics/IndexBuffer.hpp"
+#include "SomeGraphics/Rendering/IndexBuffer.hpp"
 
 namespace sg {
 

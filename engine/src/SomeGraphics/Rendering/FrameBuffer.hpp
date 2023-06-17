@@ -5,8 +5,8 @@
 
 #include "glm/ext/vector_float2.hpp"
 
-#include "SomeGraphics/Texture.hpp"
-#include "SomeGraphics/RenderBuffer.hpp"
+#include "SomeGraphics/Rendering/Texture.hpp"
+#include "SomeGraphics/Rendering/RenderBuffer.hpp"
 
 namespace sg {
 

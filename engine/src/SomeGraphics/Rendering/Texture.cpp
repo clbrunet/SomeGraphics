@@ -1,7 +1,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "glad/gl.h"
 
-#include "SomeGraphics/Texture.hpp"
+#include "SomeGraphics/Rendering/Texture.hpp"
 
 namespace sg {
 

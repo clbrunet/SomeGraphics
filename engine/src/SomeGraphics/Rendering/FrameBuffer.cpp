@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 
-#include "SomeGraphics/FrameBuffer.hpp"
+#include "SomeGraphics/Rendering/FrameBuffer.hpp"
 
 namespace sg {
 

@@ -7,8 +7,8 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
-#include "SomeGraphics/Program.hpp"
-#include "SomeGraphics/Shader.hpp"
+#include "SomeGraphics/Rendering/Program.hpp"
+#include "SomeGraphics/Rendering/Shader.hpp"
 
 namespace sg {
 

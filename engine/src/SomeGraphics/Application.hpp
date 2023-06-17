@@ -3,7 +3,7 @@
 #include <string>
 
 #include "SomeGraphics/Window.hpp"
-#include "SomeGraphics/Renderer.hpp"
+#include "SomeGraphics/Rendering/Renderer.hpp"
 
 namespace sg {
 

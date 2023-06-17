@@ -1,4 +1,4 @@
-#include "SomeGraphics/VertexAttribute.hpp"
+#include "SomeGraphics/Rendering/VertexAttribute.hpp"
 
 namespace sg {
 

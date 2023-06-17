@@ -1,4 +1,4 @@
-#include "SomeGraphics/VertexBuffer.hpp"
+#include "SomeGraphics/Rendering/VertexBuffer.hpp"
 
 #include "glad/gl.h"
 
