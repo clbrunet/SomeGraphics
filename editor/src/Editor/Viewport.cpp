@@ -65,6 +65,7 @@ void Viewport::on_update(const Window& window, float delta_time)
 void Viewport::on_render(const Renderer& renderer)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);
     ImGui::Begin("Viewport");
     m_is_hovered = ImGui::IsWindowHovered();
     ImVec2 content_region_available = ImGui::GetContentRegionAvail();
@@ -91,6 +92,7 @@ void Viewport::on_render(const Renderer& renderer)
         m_dimension, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
     ImGui::End();
+    ImGui::PopStyleVar();
     ImGui::PopStyleVar();
 }
 
