@@ -7,3 +7,6 @@
 [submodule "engine/ext/imgui/imgui"]
 	path = engine/ext/imgui/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "engine/ext/assimp"]
+	path = engine/ext/assimp
+	url = git@github.com:assimp/assimp.git
