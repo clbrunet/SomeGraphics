@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "SomeGraphics/Window.hpp"
@@ -21,8 +22,8 @@ public:
     virtual void on_render();
 protected:
     std::string m_name;
-    Window m_window;
-    Renderer m_renderer;
+    std::unique_ptr<Window> m_window;
+    std::unique_ptr<Renderer> m_renderer = std::make_unique<Renderer>();
 };
 
 }

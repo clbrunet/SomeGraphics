@@ -8,13 +8,14 @@
 
 namespace sg {
 
-Viewport::Viewport(const Renderer& renderer)
+Viewport::Viewport(const Renderer& renderer) :
+    m_frame_buffer(std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y))),
+    m_editor_camera(std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f),
+            glm::vec2(-35.0f, 45.0f), glm::perspective(glm::radians(60.0f),
+                m_dimension.x / m_dimension.y, 0.01f, 1000.0f)))
 {
     renderer.set_viewport(glm::ivec2(m_dimension.x, m_dimension.y));
     renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
-    m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y));
-    m_camera = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec2(-35.0f, 45.0f),
-        glm::perspective(glm::radians(60.0f), m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::optional<std::unique_ptr<Program>> program_optional
         = Program::create("editor/assets/shaders/flat.vert", "editor/assets/shaders/flat.frag");
     if (!program_optional.has_value()) {
@@ -35,7 +36,7 @@ Viewport::~Viewport() {
 void Viewport::on_update(const Window& window, float delta_time)
 {
     if (m_is_hovered) {
-        m_camera->on_update(window, delta_time);
+        m_editor_camera->on_update(window, delta_time);
     }
 }
 
@@ -51,14 +52,14 @@ void Viewport::on_render(const Renderer& renderer)
         m_dimension = content_region_available;
         renderer.set_viewport(glm::ivec2(m_dimension.x, m_dimension.y));
         m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y));
-        m_camera->set_projection(glm::perspective(glm::radians(60.0f),
+        m_editor_camera->set_projection(glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     }
 
     m_frame_buffer->bind();
     renderer.clear();
     m_program->use();
-    m_program->set_mat4("u_view_projection", m_camera->view_projection());
+    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
     m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
     renderer.draw(*m_model);
     FrameBuffer::bind_default();

@@ -13,7 +13,7 @@ namespace sg {
 
 EditorApplication::EditorApplication(const std::string& name) :
     Application(name),
-    m_viewport(std::make_unique<Viewport>(m_renderer))
+    m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
 }
 
@@ -23,13 +23,13 @@ EditorApplication::~EditorApplication()
 
 void EditorApplication::on_update(float delta_time)
 {
-    m_viewport->on_update(m_window, delta_time);
+    m_viewport->on_update(*m_window, delta_time);
 }
 
 void EditorApplication::on_render()
 {
     ImGui::DockSpaceOverViewport();
-    m_viewport->on_render(m_renderer);
+    m_viewport->on_render(*m_renderer);
 }
 
 }
