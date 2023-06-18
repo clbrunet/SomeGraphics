@@ -15,6 +15,7 @@ class VertexAttribute;
 
 class VertexArray {
 public:
+    VertexArray() = delete;
     template<typename T>
     VertexArray(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes,
         const std::vector<uint> indices)
@@ -24,6 +25,10 @@ public:
         m_vertex_buffer = std::make_unique<VertexBuffer>(vertices, attributes);
         m_index_buffer = std::make_unique<IndexBuffer>(indices);
     }
+    VertexArray(VertexArray&& other);
+    VertexArray(const VertexArray& other) = delete;
+    VertexArray& operator=(VertexArray&& other);
+    VertexArray& operator=(const VertexArray& other) = delete;
     ~VertexArray();
 
     void bind() const;

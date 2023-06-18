@@ -9,7 +9,12 @@ namespace sg {
 
 class Texture {
 public:
+    Texture() = delete;
     Texture(const glm::vec2& dimension);
+    Texture(Texture&& other);
+    Texture(const Texture& other) = delete;
+    Texture& operator=(Texture&& other);
+    Texture& operator=(const Texture& other) = delete;
     ~Texture();
 
     void bind() const;

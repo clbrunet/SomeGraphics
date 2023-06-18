@@ -19,6 +19,23 @@ FrameBuffer::FrameBuffer(const glm::vec2& dimension)
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
+FrameBuffer::FrameBuffer(FrameBuffer&& other)
+{
+    *this = std::move(other);
+}
+
+FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_renderer_id = other.m_renderer_id;
+    m_color_texture = std::move(other.m_color_texture);
+    m_depth_and_stencil_render_buffer = std::move(other.m_depth_and_stencil_render_buffer);
+    other.m_renderer_id = 0;
+    return *this;
+}
+
 FrameBuffer::~FrameBuffer()
 {
     glDeleteFramebuffers(1, &m_renderer_id);

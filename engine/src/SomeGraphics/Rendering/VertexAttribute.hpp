@@ -14,7 +14,12 @@ enum class VertexAttributeType {
 
 class VertexAttribute {
 public:
+    VertexAttribute() = delete;
     VertexAttribute(VertexAttributeType type);
+    VertexAttribute(VertexAttribute&& other) = default;
+    VertexAttribute(const VertexAttribute& other) = default;
+    VertexAttribute& operator=(VertexAttribute&& other) = default;
+    VertexAttribute& operator=(const VertexAttribute& other) = default;
     ~VertexAttribute();
 
     int count() const;

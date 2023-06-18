@@ -9,7 +9,12 @@ namespace sg {
 
 class RenderBuffer {
 public:
+    RenderBuffer() = delete;
     RenderBuffer(const glm::vec2& dimension);
+    RenderBuffer(RenderBuffer&& other);
+    RenderBuffer(const RenderBuffer& other) = delete;
+    RenderBuffer& operator=(RenderBuffer&& other);
+    RenderBuffer& operator=(const RenderBuffer& other) = delete;
     ~RenderBuffer();
 
     void bind() const;

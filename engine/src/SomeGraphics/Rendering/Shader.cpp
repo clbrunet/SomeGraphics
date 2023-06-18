@@ -38,6 +38,21 @@ std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* f
     return std::nullopt;
 }
 
+Shader::Shader(Shader&& other)
+{
+    *this = std::move(other);
+}
+
+Shader& Shader::operator=(Shader&& other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_renderer_id = other.m_renderer_id;
+    other.m_renderer_id = 0;
+    return *this;
+}
+
 Shader::~Shader()
 {
     glDeleteShader(m_renderer_id);

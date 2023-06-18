@@ -50,8 +50,26 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     windows_count++;
 }
 
+Window::Window(Window&& other)
+{
+    *this = std::move(other);
+}
+
+Window& Window::operator=(Window&& other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_window = other.m_window;
+    other.m_window = nullptr;
+    return *this;
+}
+
 Window::~Window()
 {
+    if (m_window == nullptr) {
+        return;
+    }
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

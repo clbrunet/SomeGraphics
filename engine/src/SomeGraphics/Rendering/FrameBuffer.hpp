@@ -12,7 +12,12 @@ namespace sg {
 
 class FrameBuffer {
 public:
+    FrameBuffer() = delete;
     FrameBuffer(const glm::vec2& dimension);
+    FrameBuffer(FrameBuffer&& other);
+    FrameBuffer(const FrameBuffer& other) = delete;
+    FrameBuffer& operator=(FrameBuffer&& other);
+    FrameBuffer& operator=(const FrameBuffer& other) = delete;
     ~FrameBuffer();
 
     static void bind_default();

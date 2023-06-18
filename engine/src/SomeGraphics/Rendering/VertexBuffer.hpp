@@ -12,6 +12,7 @@ namespace sg {
 
 class VertexBuffer {
 public:
+    VertexBuffer() = delete;
     template<typename T>
     VertexBuffer(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes)
     {
@@ -33,6 +34,10 @@ public:
             offset += attribute.size();
         }
     }
+    VertexBuffer(VertexBuffer&& other);
+    VertexBuffer(const VertexBuffer& other) = delete;
+    VertexBuffer& operator=(VertexBuffer&& other);
+    VertexBuffer& operator=(const VertexBuffer& other) = delete;
     ~VertexBuffer();
 private:
     uint m_renderer_id = 0;

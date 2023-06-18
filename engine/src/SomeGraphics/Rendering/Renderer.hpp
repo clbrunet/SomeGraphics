@@ -12,6 +12,10 @@ class VertexArray;
 class Renderer {
 public:
     Renderer();
+    Renderer(Renderer&& other) = default;
+    Renderer(const Renderer& other) = default;
+    Renderer& operator=(Renderer&& other) = default;
+    Renderer& operator=(const Renderer& other) = default;
     ~Renderer();
 
     void set_viewport(glm::ivec2 dimension) const;

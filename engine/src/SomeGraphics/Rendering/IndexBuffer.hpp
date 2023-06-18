@@ -9,7 +9,12 @@ namespace sg {
 
 class IndexBuffer {
 public:
+    IndexBuffer() = delete;
     IndexBuffer(const std::vector<uint>& indices);
+    IndexBuffer(IndexBuffer&& other);
+    IndexBuffer(const IndexBuffer& other) = delete;
+    IndexBuffer& operator=(IndexBuffer&& other);
+    IndexBuffer& operator=(const IndexBuffer& other) = delete;
     ~IndexBuffer();
 
     uint count() const;

@@ -13,7 +13,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 "NEW")
 set(BUILD_SHARED_LIBS Off)
 set(ASSIMP_BUILD_TESTS Off)
 set(ASSIMP_INSTALL Off)
-message("ASSIMP_BUILD_TESTS in mine : ${ASSIMP_BUILD_TESTS}")
 add_subdirectory("./ext/assimp")
 
 file(GLOB_RECURSE SRCS "src/*.cpp")

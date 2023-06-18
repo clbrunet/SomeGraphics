@@ -6,8 +6,13 @@ namespace sg {
 
 class Camera {
 public:
+    Camera() = delete;
     Camera(const glm::vec3& position, const glm::quat& rotation, const glm::mat4& projection);
-    ~Camera();
+    Camera(Camera&& other) = default;
+    Camera(const Camera& other) = default;
+    Camera& operator=(Camera&& other) = default;
+    Camera& operator=(const Camera& other) = default;
+    virtual ~Camera();
 
     const glm::mat4& view_projection() const;
     void set_position(const glm::vec3& position);

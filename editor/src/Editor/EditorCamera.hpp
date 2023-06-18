@@ -7,9 +7,14 @@ namespace sg {
 
 class EditorCamera final : public Camera {
 public:
+    EditorCamera() = delete;
     EditorCamera(const glm::vec3& position, const glm::vec2& euler_angles,
         const glm::mat4& projection);
-    ~EditorCamera();
+    EditorCamera(EditorCamera&& other) = default;
+    EditorCamera(const EditorCamera& other) = default;
+    EditorCamera& operator=(EditorCamera&& other) = default;
+    EditorCamera& operator=(const EditorCamera& other) = default;
+    ~EditorCamera() final override;
 
     void on_update(const Window& window, float delta_time);
 private:

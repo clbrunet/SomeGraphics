@@ -10,7 +10,12 @@ namespace sg {
 
 class Window {
 public:
+    Window() = delete;
     Window(const char* title, uint16_t width, uint16_t height);
+    Window(Window&& other);
+    Window(const Window& other) = delete;
+    Window& operator=(Window&& other);
+    Window& operator=(const Window& other) = delete;
     ~Window();
 
     bool should_close() const;

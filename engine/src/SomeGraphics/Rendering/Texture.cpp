@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "glm/ext/vector_float2.hpp"
 #include "glad/gl.h"
 
@@ -13,6 +15,22 @@ Texture::Texture(const glm::vec2& dimension) :
     glTexImage2D(m_target, 0, GL_RGB, dimension.x, dimension.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+Texture::Texture(Texture&& other)
+{
+    *this = std::move(other);
+}
+
+Texture& Texture::operator=(Texture&& other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_target = other.m_target;
+    m_renderer_id = other.m_renderer_id;
+    other.m_renderer_id = 0;
+    return *this;
 }
 
 Texture::~Texture()

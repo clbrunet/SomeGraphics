@@ -16,7 +16,12 @@ class EditorCamera;
 
 class Viewport {
 public:
+    Viewport() = delete;
     Viewport(const Renderer& renderer);
+    Viewport(Viewport&& other) = default;
+    Viewport(const Viewport& other) = delete;
+    Viewport& operator=(Viewport&& other) = default;
+    Viewport& operator=(const Viewport& other) = delete;
     ~Viewport();
 
     void on_update(const Window& window, float delta_time);

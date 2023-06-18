@@ -31,6 +31,21 @@ std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filenam
     return std::unique_ptr<Program>(new Program(program.value()));
 }
 
+Program::Program(Program&& other)
+{
+    *this = std::move(other);
+}
+
+Program& Program::operator=(Program&& other)
+{
+    if (this == &other) {
+        return *this;
+    }
+    m_renderer_id = other.m_renderer_id;
+    other.m_renderer_id = 0;
+    return *this;
+}
+
 Program::~Program()
 {
     glDeleteProgram(m_renderer_id);
