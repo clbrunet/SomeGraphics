@@ -5,6 +5,8 @@
 
 namespace sg {
 
+class Model;
+class Mesh;
 class VertexArray;
 
 class Renderer {
@@ -15,6 +17,8 @@ public:
     void set_viewport(glm::ivec2 dimension) const;
     void clear() const;
     void set_clear_color(float red, float green, float blue, float opacity) const;
+    void draw(const Model& model) const;
+    void draw(const Mesh& mesh) const;
     void draw(const VertexArray& vertex_array) const;
 private:
     static void GLAPIENTRY gl_debug_message_callback(GLenum source, GLenum type, GLuint id,

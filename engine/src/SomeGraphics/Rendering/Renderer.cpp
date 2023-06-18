@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "SomeGraphics/Model.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
@@ -43,6 +44,18 @@ void Renderer::clear() const
 void Renderer::set_clear_color(float red, float green, float blue, float opacity) const
 {
     glClearColor(red, green, blue, opacity);
+}
+
+void Renderer::draw(const Model& model) const
+{
+    for (const Mesh& mesh : model.meshes()) {
+        draw(mesh);
+    }
+}
+
+void Renderer::draw(const Mesh& mesh) const
+{
+    draw(mesh.vertex_array());
 }
 
 void Renderer::draw(const VertexArray& vertex_array) const
