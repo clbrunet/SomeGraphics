@@ -7,6 +7,8 @@ add_subdirectory("./ext/glad")
 
 add_subdirectory("./ext/glm")
 
+add_subdirectory("./ext/stb")
+
 add_subdirectory("./ext/imgui")
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 "NEW")
@@ -37,6 +39,7 @@ target_link_libraries(SomeGraphicsEngine PUBLIC
   glfw
   glad
   glm
+  stb
   imgui
   assimp
   )
