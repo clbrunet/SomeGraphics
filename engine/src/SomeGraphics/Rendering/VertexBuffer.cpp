@@ -24,4 +24,10 @@ VertexBuffer::~VertexBuffer()
     glDeleteBuffers(1, &m_renderer_id);
 }
 
+void VertexBuffer::bind_to_vertex_array(uint vertex_array, uint binding_index,
+    intptr_t offset, uint stride) const
+{
+    glVertexArrayVertexBuffer(vertex_array, binding_index, m_renderer_id, offset, stride);
+}
+
 }

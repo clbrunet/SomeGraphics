@@ -8,8 +8,7 @@ IndexBuffer::IndexBuffer(const std::vector<uint>& indices) :
     m_count(indices.size())
 {
     glCreateBuffers(1, &m_renderer_id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_renderer_id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_count * sizeof(uint), indices.data(), GL_STATIC_DRAW);
+    glNamedBufferStorage(m_renderer_id, m_count * sizeof(uint), indices.data(), 0);
 }
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other)
@@ -43,6 +42,11 @@ uint IndexBuffer::count() const
 GLenum IndexBuffer::format() const
 {
     return m_format;
+}
+
+void IndexBuffer::bind_to_vertex_array(uint vertex_array) const
+{
+    glVertexArrayElementBuffer(vertex_array, m_renderer_id);
 }
 
 }

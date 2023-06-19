@@ -11,10 +11,11 @@ Texture::Texture(const glm::vec2& dimension) :
     m_target(GL_TEXTURE_2D)
 {
     glCreateTextures(m_target, 1, &m_renderer_id);
-    bind();
-    glTexImage2D(m_target, 0, GL_RGB, dimension.x, dimension.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimension.x, dimension.y);
+    glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimension.x, dimension.y,
+        GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 }
 
 Texture::Texture(Texture&& other)
@@ -38,11 +39,6 @@ Texture::~Texture()
     glDeleteTextures(1, &m_renderer_id);
 }
 
-void Texture::bind() const
-{
-    glBindTexture(m_target, m_renderer_id);
-}
-
 void Texture::bind_to_unit(uint unit) const
 {
     glBindTextureUnit(unit, m_renderer_id);
@@ -53,9 +49,9 @@ uint Texture::renderer_id() const
     return m_renderer_id;
 }
 
-void Texture::attach_to_framebuffer(GLenum attachment) const
+void Texture::attach_to_framebuffer(uint frame_buffer, GLenum attachment) const
 {
-    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, m_target, m_renderer_id, 0);
+    glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
 }

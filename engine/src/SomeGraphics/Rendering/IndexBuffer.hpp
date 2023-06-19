@@ -19,6 +19,7 @@ public:
 
     uint count() const;
     GLenum format() const;
+    void bind_to_vertex_array(uint vertex_array) const;
 private:
     uint m_renderer_id = 0;
     uint m_count = 0;

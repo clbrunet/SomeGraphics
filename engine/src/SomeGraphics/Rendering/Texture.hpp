@@ -17,10 +17,9 @@ public:
     Texture& operator=(const Texture& other) = delete;
     ~Texture();
 
-    void bind() const;
     void bind_to_unit(uint unit) const;
     uint renderer_id() const;
-    void attach_to_framebuffer(GLenum attachment) const;
+    void attach_to_framebuffer(uint frame_buffer, GLenum attachment) const;
 private:
     GLenum m_target;
     uint m_renderer_id = 0;
