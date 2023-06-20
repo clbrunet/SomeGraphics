@@ -8,13 +8,14 @@ namespace sg {
 
 std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename, int channels_count_desired)
 {
-    int width, height, channels_count;
-    u_char *pixels = stbi_load(filename, &width, &height, &channels_count, channels_count_desired);
+    int width, height, channels_count_in_file;
+    u_char *pixels = stbi_load(filename, &width, &height, &channels_count_in_file, channels_count_desired);
     if (pixels == nullptr) {
         std::cerr << "Image '" << filename << "' loading error" << std::endl;
         return std::nullopt;
     }
-    return StbImageWrapper(pixels, width, height, channels_count);
+    return StbImageWrapper(pixels, width, height,
+        channels_count_desired == 0 ? channels_count_in_file : channels_count_desired);
 }
 
 StbImageWrapper::StbImageWrapper(StbImageWrapper&& other)
