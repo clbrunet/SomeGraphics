@@ -14,7 +14,7 @@ public:
     Window(const char* title, uint16_t width, uint16_t height);
     Window(Window&& other);
     Window(const Window& other) = delete;
-    Window& operator=(Window&& other);
+    Window& operator=(Window&& other) = delete;
     Window& operator=(const Window& other) = delete;
     ~Window();
 

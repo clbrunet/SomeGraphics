@@ -14,7 +14,7 @@ public:
     Application(const std::string& name);
     Application(Application&& other) = default;
     Application(const Application& other) = delete;
-    Application& operator=(Application&& other) = default;
+    Application& operator=(Application&& other) = delete;
     Application& operator=(const Application& other) = delete;
     virtual ~Application();
     void run();
@@ -24,6 +24,7 @@ protected:
     std::string m_name;
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Renderer> m_renderer = std::make_unique<Renderer>();
+    static uint8_t applications_count;
 };
 
 }

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
@@ -15,11 +16,10 @@ namespace sg {
 
 Window::Window(const char* title, uint16_t width, uint16_t height)
 {
-    if (windows_count == 0) {
-        glfwSetErrorCallback(glfw_error_callback);
-        if (!glfwInit()) {
-            std::abort();
-        }
+    assert(windows_count == 0 && "Multiple windows (not including ImGui windows) are not supported");
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit()) {
+        std::abort();
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -32,9 +32,7 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
         std::abort();
     }
     glfwMakeContextCurrent(m_window);
-    if (windows_count == 0) {
-        gladLoadGL(glfwGetProcAddress);
-    }
+    gladLoadGL(glfwGetProcAddress);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -50,20 +48,10 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     windows_count++;
 }
 
-Window::Window(Window&& other)
+Window::Window(Window&& other) :
+    m_window(other.m_window)
 {
-    *this = std::move(other);
-}
-
-Window& Window::operator=(Window&& other)
-{
-    if (this == &other) {
-        return *this;
-    }
-    glfwDestroyWindow(m_window);
-    m_window = other.m_window;
     other.m_window = nullptr;
-    return *this;
 }
 
 Window::~Window()
@@ -75,9 +63,7 @@ Window::~Window()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     glfwDestroyWindow(m_window);
-    if (windows_count == 1) {
-        glfwTerminate();
-    }
+    glfwTerminate();
     windows_count--;
 }
 
