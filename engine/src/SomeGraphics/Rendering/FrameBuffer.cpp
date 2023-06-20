@@ -30,6 +30,7 @@ FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteFramebuffers(1, &m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     m_color_texture = std::move(other.m_color_texture);
     m_depth_and_stencil_render_buffer = std::move(other.m_depth_and_stencil_render_buffer);

@@ -28,6 +28,7 @@ StbImageWrapper& StbImageWrapper::operator=(StbImageWrapper&& other)
     if (this == &other) {
         return *this;
     }
+    stbi_image_free(m_pixels);
     m_pixels = other.m_pixels;
     m_width = other.m_width;
     m_height = other.m_height;

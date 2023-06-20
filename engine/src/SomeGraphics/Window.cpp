@@ -60,6 +60,7 @@ Window& Window::operator=(Window&& other)
     if (this == &other) {
         return *this;
     }
+    glfwDestroyWindow(m_window);
     m_window = other.m_window;
     other.m_window = nullptr;
     return *this;

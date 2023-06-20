@@ -12,6 +12,7 @@ VertexArray& VertexArray::operator=(VertexArray&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteVertexArrays(1, &m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     m_vertex_buffer = std::move(other.m_vertex_buffer);
     m_index_buffer = std::move(other.m_index_buffer);

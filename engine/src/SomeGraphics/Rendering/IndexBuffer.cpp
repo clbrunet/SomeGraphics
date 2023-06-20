@@ -21,6 +21,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteBuffers(1, &m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     m_count = other.m_count;
     m_format = other.m_format;

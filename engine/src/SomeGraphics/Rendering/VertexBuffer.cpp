@@ -14,6 +14,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteBuffers(1, &m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     other.m_renderer_id = 0;
     return *this;

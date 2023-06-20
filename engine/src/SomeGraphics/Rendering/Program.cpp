@@ -41,6 +41,7 @@ Program& Program::operator=(Program&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteProgram(m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     other.m_renderer_id = 0;
     return *this;

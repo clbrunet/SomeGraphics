@@ -23,6 +23,7 @@ RenderBuffer& RenderBuffer::operator=(RenderBuffer&& other)
     if (this == &other) {
         return *this;
     }
+    glDeleteRenderbuffers(1, &m_renderer_id);
     m_renderer_id = other.m_renderer_id;
     other.m_renderer_id = 0;
     return *this;
