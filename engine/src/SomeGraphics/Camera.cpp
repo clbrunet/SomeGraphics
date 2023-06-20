@@ -14,11 +14,21 @@ Camera::Camera(const glm::vec3& position, const glm::quat& rotation, const glm::
     m_rotation(rotation),
     m_projection(projection)
 {
-    set_view_projection();
+    set_view();
 }
 
 Camera::~Camera()
 {
+}
+
+const glm::mat4& Camera::view() const
+{
+    return m_view;
+}
+
+const glm::mat4& Camera::projection() const
+{
+    return m_projection;
 }
 
 const glm::mat4& Camera::view_projection() const
@@ -29,13 +39,13 @@ const glm::mat4& Camera::view_projection() const
 void Camera::set_position(const glm::vec3& position)
 {
     m_position = position;
-    set_view_projection();
+    set_view();
 }
 
 void Camera::set_rotation(const glm::quat& rotation)
 {
     m_rotation = rotation;
-    set_view_projection();
+    set_view();
 }
 
 void Camera::set_projection(const glm::mat4& projection)
@@ -44,10 +54,15 @@ void Camera::set_projection(const glm::mat4& projection)
     set_view_projection();
 }
 
+void Camera::set_view()
+{
+    m_view = glm::inverse(glm::translate(glm::mat4(1.0f), m_position) * glm::toMat4(m_rotation));
+    set_view_projection();
+}
+
 void Camera::set_view_projection()
 {
-    m_view_projection = m_projection
-        * glm::inverse(glm::translate(glm::mat4(1.0f), m_position) * glm::toMat4(m_rotation));
+    m_view_projection = m_projection * m_view;
 }
 
 }

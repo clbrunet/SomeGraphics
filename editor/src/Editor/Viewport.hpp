@@ -10,9 +10,10 @@ class Renderer;
 class Window;
 class Renderer;
 class FrameBuffer;
+class EditorCamera;
 class Program;
 class Model;
-class EditorCamera;
+class Texture;
 
 class Viewport {
 public:
@@ -28,11 +29,14 @@ public:
     void on_render(const Renderer& renderer);
 private:
     ImVec2 m_dimension = ImVec2(800.0f, 450.0f);
+    bool m_is_hovered = false;
     std::unique_ptr<FrameBuffer> m_frame_buffer;
     std::unique_ptr<EditorCamera> m_editor_camera;
     std::unique_ptr<Program> m_program;
     std::unique_ptr<Model> m_model;
-    bool m_is_hovered = false;
+    std::unique_ptr<Program> m_skybox_program;
+    std::unique_ptr<Model> m_skybox_model;
+    std::unique_ptr<Texture> m_skybox_texture;
 };
 
 }

@@ -11,11 +11,11 @@ namespace sg {
 
 std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* filename)
 {
-    std::optional<std::string> source_optional = read_file(filename);
-    if (!source_optional.has_value()) {
+    std::optional<std::string> source_opt = read_file(filename);
+    if (!source_opt.has_value()) {
         return std::nullopt;
     }
-    const char* source = source_optional.value().c_str();
+    const char* source = source_opt.value().c_str();
     uint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);

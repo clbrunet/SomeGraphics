@@ -25,7 +25,6 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other)
     m_count = other.m_count;
     m_format = other.m_format;
     other.m_renderer_id = 0;
-    other.m_count = 0;
     return *this;
 }
 

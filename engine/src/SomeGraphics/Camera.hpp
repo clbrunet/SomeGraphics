@@ -14,6 +14,8 @@ public:
     Camera& operator=(const Camera& other) = default;
     virtual ~Camera();
 
+    const glm::mat4& view() const;
+    const glm::mat4& projection() const;
     const glm::mat4& view_projection() const;
     void set_position(const glm::vec3& position);
     void set_rotation(const glm::quat& rotation);
@@ -21,9 +23,11 @@ public:
 protected:
     glm::vec3 m_position;
     glm::quat m_rotation;
+    glm::mat4 m_view;
     glm::mat4 m_projection;
     glm::mat4 m_view_projection;
 private:
+    void set_view();
     void set_view_projection();
 };
 
