@@ -20,6 +20,7 @@ Viewport::Viewport(const Renderer& renderer) :
             glm::vec2(-35.0f, 45.0f), glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f)))
 {
+    // TODO: create a skybox class in the engine
     std::vector<Mesh> meshes;
     meshes.emplace_back(std::vector<Vertex>({
         Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
@@ -133,19 +134,21 @@ void Viewport::on_render(const Renderer& renderer)
     m_frame_buffer->bind();
     renderer.clear();
 
+    m_program->use();
+    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
+    m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
+    renderer.draw(*m_model);
+
     glDepthMask(GL_FALSE);
+    glDepthFunc(GL_LEQUAL);
     m_skybox_program->use();
     m_skybox_program->set_mat4("u_view_projection",
         m_editor_camera->projection() * glm::mat4(glm::mat3(m_editor_camera->view())));
     m_skybox_program->set_int("u_skybox", 0);
     m_skybox_texture->bind_to_unit(0);
     renderer.draw(*m_skybox_model);
+    glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-
-    m_program->use();
-    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
-    m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
-    renderer.draw(*m_model);
 
     FrameBuffer::bind_default();
 

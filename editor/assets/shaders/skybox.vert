@@ -9,5 +9,5 @@ out vec3 v_texture_coordinates;
 void main()
 {
     v_texture_coordinates = vec3(a_position);
-    gl_Position = u_view_projection * a_position;
+    gl_Position = (u_view_projection * a_position).xyww;
 }
