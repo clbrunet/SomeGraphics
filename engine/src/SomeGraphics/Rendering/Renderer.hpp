@@ -5,6 +5,8 @@
 
 namespace sg {
 
+class Skybox;
+class Camera;
 class Model;
 class Mesh;
 class VertexArray;
@@ -21,6 +23,7 @@ public:
     void set_viewport(glm::ivec2 dimension) const;
     void clear() const;
     void set_clear_color(float red, float green, float blue, float opacity) const;
+    void draw(const Skybox& skybox, const Camera& camera) const;
     void draw(const Model& model) const;
     void draw(const Mesh& mesh) const;
     void draw(const VertexArray& vertex_array) const;

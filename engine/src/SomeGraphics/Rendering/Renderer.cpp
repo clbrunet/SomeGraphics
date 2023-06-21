@@ -1,11 +1,15 @@
 #include <iostream>
 
-#include "SomeGraphics/Model.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
 #include "SomeGraphics/Rendering/Renderer.hpp"
+#include "SomeGraphics/Rendering/Program.hpp"
+#include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/VertexArray.hpp"
+#include "SomeGraphics/Camera.hpp"
+#include "SomeGraphics/Skybox.hpp"
+#include "SomeGraphics/Model.hpp"
 
 namespace sg {
 
@@ -44,6 +48,20 @@ void Renderer::clear() const
 void Renderer::set_clear_color(float red, float green, float blue, float opacity) const
 {
     glClearColor(red, green, blue, opacity);
+}
+
+void Renderer::draw(const Skybox& skybox, const Camera& camera) const
+{
+    glDepthMask(GL_FALSE);
+    glDepthFunc(GL_LEQUAL);
+    skybox.program().use();
+    skybox.program().set_mat4("u_view_projection",
+        camera.projection() * glm::mat4(glm::mat3(camera.view())));
+    skybox.program().set_int("u_skybox", 0);
+    skybox.texture().bind_to_unit(0);
+    draw(skybox.model());
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
 }
 
 void Renderer::draw(const Model& model) const

@@ -13,7 +13,7 @@ class FrameBuffer;
 class EditorCamera;
 class Program;
 class Model;
-class Texture;
+class Skybox;
 
 class Viewport {
 public:
@@ -34,9 +34,7 @@ private:
     std::unique_ptr<EditorCamera> m_editor_camera;
     std::unique_ptr<Program> m_program;
     std::unique_ptr<Model> m_model;
-    std::unique_ptr<Program> m_skybox_program;
-    std::unique_ptr<Model> m_skybox_model;
-    std::unique_ptr<Texture> m_skybox_texture;
+    std::unique_ptr<Skybox> m_skybox;
 };
 
 }
