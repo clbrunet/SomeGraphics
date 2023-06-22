@@ -1,6 +1,8 @@
 #include <cassert>
+#include <iostream>
 #include <optional>
 
+#include "SomeGraphics/Rendering/VertexAttribute.hpp"
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
@@ -65,6 +67,9 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
         Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
         Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
         Vertex(glm::vec3(1.0f, -1.0f,  1.0f)),
+    }),
+    std::initializer_list<VertexAttribute>({
+        VertexAttributeType::Vec3,
     }),
     std::vector<uint>({
         0, 1, 2, 3, 4, 5,

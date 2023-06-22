@@ -19,9 +19,10 @@ Viewport::Viewport(const Renderer& renderer) :
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f)))
 {
     renderer.set_viewport(glm::ivec2(m_dimension.x, m_dimension.y));
-    renderer.set_clear_color(0.0f, 0.5f, 0.0f, 1.0f);
+    renderer.set_clear_color(1.0f, 0.0f, 1.0f, 1.0f);
     std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("editor/assets/shaders/flat.vert", "editor/assets/shaders/flat.frag");
+        = Program::create("editor/assets/shaders/environment_reflection.vert",
+            "editor/assets/shaders/environment_reflection.frag");
     if (!program_opt.has_value()) {
         abort();
     }
@@ -75,6 +76,9 @@ void Viewport::on_render(const Renderer& renderer)
     m_program->use();
     m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
     m_program->set_mat4("u_model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)));
+    m_program->set_vec3("u_camera_position", m_editor_camera->position());
+    m_program->set_int("u_environment", 0);
+    m_skybox->texture().bind_to_unit(0);
     renderer.draw(*m_model);
 
     renderer.draw(*m_skybox, *m_editor_camera);

@@ -3,6 +3,8 @@
 #include <optional>
 #include <memory>
 
+#include "glm/ext/vector_float3.hpp"
+
 namespace sg {
 
 class Program;
@@ -23,7 +25,7 @@ public:
     const Program& program() const;
     const Model& model() const;
     const Texture& texture() const;
-protected:
+private:
     std::unique_ptr<Program> m_program;
     std::unique_ptr<Model> m_model;
     std::unique_ptr<Texture> m_texture;
@@ -31,6 +33,21 @@ protected:
 
     Skybox(std::unique_ptr<Program>&& program,
         std::unique_ptr<Model>&& model, std::unique_ptr<Texture>&& texture);
+
+    struct Vertex {
+        glm::vec3 position;
+
+        Vertex() = delete;
+        Vertex(const glm::vec3& position) :
+            position(position)
+        {
+        }
+        Vertex(Vertex&& other) = default;
+        Vertex(const Vertex& other) = default;
+        Vertex& operator=(Vertex&& other) = default;
+        Vertex& operator=(const Vertex& other) = default;
+        ~Vertex() = default;
+    };
 };
 
 }

@@ -13,6 +13,7 @@
 namespace sg {
 
 class VertexAttribute;
+class VertexBuffer;
 
 class VertexArray {
 public:

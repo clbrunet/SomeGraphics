@@ -1,10 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <sys/types.h>
+#include <type_traits>
 #include <vector>
+#include <concepts>
 
 #include "glad/gl.h"
+#include "glm/gtx/string_cast.hpp"
 
 namespace sg {
 

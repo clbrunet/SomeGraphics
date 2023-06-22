@@ -6,6 +6,7 @@ target_compile_options(SomeGraphicsEditor PRIVATE
   "-Wall"
   "-Wextra"
   "-Wpedantic"
+  "-Wno-volatile"
   $<$<CONFIG:Debug>:-g3>
   )
 target_include_directories(SomeGraphicsEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

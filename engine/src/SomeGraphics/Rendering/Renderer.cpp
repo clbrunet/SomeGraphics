@@ -10,6 +10,7 @@
 #include "SomeGraphics/Camera.hpp"
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/Model.hpp"
+#include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
 
@@ -27,7 +28,6 @@ Renderer::Renderer()
             0, nullptr, GL_FALSE);
     }
 #endif
-    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 }
 

@@ -32,6 +32,7 @@ target_compile_options(SomeGraphicsEngine PRIVATE
   "-Wall"
   "-Wextra"
   "-Wpedantic"
+  "-Wno-volatile"
   $<$<CONFIG:Debug>:-g3>
   )
 target_include_directories(SomeGraphicsEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")

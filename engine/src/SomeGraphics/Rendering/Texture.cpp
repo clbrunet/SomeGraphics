@@ -87,7 +87,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
         const StbImageWrapper& top, const StbImageWrapper& bottom,
         const StbImageWrapper& front, const StbImageWrapper& back)
 {
-    std::array<const StbImageWrapper*, 6> images({ &right, &left, &top, &bottom, &front, &back });
+    std::array<const StbImageWrapper*, 6> images({ &right, &left, &top, &bottom, &back, &front });
 #if SG_DEBUG
     const StbImageWrapper& first_image = *images[0];
     for (uint i = 0; i < 6; i++) {
