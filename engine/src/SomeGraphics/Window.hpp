@@ -32,7 +32,7 @@ public:
     glm::vec2 get_cursor_position() const;
 private:
     GLFWwindow* m_window = nullptr;
-    static uint8_t windows_count;
+    static bool is_instantiated;
 
     static void glfw_error_callback(int error, const char* description);
 };

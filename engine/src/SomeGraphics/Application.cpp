@@ -6,13 +6,13 @@ Application::Application(const std::string& name) :
     m_name(name),
     m_window(std::make_unique<Window>(name.c_str(), 800, 450))
 {
-    assert(applications_count == 0 && "Multiple applications are not supported");
-    applications_count++;
+    assert(!is_instantiated && "Multiple instances are not allowed");
+    is_instantiated = true;
 }
 
 Application::~Application()
 {
-    applications_count--;
+    is_instantiated = false;
 }
 
 void Application::run()
@@ -42,6 +42,6 @@ void Application::on_render()
 {
 }
 
-uint8_t Application::applications_count = 0;
+bool Application::is_instantiated = false;
 
 }

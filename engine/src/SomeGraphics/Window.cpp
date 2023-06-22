@@ -16,7 +16,8 @@ namespace sg {
 
 Window::Window(const char* title, uint16_t width, uint16_t height)
 {
-    assert(windows_count == 0 && "Multiple windows (not including ImGui windows) are not supported");
+    assert(!is_instantiated && "Multiple instances are not allowed");
+    is_instantiated = true;
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) {
         std::abort();
@@ -45,7 +46,6 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
     ImGui_ImplGlfw_SetCallbacksChainForAllWindows(true);
-    windows_count++;
 }
 
 Window::Window(Window&& other) :
@@ -64,7 +64,7 @@ Window::~Window()
     ImGui::DestroyContext();
     glfwDestroyWindow(m_window);
     glfwTerminate();
-    windows_count--;
+    is_instantiated = false;
 }
 
 bool Window::should_close() const
@@ -143,7 +143,7 @@ glm::vec2 Window::get_cursor_position() const
     return glm::vec2(xpos, ypos);
 }
 
-uint8_t Window::windows_count = 0;
+bool Window::is_instantiated = false;
 
 void Window::glfw_error_callback(int error, const char* description)
 {

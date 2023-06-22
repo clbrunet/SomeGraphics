@@ -24,7 +24,7 @@ protected:
     std::string m_name;
     std::unique_ptr<Window> m_window;
     std::unique_ptr<Renderer> m_renderer = std::make_unique<Renderer>();
-    static uint8_t applications_count;
+    static bool is_instantiated;
 };
 
 }
