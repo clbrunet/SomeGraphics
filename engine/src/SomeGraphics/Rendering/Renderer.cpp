@@ -9,7 +9,6 @@
 #include "SomeGraphics/Rendering/VertexArray.hpp"
 #include "SomeGraphics/Camera.hpp"
 #include "SomeGraphics/Skybox.hpp"
-#include "SomeGraphics/Model.hpp"
 #include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
@@ -59,16 +58,9 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
         camera.projection() * glm::mat4(glm::mat3(camera.view())));
     skybox.program().set_int("u_skybox", 0);
     skybox.texture().bind_to_unit(0);
-    draw(skybox.model());
+    draw(skybox.mesh());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-}
-
-void Renderer::draw(const Model& model) const
-{
-    for (const Mesh& mesh : model.meshes()) {
-        draw(mesh);
-    }
 }
 
 void Renderer::draw(const Mesh& mesh) const

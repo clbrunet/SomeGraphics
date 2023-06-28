@@ -11,8 +11,9 @@
 #include "SomeGraphics/Rendering/FrameBuffer.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Camera.hpp"
-#include "SomeGraphics/Model.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/Skybox.hpp"
+#include "SomeGraphics/Scene.hpp"
+#include "SomeGraphics/SceneEntity.hpp"
 
 extern std::unique_ptr<sg::Application> create_app();

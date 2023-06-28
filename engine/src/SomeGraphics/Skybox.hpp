@@ -8,7 +8,7 @@
 namespace sg {
 
 class Program;
-class Model;
+class Mesh;
 class Texture;
 
 class Skybox {
@@ -23,16 +23,16 @@ public:
     ~Skybox();
 
     const Program& program() const;
-    const Model& model() const;
+    const Mesh& mesh() const;
     const Texture& texture() const;
 private:
     std::unique_ptr<Program> m_program;
-    std::unique_ptr<Model> m_model;
+    std::unique_ptr<Mesh> m_mesh;
     std::unique_ptr<Texture> m_texture;
     static bool is_instantiated;
 
     Skybox(std::unique_ptr<Program>&& program,
-        std::unique_ptr<Model>&& model, std::unique_ptr<Texture>&& texture);
+        std::unique_ptr<Mesh>&& mesh, std::unique_ptr<Texture>&& texture);
 
     struct Vertex {
         glm::vec3 position;

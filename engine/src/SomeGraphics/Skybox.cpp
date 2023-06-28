@@ -7,7 +7,6 @@
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Mesh.hpp"
-#include "SomeGraphics/Model.hpp"
 
 namespace sg {
 
@@ -24,8 +23,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
     if (!texture_opt.has_value()) {
         return std::nullopt;
     }
-    std::vector<Mesh> meshes;
-    meshes.emplace_back(std::vector<Vertex>({
+    std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::vector<Vertex>({
         Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
         Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
         Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
@@ -80,7 +78,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
         30, 31, 32, 33, 34, 35,
     }));
     return std::unique_ptr<Skybox>(new Skybox(std::move(program_opt.value()),
-            std::make_unique<Model>(std::move(meshes)) , std::move(texture_opt.value())));
+            std::move(mesh) , std::move(texture_opt.value())));
 }
 
 Skybox::~Skybox()
@@ -93,9 +91,9 @@ const Program& Skybox::program() const
     return *m_program;
 }
 
-const Model& Skybox::model() const
+const Mesh& Skybox::mesh() const
 {
-    return *m_model;
+    return *m_mesh;
 }
 
 const Texture& Skybox::texture() const
@@ -106,9 +104,9 @@ const Texture& Skybox::texture() const
 bool Skybox::is_instantiated = false;
 
 Skybox::Skybox(std::unique_ptr<Program>&& program,
-    std::unique_ptr<Model>&& model, std::unique_ptr<Texture>&& texture) :
+    std::unique_ptr<Mesh>&& mesh, std::unique_ptr<Texture>&& texture) :
     m_program(std::move(program)),
-    m_model(std::move(model)),
+    m_mesh(std::move(mesh)),
     m_texture(std::move(texture))
 {
     assert(!is_instantiated && "Multiple instances are not allowed");
