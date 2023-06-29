@@ -7,7 +7,10 @@ namespace sg {
 
 class StbImageWrapper {
 public:
-    static std::optional<StbImageWrapper> load(const char* filename, int channels_count_desired = 0);
+    static std::optional<StbImageWrapper> load(const char* filename,
+        int channels_count_desired = 0);
+    static std::optional<StbImageWrapper> load_from_memory(const u_char* buffer, uint length,
+        int channels_count_desired = 0);
     StbImageWrapper() = delete;
     StbImageWrapper(StbImageWrapper&& other);
     StbImageWrapper(const StbImageWrapper& other) = delete;

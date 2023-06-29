@@ -12,6 +12,7 @@
 namespace sg {
 
 class Mesh;
+class Texture;
 
 class SceneEntity {
 public:
@@ -25,10 +26,12 @@ public:
 
     const glm::mat4& transform() const;
     const std::unique_ptr<Mesh>& mesh() const;
+    const std::unique_ptr<Texture>& texture() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
 private:
     glm::mat4 m_transform = glm::mat4(1.0f);
     std::unique_ptr<Mesh> m_mesh;
+    std::unique_ptr<Texture> m_texture;
     std::vector<std::shared_ptr<SceneEntity>> m_children;
 
     SceneEntity(const aiNode* node, const aiMatrix4x4& transform, const aiScene* scene);
@@ -38,11 +41,14 @@ private:
     struct Vertex {
         glm::vec3 position;
         glm::vec3 normal;
+        glm::vec2 texture_coordinates;
 
         Vertex() = delete;
-        Vertex(const glm::vec3& position, const glm::vec3& normal) :
+        Vertex(const glm::vec3& position, const glm::vec3& normal,
+            const glm::vec2& texture_coordinates) :
             position(position),
-            normal(normal)
+            normal(normal),
+            texture_coordinates(texture_coordinates)
         {
         }
         Vertex(Vertex&& other) = default;

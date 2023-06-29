@@ -2,9 +2,11 @@
 #include <cassert>
 #include <iostream>
 #include <optional>
+#include <sys/types.h>
 #include <utility>
 #include <vector>
 
+#include "assimp/texture.h"
 #include "glm/ext/vector_float2.hpp"
 #include "glad/gl.h"
 
@@ -21,6 +23,19 @@ Texture::Texture(const glm::vec2& dimension)
     glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimension.x, dimension.y);
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimension.x, dimension.y,
         GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+}
+
+std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture)
+{
+    if (ai_texture.mHeight != 0) {
+        return std::unique_ptr<Texture>(new Texture(ai_texture));
+    }
+    std::optional<StbImageWrapper> image_opt = StbImageWrapper::load_from_memory(
+        (const u_char*)ai_texture.pcData, ai_texture.mWidth);
+    if (!image_opt.has_value()) {
+        return std::nullopt;
+    }
+    return std::unique_ptr<Texture>(new Texture(image_opt.value()));
 }
 
 std::optional<std::unique_ptr<Texture>> Texture::create_cubemap(const char* right,
@@ -83,6 +98,27 @@ void Texture::attach_to_framebuffer(uint frame_buffer, GLenum attachment) const
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
+Texture::Texture(const aiTexture& ai_texture)
+{
+    assert(ai_texture.mHeight != 0);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureStorage2D(m_renderer_id, 1, GL_RGBA8, ai_texture.mWidth, ai_texture.mHeight);
+    glTextureSubImage2D(m_renderer_id, 0, 0, 0, ai_texture.mWidth, ai_texture.mHeight,
+        GL_RGBA, GL_UNSIGNED_BYTE, ai_texture.pcData);
+}
+
+Texture::Texture(const StbImageWrapper& image)
+{
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureStorage2D(m_renderer_id, 1, internal_format(image), image.width(), image.height());
+    glTextureSubImage2D(m_renderer_id, 0, 0, 0, image.width(), image.height(),
+        format(image), GL_UNSIGNED_BYTE, image.pixels());
+}
+
 Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
         const StbImageWrapper& top, const StbImageWrapper& bottom,
         const StbImageWrapper& front, const StbImageWrapper& back)
@@ -109,6 +145,32 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
         const StbImageWrapper& image = *images[i];
         glTextureSubImage3D(m_renderer_id, 0, 0, 0, i, image.width(), image.height(),
             1, GL_RGB, GL_UNSIGNED_BYTE, image.pixels());
+    }
+}
+
+GLenum Texture::internal_format(const StbImageWrapper& image)
+{
+    switch (image.channels_count()) {
+        case 3:
+            return GL_RGB8;
+        case 4:
+            return GL_RGBA8;
+        default:
+            assert(false);
+            return GL_NONE;
+    }
+}
+
+GLenum Texture::format(const StbImageWrapper& image)
+{
+    switch (image.channels_count()) {
+        case 3:
+            return GL_RGB;
+        case 4:
+            return GL_RGBA;
+        default:
+            assert(false);
+            return GL_NONE;
     }
 }
 

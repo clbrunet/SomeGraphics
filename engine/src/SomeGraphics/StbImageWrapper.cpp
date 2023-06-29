@@ -6,16 +6,32 @@
 
 namespace sg {
 
-std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename, int channels_count_desired)
+std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename,
+    int channels_count_desired)
 {
     int width, height, channels_count_in_file;
-    u_char *pixels = stbi_load(filename, &width, &height, &channels_count_in_file, channels_count_desired);
+    u_char *pixels = stbi_load(filename, &width, &height,
+        &channels_count_in_file, channels_count_desired);
     if (pixels == nullptr) {
         std::cerr << "Image '" << filename << "' loading error" << std::endl;
         return std::nullopt;
     }
     return StbImageWrapper(pixels, width, height,
         channels_count_desired == 0 ? channels_count_in_file : channels_count_desired);
+}
+
+std::optional<StbImageWrapper> StbImageWrapper::load_from_memory(const u_char* buffer, uint size, 
+    int channels_count_desired)
+{
+    int width, height, channels_count_in_buffer;
+    u_char *pixels = stbi_load_from_memory(buffer, size, &width, &height,
+        &channels_count_in_buffer, channels_count_desired);
+    if (pixels == nullptr) {
+        std::cerr << "Image at memory " << buffer << " loading error" << std::endl;
+        return std::nullopt;
+    }
+    return StbImageWrapper(pixels, width, height,
+        channels_count_desired == 0 ? channels_count_in_buffer : channels_count_desired);
 }
 
 StbImageWrapper::StbImageWrapper(StbImageWrapper&& other)

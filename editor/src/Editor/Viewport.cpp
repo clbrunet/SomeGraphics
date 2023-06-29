@@ -75,7 +75,7 @@ void Viewport::on_render(const Renderer& renderer)
     m_program->set_int("u_environment", 0);
     m_skybox->texture().bind_to_unit(0);
     std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(m_scene->entities().begin(),
-            m_scene->entities().end());
+        m_scene->entities().end());
     while (!entities.empty()) {
         const SceneEntity& entity = *entities.front();
         entities.pop_front();
@@ -84,6 +84,8 @@ void Viewport::on_render(const Renderer& renderer)
         }
         if (entity.mesh()) {
             m_program->set_mat4("u_model", entity.transform());
+            m_program->set_int("u_texture", 1);
+            entity.texture()->bind_to_unit(1);
             renderer.draw(*entity.mesh());
         }
     }
