@@ -26,17 +26,18 @@ public:
 
     const glm::mat4& transform() const;
     const std::unique_ptr<Mesh>& mesh() const;
-    const std::unique_ptr<Texture>& texture() const;
+    const std::shared_ptr<Texture>& texture() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
 private:
     glm::mat4 m_transform = glm::mat4(1.0f);
     std::unique_ptr<Mesh> m_mesh;
-    std::unique_ptr<Texture> m_texture;
+    std::shared_ptr<Texture> m_texture;
     std::vector<std::shared_ptr<SceneEntity>> m_children;
 
-    SceneEntity(const aiNode* node, const aiMatrix4x4& transform, const aiScene* scene);
+    SceneEntity(const std::string& filename, const aiNode* node, const aiMatrix4x4& transform,
+        const aiScene* scene);
 
-    void process_node_meshes(const aiNode* node, const aiScene* scene);
+    void process_node_meshes(const std::string& filename, const aiNode* node, const aiScene* scene);
 
     struct Vertex {
         glm::vec3 position;

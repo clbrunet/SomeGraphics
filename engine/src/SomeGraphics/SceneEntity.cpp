@@ -13,6 +13,7 @@
 #include "SomeGraphics/SceneEntity.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/AssimpToGlm.hpp"
+#include "SomeGraphics/TexturesCache.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 
 namespace sg {
@@ -26,7 +27,7 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
         std::cerr << "Model loading error : " << importer.GetErrorString() << std::endl;
         return std::nullopt;
     }
-    return std::shared_ptr<SceneEntity>(new SceneEntity(ai_scene->mRootNode,
+    return std::shared_ptr<SceneEntity>(new SceneEntity(filename, ai_scene->mRootNode,
             aiMatrix4x4(), ai_scene));
 }
 
@@ -40,7 +41,7 @@ const std::unique_ptr<Mesh>& SceneEntity::mesh() const
     return m_mesh;
 }
 
-const std::unique_ptr<Texture>& SceneEntity::texture() const
+const std::shared_ptr<Texture>& SceneEntity::texture() const
 {
     return m_texture;
 }
@@ -50,18 +51,20 @@ const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
     return m_children;
 }
 
-SceneEntity::SceneEntity(const aiNode* ai_node, const aiMatrix4x4& transform, const aiScene* ai_scene) :
+SceneEntity::SceneEntity(const std::string& filename, const aiNode* ai_node,
+    const aiMatrix4x4& transform, const aiScene* ai_scene) :
     m_transform(AssimpToGlm::mat4(transform))
 {
     assert(ai_node != nullptr && ai_scene != nullptr);
-    process_node_meshes(ai_node, ai_scene);
+    process_node_meshes(filename, ai_node, ai_scene);
     for (uint i = 0; i < ai_node->mNumChildren; i++) {
-        m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(ai_node->mChildren[i],
+        m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename, ai_node->mChildren[i],
                     transform * ai_node->mChildren[i]->mTransformation, ai_scene)));
     }
 }
 
-void SceneEntity::process_node_meshes(const aiNode* ai_node, const aiScene* ai_scene)
+void SceneEntity::process_node_meshes(const std::string& filename, const aiNode* ai_node,
+    const aiScene* ai_scene)
 {
     assert(ai_node != nullptr && ai_scene != nullptr);
     if (ai_node->mNumMeshes == 0) {
@@ -91,7 +94,7 @@ void SceneEntity::process_node_meshes(const aiNode* ai_node, const aiScene* ai_s
     aiString path;
     ai_scene->mMaterials[ai_scene->mMeshes[ai_node->mMeshes[0]]->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
     const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
-    std::optional<std::unique_ptr<Texture>> texture_opt = Texture::from_ai_texture(*ai_texture);
+    std::optional<std::shared_ptr<Texture>> texture_opt = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture);
     if (!texture_opt.has_value()) {
         abort();
     }

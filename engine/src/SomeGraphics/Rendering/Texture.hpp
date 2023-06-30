@@ -15,7 +15,7 @@ class StbImageWrapper;
 class Texture {
 public:
     Texture() = delete;
-    Texture(const glm::vec2& dimension);
+    Texture(const glm::vec2& dimensions);
     static std::optional<std::unique_ptr<Texture>> from_ai_texture(const aiTexture& ai_texture);
     static std::optional<std::unique_ptr<Texture>> create_cubemap(const char* right,
         const char* left, const char* top, const char* bottom, const char* front, const char* back);

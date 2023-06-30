@@ -15,13 +15,13 @@
 
 namespace sg {
 
-Texture::Texture(const glm::vec2& dimension)
+Texture::Texture(const glm::vec2& dimensions)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimension.x, dimension.y);
-    glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimension.x, dimension.y,
+    glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimensions.x, dimensions.y);
+    glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimensions.x, dimensions.y,
         GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 }
 
