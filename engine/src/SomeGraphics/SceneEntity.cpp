@@ -8,6 +8,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include "assimp/texture.h"
+#include "assimp/types.h"
 #include "assimp/vector3.h"
 
 #include "SomeGraphics/SceneEntity.hpp"
@@ -15,6 +16,7 @@
 #include "SomeGraphics/AssimpToGlm.hpp"
 #include "SomeGraphics/TexturesCache.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
+#include "glm/ext/vector_float3.hpp"
 
 namespace sg {
 
@@ -44,6 +46,11 @@ const std::unique_ptr<Mesh>& SceneEntity::mesh() const
 const std::shared_ptr<Texture>& SceneEntity::texture() const
 {
     return m_texture;
+}
+
+const glm::vec3& SceneEntity::color() const
+{
+    return m_color;
 }
 
 const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
@@ -91,14 +98,23 @@ void SceneEntity::process_node_meshes(const std::string& filename, const aiNode*
         VertexAttribute(VertexAttributeType::Vec3),
         VertexAttribute(VertexAttributeType::Vec2),
     }), indices);
-    aiString path;
-    ai_scene->mMaterials[ai_scene->mMeshes[ai_node->mMeshes[0]]->mMaterialIndex]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-    const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
-    std::optional<std::shared_ptr<Texture>> texture_opt = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture);
-    if (!texture_opt.has_value()) {
-        abort();
+    const aiMaterial* ai_material = ai_scene->mMaterials[
+        ai_scene->mMeshes[ai_node->mMeshes[0]]->mMaterialIndex];
+    aiColor3D ai_color3;
+    ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_color3);
+    m_color = AssimpToGlm::vec3(ai_color3);
+    if (ai_material->GetTextureCount(aiTextureType_DIFFUSE) == 0) {
+        m_texture = TexturesCache::white_1px();
+    } else {
+        aiString path;
+        ai_material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+        const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
+        std::optional<std::shared_ptr<Texture>> texture_opt = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture);
+        if (!texture_opt.has_value()) {
+            abort();
+        }
+        m_texture = std::move(texture_opt.value());
     }
-    m_texture = std::move(texture_opt.value());
 }
 
 }

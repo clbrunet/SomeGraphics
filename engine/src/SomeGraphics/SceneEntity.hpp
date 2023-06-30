@@ -27,11 +27,13 @@ public:
     const glm::mat4& transform() const;
     const std::unique_ptr<Mesh>& mesh() const;
     const std::shared_ptr<Texture>& texture() const;
+    const glm::vec3& color() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
 private:
     glm::mat4 m_transform = glm::mat4(1.0f);
     std::unique_ptr<Mesh> m_mesh;
     std::shared_ptr<Texture> m_texture;
+    glm::vec3 m_color;
     std::vector<std::shared_ptr<SceneEntity>> m_children;
 
     SceneEntity(const std::string& filename, const aiNode* node, const aiMatrix4x4& transform,

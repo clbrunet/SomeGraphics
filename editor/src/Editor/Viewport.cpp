@@ -86,6 +86,7 @@ void Viewport::on_render(const Renderer& renderer)
             m_program->set_mat4("u_model", entity.transform());
             m_program->set_int("u_texture", 1);
             entity.texture()->bind_to_unit(1);
+            m_program->set_vec3("u_color", entity.color());
             renderer.draw(*entity.mesh());
         }
     }

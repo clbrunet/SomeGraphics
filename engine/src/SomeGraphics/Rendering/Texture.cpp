@@ -25,6 +25,20 @@ Texture::Texture(const glm::vec2& dimensions)
         GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 }
 
+std::unique_ptr<Texture> Texture::white_1px()
+{
+    uint renderer_id;
+    glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id);
+    glTextureParameteri(renderer_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTextureParameteri(renderer_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTextureStorage2D(renderer_id, 1, GL_RGB8, 1, 1);
+    u_char white[3] = { 255, 255, 255 };
+    glTextureSubImage2D(renderer_id, 0, 0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, white);
+    return std::unique_ptr<Texture>(new Texture(renderer_id));
+}
+
 std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture)
 {
     if (ai_texture.mHeight != 0) {
@@ -96,6 +110,11 @@ uint Texture::renderer_id() const
 void Texture::attach_to_framebuffer(uint frame_buffer, GLenum attachment) const
 {
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
+}
+
+Texture::Texture(uint renderer_id) :
+    m_renderer_id(renderer_id)
+{
 }
 
 Texture::Texture(const aiTexture& ai_texture)

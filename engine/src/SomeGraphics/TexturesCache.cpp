@@ -4,6 +4,16 @@
 
 namespace sg {
 
+std::shared_ptr<Texture> TexturesCache::white_1px()
+{
+    if (!white_1px_cache.expired()) {
+        return white_1px_cache.lock();
+    }
+    std::shared_ptr<Texture> texture = Texture::white_1px();
+    white_1px_cache = texture;
+    return texture;
+}
+
 std::optional<std::shared_ptr<Texture>> TexturesCache::from_ai_texture(const char* key,
     const aiTexture& ai_texture)
 {
@@ -32,6 +42,7 @@ void TexturesCache::clear_unused_textures()
     }
 }
 
+std::weak_ptr<Texture> TexturesCache::white_1px_cache;
 std::map<std::string, std::weak_ptr<Texture>> TexturesCache::cache;
 
 }

@@ -13,6 +13,7 @@ namespace sg {
 
 class TexturesCache {
 public:
+    static std::shared_ptr<Texture> white_1px();
     static std::optional<std::shared_ptr<Texture>> from_ai_texture(const char* key,
         const aiTexture& ai_texture);
 
@@ -25,6 +26,7 @@ public:
     TexturesCache& operator=(const TexturesCache& other) = delete;
     ~TexturesCache() = delete;
 private:
+    static std::weak_ptr<Texture> white_1px_cache;
     static std::map<std::string, std::weak_ptr<Texture>> cache;
 };
 
