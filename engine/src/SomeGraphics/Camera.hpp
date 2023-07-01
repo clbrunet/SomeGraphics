@@ -1,3 +1,5 @@
+#pragma once
+
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/quaternion_float.hpp"
 #include "glm/ext/vector_float3.hpp"
@@ -12,7 +14,7 @@ public:
     Camera(const Camera& other) = default;
     Camera& operator=(Camera&& other) = default;
     Camera& operator=(const Camera& other) = default;
-    virtual ~Camera();
+    virtual ~Camera() = default;
 
     const glm::vec3& position() const;
     const glm::mat4& view() const;

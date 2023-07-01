@@ -20,7 +20,7 @@ public:
     VertexAttribute(const VertexAttribute& other) = default;
     VertexAttribute& operator=(VertexAttribute&& other) = default;
     VertexAttribute& operator=(const VertexAttribute& other) = default;
-    ~VertexAttribute();
+    ~VertexAttribute() = default;
 
     int count() const;
     int size() const;

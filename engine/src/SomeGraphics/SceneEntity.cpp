@@ -33,6 +33,11 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
             aiMatrix4x4(), ai_scene));
 }
 
+const std::string& SceneEntity::name() const
+{
+    return m_name;
+}
+
 const glm::mat4& SceneEntity::transform() const
 {
     return m_transform;
@@ -60,6 +65,7 @@ const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
 
 SceneEntity::SceneEntity(const std::string& filename, const aiNode* ai_node,
     const aiMatrix4x4& transform, const aiScene* ai_scene) :
+    m_name(ai_node->mName.C_Str()),
     m_transform(AssimpToGlm::mat4(transform))
 {
     assert(ai_node != nullptr && ai_scene != nullptr);

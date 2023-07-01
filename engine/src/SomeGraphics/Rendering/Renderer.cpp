@@ -30,10 +30,6 @@ Renderer::Renderer()
     glEnable(GL_DEPTH_TEST);
 }
 
-Renderer::~Renderer()
-{
-}
-
 void Renderer::set_viewport(glm::ivec2 dimension) const
 {
     glViewport(0, 0, dimension.x, dimension.y);

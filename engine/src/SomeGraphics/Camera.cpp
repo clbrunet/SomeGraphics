@@ -17,10 +17,6 @@ Camera::Camera(const glm::vec3& position, const glm::quat& rotation, const glm::
     set_view();
 }
 
-Camera::~Camera()
-{
-}
-
 const glm::vec3& Camera::position() const
 {
     return m_position;

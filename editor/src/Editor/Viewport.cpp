@@ -1,7 +1,6 @@
 #include <deque>
 #include <iostream>
 #include <memory>
-#include <vector>
 
 #include "glm/ext/vector_int2.hpp"
 #include "imgui.h"
@@ -32,15 +31,6 @@ Viewport::Viewport(const Renderer& renderer)
         abort();
     }
     m_program = std::move(program_opt.value());
-    std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt
-        = SceneEntity::load_model("editor/assets/models/survival_guitar_backpack.glb");
-    if (!scene_entity_opt.has_value()) {
-        abort();
-    }
-    m_scene->add_entity(scene_entity_opt.value());
-}
-
-Viewport::~Viewport() {
 }
 
 void Viewport::on_update(const Window& window, float delta_time)
@@ -50,7 +40,7 @@ void Viewport::on_update(const Window& window, float delta_time)
     }
 }
 
-void Viewport::on_render(const Renderer& renderer)
+void Viewport::on_render(const Renderer& renderer, const Scene& scene)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);
@@ -74,8 +64,8 @@ void Viewport::on_render(const Renderer& renderer)
     m_program->set_vec3("u_camera_position", m_editor_camera->position());
     m_program->set_int("u_environment", 0);
     m_skybox->texture().bind_to_unit(0);
-    std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(m_scene->entities().begin(),
-        m_scene->entities().end());
+    std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(scene.entities().begin(),
+        scene.entities().end());
     while (!entities.empty()) {
         const SceneEntity& entity = *entities.front();
         entities.pop_front();

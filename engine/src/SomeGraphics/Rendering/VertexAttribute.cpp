@@ -25,10 +25,6 @@ VertexAttribute::VertexAttribute(VertexAttributeType type)
     }
 }
 
-VertexAttribute::~VertexAttribute()
-{
-}
-
 int VertexAttribute::count() const
 {
     return m_count;

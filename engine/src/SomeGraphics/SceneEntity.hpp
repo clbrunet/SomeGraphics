@@ -24,12 +24,14 @@ public:
     SceneEntity& operator=(const SceneEntity& other) = delete;
     ~SceneEntity() = default;
 
+    const std::string& name() const;
     const glm::mat4& transform() const;
     const std::unique_ptr<Mesh>& mesh() const;
     const std::shared_ptr<Texture>& texture() const;
     const glm::vec3& color() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
 private:
+    std::string m_name = "";
     glm::mat4 m_transform = glm::mat4(1.0f);
     std::unique_ptr<Mesh> m_mesh;
     std::shared_ptr<Texture> m_texture;

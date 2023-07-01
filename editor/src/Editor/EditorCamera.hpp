@@ -1,3 +1,5 @@
+#pragma once
+
 #include "glm/ext/quaternion_float.hpp"
 #include "glm/ext/vector_float2.hpp"
 
@@ -14,7 +16,7 @@ public:
     EditorCamera(const EditorCamera& other) = default;
     EditorCamera& operator=(EditorCamera&& other) = default;
     EditorCamera& operator=(const EditorCamera& other) = default;
-    ~EditorCamera() final override;
+    ~EditorCamera() final override = default;
 
     void on_update(const Window& window, float delta_time);
 private:

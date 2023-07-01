@@ -1,10 +1,11 @@
 #include "SomeGraphics/Application.hpp"
+#include <cstdint>
 
 namespace sg {
 
-Application::Application(const std::string& name) :
+Application::Application(const std::string& name, uint16_t width, uint16_t height) :
     m_name(name),
-    m_window(std::make_unique<Window>(name.c_str(), 800, 450))
+    m_window(std::make_unique<Window>(name.c_str(), width, height))
 {
     assert(!is_instantiated && "Multiple instances are not allowed");
     is_instantiated = true;

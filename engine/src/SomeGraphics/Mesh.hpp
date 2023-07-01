@@ -26,7 +26,7 @@ public:
     Mesh(const Mesh& other) = delete;
     Mesh& operator=(Mesh&& other) = default;
     Mesh& operator=(const Mesh& other) = delete;
-    ~Mesh();
+    ~Mesh() = default;
 
     const VertexArray& vertex_array() const;
 private:

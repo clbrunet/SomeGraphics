@@ -17,7 +17,7 @@ public:
     Renderer(const Renderer& other) = default;
     Renderer& operator=(Renderer&& other) = default;
     Renderer& operator=(const Renderer& other) = default;
-    ~Renderer();
+    ~Renderer() = default;
 
     void set_viewport(glm::ivec2 dimension) const;
     void clear() const;

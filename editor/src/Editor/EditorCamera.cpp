@@ -23,10 +23,6 @@ EditorCamera::EditorCamera(const glm::vec3& position, const glm::vec2& euler_ang
     assert(-89.0f <= euler_angles.x && euler_angles.x <= 89.0f);
 }
 
-EditorCamera::~EditorCamera()
-{
-}
-
 void EditorCamera::on_update(const Window& window, float delta_time)
 {
     if (!window.is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {

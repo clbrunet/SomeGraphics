@@ -8,6 +8,8 @@
 #include "glm/ext/vector_float3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 
+#include "Editor/EditorCamera.hpp"
+
 namespace sg {
 
 class Renderer;
@@ -27,10 +29,10 @@ public:
     Viewport(const Viewport& other) = delete;
     Viewport& operator=(Viewport&& other) = default;
     Viewport& operator=(const Viewport& other) = delete;
-    ~Viewport();
+    ~Viewport() = default;
 
     void on_update(const Window& window, float delta_time);
-    void on_render(const Renderer& renderer);
+    void on_render(const Renderer& renderer, const Scene& scene);
 private:
     ImVec2 m_dimension = ImVec2(800.0f, 450.0f);
     bool m_is_hovered = false;
@@ -41,7 +43,6 @@ private:
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::unique_ptr<Skybox> m_skybox;
     std::unique_ptr<Program> m_program;
-    std::unique_ptr<Scene> m_scene = std::make_unique<Scene>();
 };
 
 }
