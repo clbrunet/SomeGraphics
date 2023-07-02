@@ -2,6 +2,8 @@
 #include <iostream>
 #include <memory>
 
+#include "SomeGraphics/SceneEntity.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "imgui.h"
 
@@ -64,22 +66,27 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     m_program->set_vec3("u_camera_position", m_editor_camera->position());
     m_program->set_int("u_environment", 0);
     m_skybox->texture().bind_to_unit(0);
-    std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(scene.entities().begin(),
-        scene.entities().end());
-    while (!entities.empty()) {
-        const SceneEntity& entity = *entities.front();
-        entities.pop_front();
-        for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
-            entities.push_front(child);
-        }
-        if (entity.mesh()) {
-            m_program->set_mat4("u_model", entity.transform());
-            m_program->set_int("u_texture", 1);
-            entity.texture()->bind_to_unit(1);
-            m_program->set_vec3("u_color", entity.color());
-            renderer.draw(*entity.mesh());
-        }
+    // TODO: use an iterative algorithm with a heap std::stack or else
+    // (old iterative solution commented below for hints)
+    for (const std::shared_ptr<SceneEntity>& entity : scene.entities()) {
+        render_entity(renderer, *entity, entity->transform().local());
     }
+    // std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(scene.entities().begin(),
+    //     scene.entities().end());
+    // while (!entities.empty()) {
+    //     const SceneEntity& entity = *entities.front();
+    //     entities.pop_front();
+    //     for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
+    //         entities.push_front(child);
+    //     }
+    //     if (entity.mesh()) {
+    //         m_program->set_mat4("u_model", entity.transform());
+    //         m_program->set_int("u_texture", 1);
+    //         entity.texture()->bind_to_unit(1);
+    //         m_program->set_vec3("u_color", entity.color());
+    //         renderer.draw(*entity.mesh());
+    //     }
+    // }
 
     renderer.draw(*m_skybox, *m_editor_camera);
 
@@ -91,6 +98,21 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
+}
+
+void Viewport::render_entity(const Renderer& renderer,
+    const SceneEntity& entity, const glm::mat4& transform) const
+{
+    for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
+        render_entity(renderer, *child, transform * child->transform().local());
+    }
+    if (entity.mesh()) {
+        m_program->set_mat4("u_model", transform);
+        m_program->set_int("u_texture", 1);
+        entity.texture()->bind_to_unit(1);
+        m_program->set_vec3("u_color", entity.color());
+        renderer.draw(*entity.mesh());
+    }
 }
 
 }

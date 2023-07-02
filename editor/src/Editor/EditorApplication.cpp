@@ -5,6 +5,7 @@
 #include "Editor/EditorApplication.hpp"
 #include "Editor/Viewport.hpp"
 #include "Editor/Outliner.hpp"
+#include "Editor/Properties.hpp"
 
 std::unique_ptr<sg::Application> create_app()
 {
@@ -15,8 +16,7 @@ namespace sg {
 
 EditorApplication::EditorApplication(const std::string& name) :
     Application(name, 1280, 720),
-    m_viewport(std::make_unique<Viewport>(*m_renderer)),
-    m_outliner(std::make_unique<Outliner>())
+    m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt
         = SceneEntity::load_model("editor/assets/models/survival_guitar_backpack.glb");
@@ -36,6 +36,7 @@ void EditorApplication::on_render()
     ImGui::DockSpaceOverViewport();
     m_viewport->on_render(*m_renderer, *m_scene);
     m_outliner->on_render(*m_scene);
+    m_properties->on_render(*m_scene->entities()[0]);
 }
 
 }

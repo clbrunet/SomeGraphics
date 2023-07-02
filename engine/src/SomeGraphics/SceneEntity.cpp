@@ -29,8 +29,8 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
         std::cerr << "Model loading error : " << importer.GetErrorString() << std::endl;
         return std::nullopt;
     }
-    return std::shared_ptr<SceneEntity>(new SceneEntity(filename, ai_scene->mRootNode,
-            aiMatrix4x4(), ai_scene));
+    return std::shared_ptr<SceneEntity>(new SceneEntity(filename,
+            ai_scene->mRootNode, ai_scene));
 }
 
 const std::string& SceneEntity::name() const
@@ -38,7 +38,12 @@ const std::string& SceneEntity::name() const
     return m_name;
 }
 
-const glm::mat4& SceneEntity::transform() const
+const Transform& SceneEntity::transform() const
+{
+    return m_transform;
+}
+
+Transform& SceneEntity::transform()
 {
     return m_transform;
 }
@@ -63,21 +68,22 @@ const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
     return m_children;
 }
 
-SceneEntity::SceneEntity(const std::string& filename, const aiNode* ai_node,
-    const aiMatrix4x4& transform, const aiScene* ai_scene) :
+SceneEntity::SceneEntity(const std::string& filename,
+    const aiNode* ai_node, const aiScene* ai_scene) :
     m_name(ai_node->mName.C_Str()),
-    m_transform(AssimpToGlm::mat4(transform))
+    m_transform(AssimpToGlm::mat4(ai_node->mTransformation))
 {
     assert(ai_node != nullptr && ai_scene != nullptr);
     process_node_meshes(filename, ai_node, ai_scene);
     for (uint i = 0; i < ai_node->mNumChildren; i++) {
-        m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename, ai_node->mChildren[i],
-                    transform * ai_node->mChildren[i]->mTransformation, ai_scene)));
+        const aiNode* child = ai_node->mChildren[i];
+        m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename,
+                    child, ai_scene)));
     }
 }
 
-void SceneEntity::process_node_meshes(const std::string& filename, const aiNode* ai_node,
-    const aiScene* ai_scene)
+void SceneEntity::process_node_meshes(const std::string& filename,
+    const aiNode* ai_node, const aiScene* ai_scene)
 {
     assert(ai_node != nullptr && ai_scene != nullptr);
     if (ai_node->mNumMeshes == 0) {

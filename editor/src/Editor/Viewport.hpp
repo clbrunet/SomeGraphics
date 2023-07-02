@@ -43,6 +43,9 @@ private:
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::unique_ptr<Skybox> m_skybox;
     std::unique_ptr<Program> m_program;
+
+    void render_entity(const Renderer& renderer,
+        const SceneEntity& entity, const glm::mat4& transform) const;
 };
 
 }
