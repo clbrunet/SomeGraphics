@@ -31,9 +31,10 @@ void Outliner::on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selecte
             flags |= ImGuiTreeNodeFlags_Leaf;
         }
         if (ImGui::TreeNodeEx((void*)i, flags,  "%s", entity->name().c_str())) {
-            for (const std::shared_ptr<SceneEntity>& child : entity->children()) {
-                entities.push_front(child);
-            }
+            std::for_each(entity->children().crbegin(), entity->children().crend(),
+                [&entities](const std::shared_ptr<SceneEntity>& child) {
+                    entities.push_front(child);
+                });
             children_count_stack.push(entity->children().size());
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
