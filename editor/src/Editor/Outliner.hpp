@@ -1,8 +1,11 @@
 #pragma once
 
+#include <memory>
+
 namespace sg {
 
 class Scene;
+class SceneEntity;
 
 class Outliner {
 public:
@@ -13,7 +16,7 @@ public:
     Outliner& operator=(const Outliner& other) = default;
     ~Outliner() = default;
 
-    void on_render(const Scene& scene);
+    void on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selected_entity);
 };
 
 }

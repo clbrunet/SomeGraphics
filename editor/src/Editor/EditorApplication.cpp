@@ -35,8 +35,12 @@ void EditorApplication::on_render()
 {
     ImGui::DockSpaceOverViewport();
     m_viewport->on_render(*m_renderer, *m_scene);
-    m_outliner->on_render(*m_scene);
-    m_properties->on_render(*m_scene->entities()[0]);
+    m_outliner->on_render(*m_scene, m_selected_entity);
+    if (m_selected_entity.expired()) {
+        m_properties->on_render();
+    } else {
+        m_properties->on_render(*m_selected_entity.lock());
+    }
 }
 
 }

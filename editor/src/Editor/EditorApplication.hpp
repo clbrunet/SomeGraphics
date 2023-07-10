@@ -24,6 +24,7 @@ public:
     void on_render() final override;
 private:
     std::unique_ptr<Scene> m_scene = std::make_unique<Scene>();
+    std::weak_ptr<SceneEntity> m_selected_entity;
     std::unique_ptr<Viewport> m_viewport;
     std::unique_ptr<Outliner> m_outliner = std::make_unique<Outliner>();
     std::unique_ptr<Properties> m_properties = std::make_unique<Properties>();
