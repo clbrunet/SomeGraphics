@@ -23,6 +23,7 @@ EditorApplication::EditorApplication(const std::string& name) :
     if (!scene_entity_opt.has_value()) {
         abort();
     }
+    m_selected_entity = scene_entity_opt.value();
     m_scene->add_entity(std::move(scene_entity_opt.value()));
 }
 

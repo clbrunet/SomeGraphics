@@ -24,8 +24,16 @@ void Properties::on_render(SceneEntity& entity)
     ImGui::Text("%s", entity.name().c_str());
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         glm::vec3 local_position = entity.transform().local_position();
-        if (ImGui::DragFloat3("Position", glm::value_ptr(local_position))) {
+        if (ImGui::DragFloat3("Position", glm::value_ptr(local_position), 0.2f)) {
             entity.transform().set_local_position(local_position);
+        }
+        glm::vec3 local_rotation_degrees = glm::degrees(entity.transform().local_rotation());
+        if (ImGui::DragFloat3("Rotation", glm::value_ptr((local_rotation_degrees)), 1.0f)) {
+            entity.transform().set_local_rotation(glm::radians(local_rotation_degrees));
+        }
+        glm::vec3 local_scale = entity.transform().local_scale();
+        if (ImGui::DragFloat3("Scale", glm::value_ptr(local_scale), 0.1f)) {
+            entity.transform().set_local_scale(local_scale);
         }
         ImGui::TreePop();
     }
