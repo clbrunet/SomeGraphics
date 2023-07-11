@@ -1,6 +1,6 @@
-#include <deque>
 #include <iostream>
 #include <memory>
+#include <stack>
 
 #include "SomeGraphics/SceneEntity.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -60,37 +60,8 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
 
     m_frame_buffer->bind();
     renderer.clear();
-
-    m_program->use();
-    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
-    m_program->set_vec3("u_camera_position", m_editor_camera->position());
-    m_program->set_int("u_environment", 0);
-    m_skybox->texture().bind_to_unit(0);
-    // TODO: use an iterative algorithm with a heap std::stack or else
-    // (old iterative solution commented below for hints)
-    render_entity(renderer, *scene.root_entity(), scene.root_entity()->transform().local());
-    // std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(scene.entities().begin(),
-    //     scene.entities().end());
-    // std::stack<glm::mat4> model_matrices_stack = std::stack<glm::mat4>({ glm::mat4(1.0f) });
-    // while (!entities.empty()) {
-    //     const SceneEntity& entity = *entities.front();
-    //     entities.pop_front();
-    //     if (entity.mesh()) {
-    //         m_program->set_mat4("u_model", entity.transform());
-    //         m_program->set_int("u_texture", 1);
-    //         entity.texture()->bind_to_unit(1);
-    //         m_program->set_vec3("u_color", entity.color());
-    //         renderer.draw(*entity.mesh());
-    //     }
-    //     const std::shared_ptr<SceneEntity>&
-    //     std::for_each(entity.children().crbegin(), entity.children().crend(),
-    //         [&entities](const std::shared_ptr<SceneEntity>& child) {
-    //             entities.push_front(child);
-    //         });
-    // }
-
+    render_scene(renderer, scene);
     renderer.draw(*m_skybox, *m_editor_camera);
-
     FrameBuffer::bind_default();
 
     ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture().renderer_id(),
@@ -101,18 +72,39 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImGui::PopStyleVar();
 }
 
-void Viewport::render_entity(const Renderer& renderer,
-    const SceneEntity& entity, const glm::mat4& transform) const
+void Viewport::render_scene(const Renderer& renderer, const Scene& scene) const
 {
-    for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
-        render_entity(renderer, *child, transform * child->transform().local());
-    }
-    if (entity.mesh()) {
-        m_program->set_mat4("u_model", transform);
-        m_program->set_int("u_texture", 1);
-        entity.texture()->bind_to_unit(1);
-        m_program->set_vec3("u_color", entity.color());
-        renderer.draw(*entity.mesh());
+    m_program->use();
+    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
+    m_program->set_vec3("u_camera_position", m_editor_camera->position());
+    m_program->set_int("u_environment", 0);
+    m_skybox->texture().bind_to_unit(0);
+    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
+        iterators_stack({ scene.root_entity()->children().cbegin() });
+    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
+        ends_stack({ scene.root_entity()->children().cend() });
+    std::stack<glm::mat4> model_matrices_stack({ scene.root_entity()->transform().local() });
+    while (!iterators_stack.empty()) {
+        const std::shared_ptr<SceneEntity>& entity = *iterators_stack.top();
+        ++iterators_stack.top();
+        glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
+        if (entity->mesh()) {
+            m_program->set_mat4("u_model", model_matrix);
+            m_program->set_int("u_texture", 1);
+            entity->texture()->bind_to_unit(1);
+            m_program->set_vec3("u_color", entity->color());
+            renderer.draw(*entity->mesh());
+        }
+        if (entity->children().size() > 0) {
+            iterators_stack.push(entity->children().cbegin());
+            ends_stack.push(entity->children().cend());
+            model_matrices_stack.push(model_matrix);
+        }
+        while (!iterators_stack.empty() && iterators_stack.top() == ends_stack.top()) {
+            iterators_stack.pop();
+            ends_stack.pop();
+            model_matrices_stack.pop();
+        }
     }
 }
 

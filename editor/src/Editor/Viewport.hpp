@@ -44,8 +44,7 @@ private:
     std::unique_ptr<Skybox> m_skybox;
     std::unique_ptr<Program> m_program;
 
-    void render_entity(const Renderer& renderer,
-        const SceneEntity& entity, const glm::mat4& transform) const;
+    void render_scene(const Renderer& renderer, const Scene& scene) const;
 };
 
 }
