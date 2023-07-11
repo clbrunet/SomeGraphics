@@ -9,16 +9,16 @@
 #include "glm/ext/vector_float3.hpp"
 
 #include "SomeGraphics/Transform.hpp"
+#include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
 
-class Mesh;
 class Texture;
 
 class SceneEntity {
 public:
+    static std::unique_ptr<SceneEntity> create_scene_root();
     static std::optional<std::shared_ptr<SceneEntity>> load_model(const char* filename);
-    SceneEntity() = delete;
     SceneEntity(SceneEntity&& other) = default;
     SceneEntity(const SceneEntity& other) = delete;
     SceneEntity& operator=(SceneEntity&& other) = default;
@@ -32,14 +32,18 @@ public:
     const std::shared_ptr<Texture>& texture() const;
     const glm::vec3& color() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
+
+    void add_child(std::shared_ptr<SceneEntity>&& child);
 private:
-    std::string m_name = "";
+    std::string m_name;
     Transform m_transform;
     std::unique_ptr<Mesh> m_mesh;
     std::shared_ptr<Texture> m_texture;
     glm::vec3 m_color;
     std::vector<std::shared_ptr<SceneEntity>> m_children;
 
+    // Scene root constructor
+    SceneEntity();
     SceneEntity(const std::string& filename, const aiNode* node, const aiScene* scene);
 
     void process_node_meshes(const std::string& filename, const aiNode* node, const aiScene* scene);

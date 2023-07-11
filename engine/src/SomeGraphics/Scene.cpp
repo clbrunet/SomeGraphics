@@ -1,15 +1,16 @@
 #include "SomeGraphics/Scene.hpp"
+#include "SomeGraphics/SceneEntity.hpp"
 
 namespace sg {
 
-const std::vector<std::shared_ptr<SceneEntity>>& Scene::entities() const
+const std::shared_ptr<SceneEntity>& Scene::root_entity() const
 {
-    return m_entities;
+    return m_root_entity;
 }
 
-void Scene::add_entity(const std::shared_ptr<SceneEntity>& entity)
+void Scene::add_entity(std::shared_ptr<SceneEntity>&& entity)
 {
-    m_entities.push_back(entity);
+    m_root_entity->add_child(std::move(entity));
 }
 
 }

@@ -68,17 +68,13 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     m_skybox->texture().bind_to_unit(0);
     // TODO: use an iterative algorithm with a heap std::stack or else
     // (old iterative solution commented below for hints)
-    for (const std::shared_ptr<SceneEntity>& entity : scene.entities()) {
-        render_entity(renderer, *entity, entity->transform().local());
-    }
+    render_entity(renderer, *scene.root_entity(), scene.root_entity()->transform().local());
     // std::deque<std::shared_ptr<SceneEntity>> entities = std::deque(scene.entities().begin(),
     //     scene.entities().end());
+    // std::stack<glm::mat4> model_matrices_stack = std::stack<glm::mat4>({ glm::mat4(1.0f) });
     // while (!entities.empty()) {
     //     const SceneEntity& entity = *entities.front();
     //     entities.pop_front();
-    //     for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
-    //         entities.push_front(child);
-    //     }
     //     if (entity.mesh()) {
     //         m_program->set_mat4("u_model", entity.transform());
     //         m_program->set_int("u_texture", 1);
@@ -86,6 +82,11 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     //         m_program->set_vec3("u_color", entity.color());
     //         renderer.draw(*entity.mesh());
     //     }
+    //     const std::shared_ptr<SceneEntity>&
+    //     std::for_each(entity.children().crbegin(), entity.children().crend(),
+    //         [&entities](const std::shared_ptr<SceneEntity>& child) {
+    //             entities.push_front(child);
+    //         });
     // }
 
     renderer.draw(*m_skybox, *m_editor_camera);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+
+#include "SomeGraphics/SceneEntity.hpp"
 
 namespace sg {
 
@@ -16,10 +17,10 @@ public:
     Scene& operator=(const Scene& other) = delete;
     ~Scene() = default;
 
-    const std::vector<std::shared_ptr<SceneEntity>>& entities() const;
-    void add_entity(const std::shared_ptr<SceneEntity>& entity);
+    const std::shared_ptr<SceneEntity>& root_entity() const;
+    void add_entity(std::shared_ptr<SceneEntity>&& entity);
 private:
-    std::vector<std::shared_ptr<SceneEntity>> m_entities;
+    std::shared_ptr<SceneEntity> m_root_entity = SceneEntity::create_scene_root();
 };
 
 }

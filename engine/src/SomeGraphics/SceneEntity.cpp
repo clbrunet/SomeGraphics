@@ -20,6 +20,11 @@
 
 namespace sg {
 
+std::unique_ptr<SceneEntity> SceneEntity::create_scene_root()
+{
+    return std::unique_ptr<SceneEntity>(new SceneEntity());
+}
+
 std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* filename)
 {
     Assimp::Importer importer;
@@ -66,6 +71,16 @@ const glm::vec3& SceneEntity::color() const
 const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
 {
     return m_children;
+}
+
+void SceneEntity::add_child(std::shared_ptr<SceneEntity>&& child)
+{
+    m_children.emplace_back(std::move(child));
+}
+
+SceneEntity::SceneEntity() :
+    m_name("SceneRoot")
+{
 }
 
 SceneEntity::SceneEntity(const std::string& filename,
