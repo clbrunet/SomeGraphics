@@ -4,6 +4,7 @@
 
 #include "SomeGraphics/SceneEntity.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "imgui.h"
 
@@ -33,6 +34,23 @@ Viewport::Viewport(const Renderer& renderer)
         abort();
     }
     m_program = std::move(program_opt.value());
+    program_opt = Program::create("editor/assets/shaders/post_processing.vert",
+        "editor/assets/shaders/post_processing.frag");
+    if (!program_opt.has_value()) {
+        abort();
+    }
+    m_post_processing_program = std::move(program_opt.value());
+    m_quad = std::make_unique<Mesh>(std::vector<QuadVertex>({
+        QuadVertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
+        QuadVertex(glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
+        QuadVertex(glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
+        QuadVertex(glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+    }), std::initializer_list<VertexAttribute>({
+        VertexAttributeType::Vec2,
+        VertexAttributeType::Vec2,
+    }), std::vector<uint>({
+        0, 1, 2, 0, 2, 3,
+    }));
 }
 
 void Viewport::on_update(const Window& window, float delta_time)
@@ -62,6 +80,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     renderer.clear();
     render_scene(renderer, scene);
     renderer.draw(*m_skybox, *m_editor_camera);
+    post_processing(renderer);
     FrameBuffer::bind_default();
 
     ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture().renderer_id(),
@@ -106,6 +125,14 @@ void Viewport::render_scene(const Renderer& renderer, const Scene& scene) const
             model_matrices_stack.pop();
         }
     }
+}
+
+void Viewport::post_processing(const Renderer& renderer) const
+{
+    m_post_processing_program->use();
+    m_post_processing_program->set_int("u_texture", 0);
+    m_frame_buffer->color_texture().bind_to_unit(0);
+    renderer.draw(*m_quad);
 }
 
 }

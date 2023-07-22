@@ -20,6 +20,8 @@ Texture::Texture(const glm::vec2& dimensions)
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimensions.x, dimensions.y);
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimensions.x, dimensions.y,
         GL_RGB, GL_UNSIGNED_BYTE, nullptr);
@@ -159,7 +161,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTextureStorage2D(m_renderer_id, 1, GL_RGB8, right.width(), right.height());
+    glTextureStorage2D(m_renderer_id, 1, GL_SRGB8, right.width(), right.height());
     for (int i = 0; i < 6; i++) {
         const StbImageWrapper& image = *images[i];
         glTextureSubImage3D(m_renderer_id, 0, 0, 0, i, image.width(), image.height(),
@@ -171,9 +173,9 @@ GLenum Texture::internal_format(const StbImageWrapper& image)
 {
     switch (image.channels_count()) {
         case 3:
-            return GL_RGB8;
+            return GL_SRGB8;
         case 4:
-            return GL_RGBA8;
+            return GL_SRGB8_ALPHA8;
         default:
             assert(false);
             return GL_NONE;
