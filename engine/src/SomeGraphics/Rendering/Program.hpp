@@ -24,6 +24,7 @@ public:
     void use() const;
     void set_int(const char* name, int i) const;
     void set_vec3(const char* name, const glm::vec3& vec3) const;
+    void set_vec4(const char* name, const glm::vec4& vec4) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
 private:
     uint m_renderer_id = 0;

@@ -41,17 +41,18 @@ std::unique_ptr<Texture> Texture::white_1px()
     return std::unique_ptr<Texture>(new Texture(renderer_id));
 }
 
-std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture)
+std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture,
+    ColorSpace color_space)
 {
     if (ai_texture.mHeight != 0) {
-        return std::unique_ptr<Texture>(new Texture(ai_texture));
+        return std::unique_ptr<Texture>(new Texture(ai_texture, color_space));
     }
     std::optional<StbImageWrapper> image_opt = StbImageWrapper::load_from_memory(
         (const u_char*)ai_texture.pcData, ai_texture.mWidth);
     if (!image_opt.has_value()) {
         return std::nullopt;
     }
-    return std::unique_ptr<Texture>(new Texture(image_opt.value()));
+    return std::unique_ptr<Texture>(new Texture(image_opt.value(), color_space));
 }
 
 std::optional<std::unique_ptr<Texture>> Texture::create_cubemap(const char* right,
@@ -119,30 +120,31 @@ Texture::Texture(uint renderer_id) :
 {
 }
 
-Texture::Texture(const aiTexture& ai_texture)
+Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space)
 {
     assert(ai_texture.mHeight != 0);
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, GL_RGBA8, ai_texture.mWidth, ai_texture.mHeight);
+    glTextureStorage2D(m_renderer_id, 1, internal_format(4, color_space), ai_texture.mWidth, ai_texture.mHeight);
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, ai_texture.mWidth, ai_texture.mHeight,
         GL_RGBA, GL_UNSIGNED_BYTE, ai_texture.pcData);
 }
 
-Texture::Texture(const StbImageWrapper& image)
+Texture::Texture(const StbImageWrapper& image, ColorSpace color_space)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, internal_format(image), image.width(), image.height());
+    glTextureStorage2D(m_renderer_id, 1, internal_format(image.channels_count(), color_space),
+        image.width(), image.height());
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, image.width(), image.height(),
-        format(image), GL_UNSIGNED_BYTE, image.pixels());
+        format(image.channels_count()), GL_UNSIGNED_BYTE, image.pixels());
 }
 
 Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
-        const StbImageWrapper& top, const StbImageWrapper& bottom,
-        const StbImageWrapper& front, const StbImageWrapper& back)
+    const StbImageWrapper& top, const StbImageWrapper& bottom,
+    const StbImageWrapper& front, const StbImageWrapper& back)
 {
     std::array<const StbImageWrapper*, 6> images({ &right, &left, &top, &bottom, &back, &front });
 #if SG_DEBUG
@@ -169,30 +171,40 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     }
 }
 
-GLenum Texture::internal_format(const StbImageWrapper& image)
+GLenum Texture::internal_format(uint channels_count, ColorSpace color_space)
 {
-    switch (image.channels_count()) {
-        case 3:
-            return GL_SRGB8;
-        case 4:
-            return GL_SRGB8_ALPHA8;
-        default:
-            assert(false);
-            return GL_NONE;
+    switch (color_space) {
+        case ColorSpace::Srgb:
+            switch (channels_count) {
+                case 3:
+                    return GL_SRGB8;
+                case 4:
+                    return GL_SRGB8_ALPHA8;
+            }
+            break;
+        case ColorSpace::Linear:
+            switch (channels_count) {
+                case 3:
+                    return GL_RGB8;
+                case 4:
+                    return GL_RGBA8;
+            }
+            break;
     }
+    assert(false);
+    return GL_NONE;
 }
 
-GLenum Texture::format(const StbImageWrapper& image)
+GLenum Texture::format(uint channels_count)
 {
-    switch (image.channels_count()) {
+    switch (channels_count) {
         case 3:
             return GL_RGB;
         case 4:
             return GL_RGBA;
-        default:
-            assert(false);
-            return GL_NONE;
     }
+    assert(false);
+    return GL_NONE;
 }
 
 }

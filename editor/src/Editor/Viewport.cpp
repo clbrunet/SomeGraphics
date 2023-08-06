@@ -28,8 +28,8 @@ Viewport::Viewport(const Renderer& renderer)
     }
     m_skybox = std::move(skybox_opt.value());
     std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("editor/assets/shaders/environment_reflection.vert",
-            "editor/assets/shaders/environment_reflection.frag");
+        = Program::create("editor/assets/shaders/pbr.vert",
+            "editor/assets/shaders/pbr.frag");
     if (!program_opt.has_value()) {
         abort();
     }
@@ -109,9 +109,13 @@ void Viewport::render_scene(const Renderer& renderer, const Scene& scene) const
         glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
         if (entity->mesh()) {
             m_program->set_mat4("u_model", model_matrix);
-            m_program->set_int("u_texture", 1);
-            entity->texture()->bind_to_unit(1);
-            m_program->set_vec3("u_color", entity->color());
+            m_program->set_int("u_albedo_map", 1);
+            entity->albedo()->bind_to_unit(1);
+            m_program->set_vec4("u_color", entity->color());
+            m_program->set_int("u_roughness_map", 2);
+            entity->roughness()->bind_to_unit(2);
+            m_program->set_int("u_metallic_map", 3);
+            entity->metalness()->bind_to_unit(3);
             renderer.draw(*entity->mesh());
         }
         if (entity->children().size() > 0) {

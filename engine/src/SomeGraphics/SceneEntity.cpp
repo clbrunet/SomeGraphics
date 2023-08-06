@@ -1,7 +1,11 @@
+#include <array>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <utility>
 
 #include "assimp/Importer.hpp"
+#include "assimp/StringUtils.h"
 #include "assimp/material.h"
 #include "assimp/matrix4x4.h"
 #include "assimp/mesh.h"
@@ -17,6 +21,8 @@
 #include "SomeGraphics/TexturesCache.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "glm/ext/vector_float3.hpp"
+#include "glm/ext/vector_float4.hpp"
+#include "glm/gtx/string_cast.hpp"
 
 namespace sg {
 
@@ -58,12 +64,22 @@ const std::unique_ptr<Mesh>& SceneEntity::mesh() const
     return m_mesh;
 }
 
-const std::shared_ptr<Texture>& SceneEntity::texture() const
+const std::shared_ptr<Texture>& SceneEntity::albedo() const
 {
-    return m_texture;
+    return m_albedo;
 }
 
-const glm::vec3& SceneEntity::color() const
+const std::shared_ptr<Texture>& SceneEntity::roughness() const
+{
+    return m_roughness;
+}
+
+const std::shared_ptr<Texture>& SceneEntity::metalness() const
+{
+    return m_metalness;
+}
+
+const glm::vec4& SceneEntity::color() const
 {
     return m_color;
 }
@@ -128,19 +144,33 @@ void SceneEntity::process_node_meshes(const std::string& filename,
     const aiMaterial* ai_material = ai_scene->mMaterials[
         ai_scene->mMeshes[ai_node->mMeshes[0]]->mMaterialIndex];
     aiColor3D ai_color3;
-    ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_color3);
-    m_color = AssimpToGlm::vec3(ai_color3);
-    if (ai_material->GetTextureCount(aiTextureType_DIFFUSE) == 0) {
-        m_texture = TexturesCache::white_1px();
-    } else {
-        aiString path;
-        ai_material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-        const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
-        std::optional<std::shared_ptr<Texture>> texture_opt = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture);
-        if (!texture_opt.has_value()) {
-            abort();
+    ai_material->Get(AI_MATKEY_BASE_COLOR, ai_color3);
+    m_color = glm::vec4(AssimpToGlm::vec3(ai_color3), 1.0f);
+    struct TextureInfo {
+        aiTextureType type;
+        std::shared_ptr<Texture>& texture;
+        ColorSpace color_space;
+    };
+    std::array<TextureInfo, 3> textures_info = {
+        TextureInfo { aiTextureType_BASE_COLOR, m_albedo, ColorSpace::Srgb },
+        TextureInfo { aiTextureType_DIFFUSE_ROUGHNESS, m_roughness, ColorSpace::Linear },
+        TextureInfo { aiTextureType_METALNESS, m_metalness, ColorSpace::Linear },
+    };
+    for (const TextureInfo& texture_info : textures_info) {
+        if (ai_material->GetTextureCount(texture_info.type) == 0) {
+            texture_info.texture = TexturesCache::white_1px();
+        } else {
+            aiString path;
+            ai_material->GetTexture(texture_info.type, 0, &path);
+            const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
+            std::optional<std::shared_ptr<Texture>> texture_opt
+                = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture,
+                    texture_info.color_space);
+            if (!texture_opt.has_value()) {
+                abort();
+            }
+            texture_info.texture = std::move(texture_opt.value());
         }
-        m_texture = std::move(texture_opt.value());
     }
 }
 

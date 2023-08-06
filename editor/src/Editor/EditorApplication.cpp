@@ -19,7 +19,7 @@ EditorApplication::EditorApplication(const std::string& name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt
-        = SceneEntity::load_model("editor/assets/models/survival_guitar_backpack.glb");
+        = SceneEntity::load_model("editor/assets/models/rusted_iron_sphere.glb");
     if (!scene_entity_opt.has_value()) {
         abort();
     }

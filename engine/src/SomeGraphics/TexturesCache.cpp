@@ -1,3 +1,4 @@
+#include <iostream>
 #include <map>
 
 #include "SomeGraphics/TexturesCache.hpp"
@@ -15,13 +16,14 @@ std::shared_ptr<Texture> TexturesCache::white_1px()
 }
 
 std::optional<std::shared_ptr<Texture>> TexturesCache::from_ai_texture(const char* key,
-    const aiTexture& ai_texture)
+    const aiTexture& ai_texture, ColorSpace color_space)
 {
     std::map<std::string, std::weak_ptr<Texture>>::iterator it = cache.find(key);
     if (it != cache.end() && !it->second.expired()) {
         return it->second.lock();
     }
-    std::optional<std::unique_ptr<Texture>> texture_opt = Texture::from_ai_texture(ai_texture);
+    std::optional<std::unique_ptr<Texture>> texture_opt
+        = Texture::from_ai_texture(ai_texture, color_space);
     if (!texture_opt.has_value()) {
         return std::nullopt;
     }

@@ -29,8 +29,10 @@ public:
     const Transform& transform() const;
     Transform& transform();
     const std::unique_ptr<Mesh>& mesh() const;
-    const std::shared_ptr<Texture>& texture() const;
-    const glm::vec3& color() const;
+    const std::shared_ptr<Texture>& albedo() const;
+    const std::shared_ptr<Texture>& roughness() const;
+    const std::shared_ptr<Texture>& metalness() const;
+    const glm::vec4& color() const;
     const std::vector<std::shared_ptr<SceneEntity>>& children() const;
 
     void add_child(std::shared_ptr<SceneEntity>&& child);
@@ -38,8 +40,10 @@ private:
     std::string m_name;
     Transform m_transform;
     std::unique_ptr<Mesh> m_mesh;
-    std::shared_ptr<Texture> m_texture;
-    glm::vec3 m_color;
+    std::shared_ptr<Texture> m_albedo;
+    std::shared_ptr<Texture> m_roughness;
+    std::shared_ptr<Texture> m_metalness;
+    glm::vec4 m_color;
     std::vector<std::shared_ptr<SceneEntity>> m_children;
 
     // Scene root constructor

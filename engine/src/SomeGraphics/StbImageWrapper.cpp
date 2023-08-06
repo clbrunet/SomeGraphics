@@ -7,7 +7,7 @@
 namespace sg {
 
 std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename,
-    int channels_count_desired)
+    uint channels_count_desired)
 {
     int width, height, channels_count_in_file;
     u_char *pixels = stbi_load(filename, &width, &height,
@@ -20,8 +20,8 @@ std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename,
         channels_count_desired == 0 ? channels_count_in_file : channels_count_desired);
 }
 
-std::optional<StbImageWrapper> StbImageWrapper::load_from_memory(const u_char* buffer, uint size, 
-    int channels_count_desired)
+std::optional<StbImageWrapper> StbImageWrapper::load_from_memory(const u_char* buffer, uint size,
+    uint channels_count_desired)
 {
     int width, height, channels_count_in_buffer;
     u_char *pixels = stbi_load_from_memory(buffer, size, &width, &height,
@@ -63,22 +63,22 @@ const u_char* StbImageWrapper::pixels() const
     return m_pixels;
 }
 
-int StbImageWrapper::width() const
+uint StbImageWrapper::width() const
 {
     return m_width;
 }
 
-int StbImageWrapper::height() const
+uint StbImageWrapper::height() const
 {
     return m_height;
 }
 
-int StbImageWrapper::channels_count() const
+uint StbImageWrapper::channels_count() const
 {
     return m_channels_count;
 }
 
-StbImageWrapper::StbImageWrapper(u_char* pixels, int width, int height, int channels_count) :
+StbImageWrapper::StbImageWrapper(u_char* pixels, uint width, uint height, uint channels_count) :
     m_pixels(pixels), m_width(width), m_height(height), m_channels_count(channels_count)
 {
 }

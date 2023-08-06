@@ -67,6 +67,11 @@ void Program::set_vec3(const char* name, const glm::vec3& vec3) const
     glUniform3fv(glGetUniformLocation(m_renderer_id, name), 1, glm::value_ptr(vec3));
 }
 
+void Program::set_vec4(const char* name, const glm::vec4& vec4) const
+{
+    glUniform4fv(glGetUniformLocation(m_renderer_id, name), 1, glm::value_ptr(vec4));
+}
+
 void Program::set_mat4(const char* name, const glm::mat4& mat4) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
