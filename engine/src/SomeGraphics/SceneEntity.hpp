@@ -28,7 +28,7 @@ public:
     const std::string& name() const;
     const Transform& transform() const;
     Transform& transform();
-    const std::unique_ptr<Mesh>& mesh() const;
+    const std::shared_ptr<Mesh>& mesh() const;
     const std::shared_ptr<Texture>& albedo() const;
     const std::shared_ptr<Texture>& roughness() const;
     const std::shared_ptr<Texture>& metalness() const;
@@ -39,7 +39,7 @@ public:
 private:
     std::string m_name;
     Transform m_transform;
-    std::unique_ptr<Mesh> m_mesh;
+    std::shared_ptr<Mesh> m_mesh;
     std::shared_ptr<Texture> m_albedo;
     std::shared_ptr<Texture> m_roughness;
     std::shared_ptr<Texture> m_metalness;
@@ -48,29 +48,9 @@ private:
 
     // Scene root constructor
     SceneEntity();
-    SceneEntity(const std::string& filename, const aiNode* node, const aiScene* scene);
+    SceneEntity(const std::string& filename, const aiNode& node, const aiScene& scene);
 
-    void process_node_meshes(const std::string& filename, const aiNode* node, const aiScene* scene);
-
-    struct Vertex {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 texture_coordinates;
-
-        Vertex() = delete;
-        Vertex(const glm::vec3& position, const glm::vec3& normal,
-            const glm::vec2& texture_coordinates) :
-            position(position),
-            normal(normal),
-            texture_coordinates(texture_coordinates)
-        {
-        }
-        Vertex(Vertex&& other) = default;
-        Vertex(const Vertex& other) = default;
-        Vertex& operator=(Vertex&& other) = default;
-        Vertex& operator=(const Vertex& other) = default;
-        ~Vertex() = default;
-    };
+    void process_node(const std::string& filename, const aiNode& node, const aiScene& scene);
 };
 
 }

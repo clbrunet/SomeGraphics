@@ -18,7 +18,7 @@
 #include "SomeGraphics/SceneEntity.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/AssimpToGlm.hpp"
-#include "SomeGraphics/TexturesCache.hpp"
+#include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/ext/vector_float4.hpp"
@@ -41,7 +41,7 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
         return std::nullopt;
     }
     return std::shared_ptr<SceneEntity>(new SceneEntity(filename,
-            ai_scene->mRootNode, ai_scene));
+            *ai_scene->mRootNode, *ai_scene));
 }
 
 const std::string& SceneEntity::name() const
@@ -59,7 +59,7 @@ Transform& SceneEntity::transform()
     return m_transform;
 }
 
-const std::unique_ptr<Mesh>& SceneEntity::mesh() const
+const std::shared_ptr<Mesh>& SceneEntity::mesh() const
 {
     return m_mesh;
 }
@@ -100,51 +100,29 @@ SceneEntity::SceneEntity() :
 }
 
 SceneEntity::SceneEntity(const std::string& filename,
-    const aiNode* ai_node, const aiScene* ai_scene) :
-    m_name(ai_node->mName.C_Str()),
-    m_transform(AssimpToGlm::mat4(ai_node->mTransformation))
+    const aiNode& ai_node, const aiScene& ai_scene) :
+    m_name(ai_node.mName.C_Str()),
+    m_transform(AssimpToGlm::mat4(ai_node.mTransformation))
 {
-    assert(ai_node != nullptr && ai_scene != nullptr);
-    process_node_meshes(filename, ai_node, ai_scene);
-    for (uint i = 0; i < ai_node->mNumChildren; i++) {
-        const aiNode* child = ai_node->mChildren[i];
+    process_node(filename, ai_node, ai_scene);
+    for (uint i = 0; i < ai_node.mNumChildren; i++) {
+        const aiNode& child = *ai_node.mChildren[i];
         m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename,
                     child, ai_scene)));
     }
 }
 
-void SceneEntity::process_node_meshes(const std::string& filename,
-    const aiNode* ai_node, const aiScene* ai_scene)
+void SceneEntity::process_node(const std::string& filename,
+    const aiNode& ai_node, const aiScene& ai_scene)
 {
-    assert(ai_node != nullptr && ai_scene != nullptr);
-    if (ai_node->mNumMeshes == 0) {
+    if (ai_node.mNumMeshes == 0) {
         return;
     }
-    std::vector<Vertex> vertices;
-    std::vector<uint> indices;
-    for (uint i = 0; i < ai_node->mNumMeshes; i++) {
-        aiMesh* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
-        for(uint i = 0; i < ai_mesh->mNumVertices; i++) {
-            vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh->mVertices[i]),
-                    AssimpToGlm::vec3(ai_mesh->mNormals[i]),
-                    AssimpToGlm::vec3(ai_mesh->mTextureCoords[0][i])));
-        }
-        for (uint i = 0; i < ai_mesh->mNumFaces; i++) {
-            aiFace* ai_face = ai_mesh->mFaces + i;
-            for (uint j = 0; j < ai_face->mNumIndices; j++) {
-                indices.push_back(ai_face->mIndices[j]);
-            }
-        }
-    }
-    m_mesh = std::make_unique<Mesh>(vertices, std::initializer_list<VertexAttribute>({
-        VertexAttribute(VertexAttributeType::Vec3),
-        VertexAttribute(VertexAttributeType::Vec3),
-        VertexAttribute(VertexAttributeType::Vec2),
-    }), indices);
-    const aiMaterial* ai_material = ai_scene->mMaterials[
-        ai_scene->mMeshes[ai_node->mMeshes[0]]->mMaterialIndex];
+    m_mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
+    const aiMaterial& ai_material = *ai_scene.mMaterials[
+        ai_scene.mMeshes[ai_node.mMeshes[0]]->mMaterialIndex];
     aiColor3D ai_color3;
-    ai_material->Get(AI_MATKEY_BASE_COLOR, ai_color3);
+    ai_material.Get(AI_MATKEY_BASE_COLOR, ai_color3);
     m_color = glm::vec4(AssimpToGlm::vec3(ai_color3), 1.0f);
     struct TextureInfo {
         aiTextureType type;
@@ -157,14 +135,14 @@ void SceneEntity::process_node_meshes(const std::string& filename,
         TextureInfo { aiTextureType_METALNESS, m_metalness, ColorSpace::Linear },
     };
     for (const TextureInfo& texture_info : textures_info) {
-        if (ai_material->GetTextureCount(texture_info.type) == 0) {
-            texture_info.texture = TexturesCache::white_1px();
+        if (ai_material.GetTextureCount(texture_info.type) == 0) {
+            texture_info.texture = ResourcesCache::white_1px_texture();
         } else {
             aiString path;
-            ai_material->GetTexture(texture_info.type, 0, &path);
-            const aiTexture* ai_texture = ai_scene->GetEmbeddedTexture(path.C_Str());
+            ai_material.GetTexture(texture_info.type, 0, &path);
+            const aiTexture* ai_texture = ai_scene.GetEmbeddedTexture(path.C_Str());
             std::optional<std::shared_ptr<Texture>> texture_opt
-                = TexturesCache::from_ai_texture((filename + path.C_Str()).c_str(), *ai_texture,
+                = ResourcesCache::texture_from_ai_texture(filename, *ai_texture,
                     texture_info.color_space);
             if (!texture_opt.has_value()) {
                 abort();

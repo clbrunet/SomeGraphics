@@ -1,0 +1,54 @@
+#pragma once
+
+#include <map>
+#include <string>
+#include <memory>
+#include <optional>
+
+#include "assimp/scene.h"
+#include "glm/ext/vector_float2.hpp"
+#include "assimp/texture.h"
+
+#include "SomeGraphics/Rendering/Texture.hpp"
+#include "SomeGraphics/Mesh.hpp"
+
+namespace sg {
+
+class ResourcesCache {
+public:
+    static std::shared_ptr<Texture> white_1px_texture();
+    static std::optional<std::shared_ptr<Texture>> texture_from_ai_texture(
+        const std::string& filename, const aiTexture& ai_texture, ColorSpace color_space);
+    static std::shared_ptr<Mesh> mesh_from_ai_node(const std::string& filename,
+        const aiNode& ai_node, const aiScene& ai_scene);
+
+    static void clear_unused();
+    static void clear_unused_textures();
+    static void clear_unused_meshes();
+
+    ResourcesCache() = delete;
+    ResourcesCache(ResourcesCache&& other) = delete;
+    ResourcesCache(const ResourcesCache& other) = delete;
+    ResourcesCache& operator=(ResourcesCache&& other) = delete;
+    ResourcesCache& operator=(const ResourcesCache& other) = delete;
+    ~ResourcesCache() = delete;
+private:
+    static std::weak_ptr<Texture> white_1px_texture_cache;
+    static std::map<std::string, std::weak_ptr<Texture>> textures_cache;
+    static std::map<std::string, std::weak_ptr<Mesh>> meshes_cache;
+
+    template<typename T>
+    static void clear_unused(std::map<std::string, std::weak_ptr<T>> cache)
+    {
+        typename std::map<std::string, std::weak_ptr<T>>::const_iterator cit = cache.cbegin();
+        for (; cit != cache.cend(); ) {
+            if (cit->second.expired()) {
+                cit = cache.erase(cit);
+            } else {
+                ++cit;
+            }
+        }
+    }
+};
+
+}
