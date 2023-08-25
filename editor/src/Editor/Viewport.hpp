@@ -43,11 +43,9 @@ private:
             glm::vec2(-35.0f, 45.0f), glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::unique_ptr<Skybox> m_skybox;
-    std::unique_ptr<Program> m_program;
     std::unique_ptr<Mesh> m_quad;
     std::unique_ptr<Program> m_post_processing_program;
 
-    void render_scene(const Renderer& renderer, const Scene& scene) const;
     void post_processing(const Renderer& renderer) const;
 
     struct QuadVertex {

@@ -8,10 +8,10 @@ in vec2 v_texture_coordinates;
 
 uniform vec3 u_camera_position;
 
-uniform sampler2D u_albedo_map;
 uniform vec4 u_color;
+uniform sampler2D u_albedo_map;
 uniform sampler2D u_roughness_map;
-uniform sampler2D u_metallic_map;
+uniform sampler2D u_metalness_map;
 
 out vec4 color;
 
@@ -22,9 +22,9 @@ void main()
 {
     vec4 albedo = texture(u_albedo_map, v_texture_coordinates) * u_color;
     float roughness = texture(u_roughness_map, v_texture_coordinates).g;
-    float metalness = texture(u_metallic_map, v_texture_coordinates).b;
+    float metalness = texture(u_metalness_map, v_texture_coordinates).b;
     vec3 light_position = vec3(0.0, 1.0, 2.0);
-    vec3 light_color = vec3(2.0);
+    vec3 light_color = vec3(3.0);
     vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
             v_normal, v_position, u_camera_position, light_position);
     vec3 fragment_to_light = light_position - v_position;

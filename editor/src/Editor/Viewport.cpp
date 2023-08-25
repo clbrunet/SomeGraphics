@@ -2,6 +2,7 @@
 #include <memory>
 #include <stack>
 
+#include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/SceneEntity.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
@@ -28,14 +29,8 @@ Viewport::Viewport(const Renderer& renderer)
     }
     m_skybox = std::move(skybox_opt.value());
     std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("editor/assets/shaders/pbr.vert",
-            "editor/assets/shaders/pbr.frag");
-    if (!program_opt.has_value()) {
-        abort();
-    }
-    m_program = std::move(program_opt.value());
-    program_opt = Program::create("editor/assets/shaders/post_processing.vert",
-        "editor/assets/shaders/post_processing.frag");
+        = Program::create("editor/assets/shaders/post_processing.vert",
+            "editor/assets/shaders/post_processing.frag");
     if (!program_opt.has_value()) {
         abort();
     }
@@ -78,7 +73,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
 
     m_frame_buffer->bind();
     renderer.clear();
-    render_scene(renderer, scene);
+    renderer.draw(scene, *m_editor_camera);
     renderer.draw(*m_skybox, *m_editor_camera);
     post_processing(renderer);
     FrameBuffer::bind_default();
@@ -89,46 +84,6 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
-}
-
-void Viewport::render_scene(const Renderer& renderer, const Scene& scene) const
-{
-    m_program->use();
-    m_program->set_mat4("u_view_projection", m_editor_camera->view_projection());
-    m_program->set_vec3("u_camera_position", m_editor_camera->position());
-    m_program->set_int("u_environment", 0);
-    m_skybox->texture().bind_to_unit(0);
-    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
-        iterators_stack({ scene.root_entity()->children().cbegin() });
-    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
-        ends_stack({ scene.root_entity()->children().cend() });
-    std::stack<glm::mat4> model_matrices_stack({ scene.root_entity()->transform().local() });
-    while (!iterators_stack.empty()) {
-        const std::shared_ptr<SceneEntity>& entity = *iterators_stack.top();
-        ++iterators_stack.top();
-        glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
-        if (entity->mesh()) {
-            m_program->set_mat4("u_model", model_matrix);
-            m_program->set_int("u_albedo_map", 1);
-            entity->albedo()->bind_to_unit(1);
-            m_program->set_vec4("u_color", entity->color());
-            m_program->set_int("u_roughness_map", 2);
-            entity->roughness()->bind_to_unit(2);
-            m_program->set_int("u_metallic_map", 3);
-            entity->metalness()->bind_to_unit(3);
-            renderer.draw(*entity->mesh());
-        }
-        if (entity->children().size() > 0) {
-            iterators_stack.push(entity->children().cbegin());
-            ends_stack.push(entity->children().cend());
-            model_matrices_stack.push(model_matrix);
-        }
-        while (!iterators_stack.empty() && iterators_stack.top() == ends_stack.top()) {
-            iterators_stack.pop();
-            ends_stack.pop();
-            model_matrices_stack.pop();
-        }
-    }
 }
 
 void Viewport::post_processing(const Renderer& renderer) const

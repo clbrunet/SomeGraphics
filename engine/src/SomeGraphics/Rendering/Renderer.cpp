@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stack>
 
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
@@ -8,8 +9,10 @@
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/VertexArray.hpp"
 #include "SomeGraphics/Camera.hpp"
+#include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/Rendering/Material.hpp"
 
 namespace sg {
 
@@ -43,6 +46,39 @@ void Renderer::clear() const
 void Renderer::set_clear_color(float red, float green, float blue, float opacity) const
 {
     glClearColor(red, green, blue, opacity);
+}
+
+void Renderer::draw(const Scene& scene, const Camera& camera) const
+{
+    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
+        iterators_stack({ scene.root_entity()->children().cbegin() });
+    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
+        ends_stack({ scene.root_entity()->children().cend() });
+    std::stack<glm::mat4> model_matrices_stack({ scene.root_entity()->transform().local() });
+    while (!iterators_stack.empty()) {
+        const std::shared_ptr<SceneEntity>& entity = *iterators_stack.top();
+        iterators_stack.top() += 1;
+        glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
+        if (entity->mesh()) {
+            const std::shared_ptr<Program> program = entity->material()->program();
+            program->use();
+            program->set_mat4("u_view_projection", camera.view_projection());
+            program->set_vec3("u_camera_position", camera.position());
+            program->set_mat4("u_model", model_matrix);
+            entity->material()->set_program_data();
+            draw(*entity->mesh());
+        }
+        if (entity->children().size() > 0) {
+            iterators_stack.push(entity->children().cbegin());
+            ends_stack.push(entity->children().cend());
+            model_matrices_stack.push(model_matrix);
+        }
+        while (!iterators_stack.empty() && iterators_stack.top() == ends_stack.top()) {
+            iterators_stack.pop();
+            ends_stack.pop();
+            model_matrices_stack.pop();
+        }
+    }
 }
 
 void Renderer::draw(const Skybox& skybox, const Camera& camera) const
