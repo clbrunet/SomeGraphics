@@ -19,7 +19,7 @@ std::shared_ptr<Texture> ResourcesCache::white_1px_texture()
 std::optional<std::shared_ptr<Texture>> ResourcesCache::texture_from_ai_texture(
     const std::string& filename, const aiTexture& ai_texture, ColorSpace color_space)
 {
-    std::string key = filename + ai_texture.mFilename.C_Str();
+    std::string key = filename + "/" + ai_texture.mFilename.C_Str();
     std::map<std::string, std::weak_ptr<Texture>>::iterator it = textures_cache.find(key);
     if (it != textures_cache.end() && !it->second.expired()) {
         return it->second.lock();
@@ -34,10 +34,29 @@ std::optional<std::shared_ptr<Texture>> ResourcesCache::texture_from_ai_texture(
     return texture;
 }
 
+std::optional<std::shared_ptr<Program>> ResourcesCache::program(const char* vert_filename,
+    const char* frag_filename)
+{
+    std::string key = std::string(vert_filename) + "-" + frag_filename;
+    std::map<std::string, std::weak_ptr<Program>>::iterator it = programs_cache.find(key);
+    if (it != programs_cache.end() && !it->second.expired()) {
+        return it->second.lock();
+    }
+    std::optional<std::shared_ptr<Program>> program_opt
+        = Program::create(vert_filename, frag_filename);
+    if (!program_opt.has_value()) {
+        return std::nullopt;
+    }
+    std::shared_ptr<Program> program = std::move(program_opt.value());
+    programs_cache[key] = program;
+    return program;
+}
+
+
 std::shared_ptr<Mesh> ResourcesCache::mesh_from_ai_node(const std::string& filename,
     const aiNode& ai_node, const aiScene& ai_scene)
 {
-    std::string key = filename + ai_scene.mMeshes[ai_node.mMeshes[0]]->mName.C_Str();
+    std::string key = filename + "/" + ai_scene.mMeshes[ai_node.mMeshes[0]]->mName.C_Str();
     std::map<std::string, std::weak_ptr<Mesh>>::iterator it = meshes_cache.find(key);
     if (it != meshes_cache.end() && !it->second.expired()) {
         return it->second.lock();
@@ -50,12 +69,18 @@ std::shared_ptr<Mesh> ResourcesCache::mesh_from_ai_node(const std::string& filen
 void ResourcesCache::clear_unused()
 {
     clear_unused_textures();
+    clear_unused_programs();
     clear_unused_meshes();
 }
 
 void ResourcesCache::clear_unused_textures()
 {
     clear_unused(textures_cache);
+}
+
+void ResourcesCache::clear_unused_programs()
+{
+    clear_unused(programs_cache);
 }
 
 void ResourcesCache::clear_unused_meshes()
@@ -65,6 +90,7 @@ void ResourcesCache::clear_unused_meshes()
 
 std::weak_ptr<Texture> ResourcesCache::white_1px_texture_cache;
 std::map<std::string, std::weak_ptr<Texture>> ResourcesCache::textures_cache;
+std::map<std::string, std::weak_ptr<Program>> ResourcesCache::programs_cache;
 std::map<std::string, std::weak_ptr<Mesh>> ResourcesCache::meshes_cache;
 
 }

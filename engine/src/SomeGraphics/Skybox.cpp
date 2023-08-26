@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "SomeGraphics/Rendering/VertexAttribute.hpp"
+#include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
@@ -13,8 +14,9 @@ namespace sg {
 std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const char* left,
     const char* top, const char* bottom, const char* front, const char* back)
 {
-    std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("engine/assets/shaders/skybox.vert", "engine/assets/shaders/skybox.frag");
+    std::optional<std::shared_ptr<Program>> program_opt
+        = ResourcesCache::program("engine/assets/shaders/skybox.vert",
+            "engine/assets/shaders/skybox.frag");
     if (!program_opt.has_value()) {
         return std::nullopt;
     }
@@ -101,7 +103,7 @@ const Texture& Skybox::texture() const
 
 bool Skybox::is_instantiated = false;
 
-Skybox::Skybox(std::unique_ptr<Program>&& program,
+Skybox::Skybox(std::shared_ptr<Program>&& program,
     std::unique_ptr<Mesh>&& mesh, std::unique_ptr<Texture>&& texture) :
     m_program(std::move(program)),
     m_mesh(std::move(mesh)),

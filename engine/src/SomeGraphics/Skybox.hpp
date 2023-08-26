@@ -26,12 +26,12 @@ public:
     const Mesh& mesh() const;
     const Texture& texture() const;
 private:
-    std::unique_ptr<Program> m_program;
+    std::shared_ptr<Program> m_program;
     std::unique_ptr<Mesh> m_mesh;
     std::unique_ptr<Texture> m_texture;
     static bool is_instantiated;
 
-    Skybox(std::unique_ptr<Program>&& program,
+    Skybox(std::shared_ptr<Program>&& program,
         std::unique_ptr<Mesh>&& mesh, std::unique_ptr<Texture>&& texture);
 
     struct Vertex {

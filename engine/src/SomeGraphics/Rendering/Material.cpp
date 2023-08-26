@@ -15,8 +15,8 @@ namespace sg {
 std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::string& filename,
     const aiMaterial& ai_material, const aiScene& ai_scene)
 {
-    std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("engine/assets/shaders/pbr.vert",
+    std::optional<std::shared_ptr<Program>> program_opt
+        = ResourcesCache::program("engine/assets/shaders/pbr.vert",
             "engine/assets/shaders/pbr.frag");
     if (!program_opt.has_value()) {
         return std::nullopt;

@@ -3,6 +3,7 @@
 #include <stack>
 
 #include "SomeGraphics/Rendering/Material.hpp"
+#include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/SceneEntity.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
@@ -28,8 +29,8 @@ Viewport::Viewport(const Renderer& renderer)
         abort();
     }
     m_skybox = std::move(skybox_opt.value());
-    std::optional<std::unique_ptr<Program>> program_opt
-        = Program::create("editor/assets/shaders/post_processing.vert",
+    std::optional<std::shared_ptr<Program>> program_opt
+        = ResourcesCache::program("editor/assets/shaders/post_processing.vert",
             "editor/assets/shaders/post_processing.frag");
     if (!program_opt.has_value()) {
         abort();

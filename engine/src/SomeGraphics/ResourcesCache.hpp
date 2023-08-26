@@ -10,6 +10,7 @@
 #include "assimp/texture.h"
 
 #include "SomeGraphics/Rendering/Texture.hpp"
+#include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
@@ -19,11 +20,14 @@ public:
     static std::shared_ptr<Texture> white_1px_texture();
     static std::optional<std::shared_ptr<Texture>> texture_from_ai_texture(
         const std::string& filename, const aiTexture& ai_texture, ColorSpace color_space);
+    static std::optional<std::shared_ptr<Program>> program(const char* vert_filename,
+        const char* frag_filename);
     static std::shared_ptr<Mesh> mesh_from_ai_node(const std::string& filename,
         const aiNode& ai_node, const aiScene& ai_scene);
 
     static void clear_unused();
     static void clear_unused_textures();
+    static void clear_unused_programs();
     static void clear_unused_meshes();
 
     ResourcesCache() = delete;
@@ -35,6 +39,7 @@ public:
 private:
     static std::weak_ptr<Texture> white_1px_texture_cache;
     static std::map<std::string, std::weak_ptr<Texture>> textures_cache;
+    static std::map<std::string, std::weak_ptr<Program>> programs_cache;
     static std::map<std::string, std::weak_ptr<Mesh>> meshes_cache;
 
     template<typename T>

@@ -44,7 +44,7 @@ private:
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::unique_ptr<Skybox> m_skybox;
     std::unique_ptr<Mesh> m_quad;
-    std::unique_ptr<Program> m_post_processing_program;
+    std::shared_ptr<Program> m_post_processing_program;
 
     void post_processing(const Renderer& renderer) const;
 
