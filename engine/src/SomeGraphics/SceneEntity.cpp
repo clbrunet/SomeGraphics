@@ -107,8 +107,8 @@ void SceneEntity::process_node(const std::string& filename,
     m_mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
     const aiMaterial& ai_material = *ai_scene.mMaterials[
         ai_scene.mMeshes[ai_node.mMeshes[0]]->mMaterialIndex];
-    std::optional<std::unique_ptr<Material>> material_opt
-        = Material::from_ai_material(filename, ai_material, ai_scene);
+    std::optional<std::shared_ptr<Material>> material_opt
+        = ResourcesCache::material_from_ai_material(filename, ai_material, ai_scene);
     if (!material_opt.has_value()) {
         abort();
     }

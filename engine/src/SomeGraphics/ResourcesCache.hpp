@@ -5,12 +5,13 @@
 #include <memory>
 #include <optional>
 
-#include "assimp/scene.h"
 #include "glm/ext/vector_float2.hpp"
+#include "assimp/scene.h"
 #include "assimp/texture.h"
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
+#include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
@@ -24,12 +25,15 @@ public:
         const char* left, const char* top, const char* bottom, const char* front, const char* back);
     static std::optional<std::shared_ptr<Program>> program(const char* vert_filename,
         const char* frag_filename);
+    static std::optional<std::shared_ptr<Material>> material_from_ai_material(
+        const std::string& filename, const aiMaterial& ai_material, const aiScene& ai_scene);
     static std::shared_ptr<Mesh> mesh_from_ai_node(const std::string& filename,
         const aiNode& ai_node, const aiScene& ai_scene);
 
     static void clear_unused();
     static void clear_unused_textures();
     static void clear_unused_programs();
+    static void clear_unused_materials();
     static void clear_unused_meshes();
 
     ResourcesCache() = delete;
@@ -42,6 +46,7 @@ private:
     static std::weak_ptr<Texture> white_1px_texture_cache;
     static std::map<std::string, std::weak_ptr<Texture>> textures_cache;
     static std::map<std::string, std::weak_ptr<Program>> programs_cache;
+    static std::map<std::string, std::weak_ptr<Material>> materials_cache;
     static std::map<std::string, std::weak_ptr<Mesh>> meshes_cache;
 
     template<typename T>

@@ -71,6 +71,23 @@ std::optional<std::shared_ptr<Program>> ResourcesCache::program(const char* vert
     return program;
 }
 
+std::optional<std::shared_ptr<Material>> ResourcesCache::material_from_ai_material(
+    const std::string& filename, const aiMaterial& ai_material, const aiScene& ai_scene)
+{
+    std::string key = filename + "/" + ai_material.GetName().C_Str();
+    std::map<std::string, std::weak_ptr<Material>>::iterator it = materials_cache.find(key);
+    if (it != materials_cache.end() && !it->second.expired()) {
+        return it->second.lock();
+    }
+    std::optional<std::shared_ptr<Material>> material_opt
+        = Material::from_ai_material(filename, ai_material, ai_scene);
+    if (!material_opt.has_value()) {
+        return std::nullopt;
+    }
+    std::shared_ptr<Material> material = std::move(material_opt.value());
+    materials_cache[key] = material;
+    return material;
+}
 
 std::shared_ptr<Mesh> ResourcesCache::mesh_from_ai_node(const std::string& filename,
     const aiNode& ai_node, const aiScene& ai_scene)
@@ -89,6 +106,7 @@ void ResourcesCache::clear_unused()
 {
     clear_unused_textures();
     clear_unused_programs();
+    clear_unused_materials();
     clear_unused_meshes();
 }
 
@@ -102,6 +120,11 @@ void ResourcesCache::clear_unused_programs()
     clear_unused(programs_cache);
 }
 
+void ResourcesCache::clear_unused_materials()
+{
+    clear_unused(materials_cache);
+}
+
 void ResourcesCache::clear_unused_meshes()
 {
     clear_unused(meshes_cache);
@@ -110,6 +133,7 @@ void ResourcesCache::clear_unused_meshes()
 std::weak_ptr<Texture> ResourcesCache::white_1px_texture_cache;
 std::map<std::string, std::weak_ptr<Texture>> ResourcesCache::textures_cache;
 std::map<std::string, std::weak_ptr<Program>> ResourcesCache::programs_cache;
+std::map<std::string, std::weak_ptr<Material>> ResourcesCache::materials_cache;
 std::map<std::string, std::weak_ptr<Mesh>> ResourcesCache::meshes_cache;
 
 }
