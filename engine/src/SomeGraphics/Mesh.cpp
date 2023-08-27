@@ -9,17 +9,17 @@ namespace sg {
 Mesh::Mesh(const aiNode& ai_node, const aiScene& ai_scene)
 {
     std::vector<Vertex> vertices;
-    std::vector<uint> indices;
-    for (uint i = 0; i < ai_node.mNumMeshes; i++) {
+    std::vector<uint32_t> indices;
+    for (uint32_t i = 0; i < ai_node.mNumMeshes; i++) {
         const aiMesh& ai_mesh = *ai_scene.mMeshes[ai_node.mMeshes[i]];
-        for(uint i = 0; i < ai_mesh.mNumVertices; i++) {
+        for(uint32_t i = 0; i < ai_mesh.mNumVertices; i++) {
             vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh.mVertices[i]),
                     AssimpToGlm::vec3(ai_mesh.mNormals[i]),
                     AssimpToGlm::vec3(ai_mesh.mTextureCoords[0][i])));
         }
-        for (uint i = 0; i < ai_mesh.mNumFaces; i++) {
+        for (uint32_t i = 0; i < ai_mesh.mNumFaces; i++) {
             const aiFace& ai_face = ai_mesh.mFaces[i];
-            for (uint j = 0; j < ai_face.mNumIndices; j++) {
+            for (uint32_t j = 0; j < ai_face.mNumIndices; j++) {
                 indices.push_back(ai_face.mIndices[j]);
             }
         }

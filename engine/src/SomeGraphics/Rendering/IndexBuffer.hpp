@@ -10,19 +10,19 @@ namespace sg {
 class IndexBuffer {
 public:
     IndexBuffer() = delete;
-    IndexBuffer(const std::vector<uint>& indices);
+    IndexBuffer(const std::vector<uint32_t>& indices);
     IndexBuffer(IndexBuffer&& other);
     IndexBuffer(const IndexBuffer& other) = delete;
     IndexBuffer& operator=(IndexBuffer&& other);
     IndexBuffer& operator=(const IndexBuffer& other) = delete;
     ~IndexBuffer();
 
-    uint count() const;
+    uint32_t count() const;
     GLenum format() const;
-    void bind_to_vertex_array(uint vertex_array) const;
+    void bind_to_vertex_array(uint32_t vertex_array) const;
 private:
-    uint m_renderer_id = 0;
-    uint m_count = 0;
+    uint32_t m_renderer_id = 0;
+    uint32_t m_count = 0;
     GLenum m_format = GL_UNSIGNED_INT;
 };
 

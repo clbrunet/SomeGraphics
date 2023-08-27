@@ -31,21 +31,21 @@ public:
     Texture& operator=(const Texture& other) = delete;
     ~Texture();
 
-    void bind_to_unit(uint unit) const;
-    uint renderer_id() const;
-    void attach_to_framebuffer(uint frame_buffer, GLenum attachment) const;
+    void bind_to_unit(uint32_t unit) const;
+    uint32_t renderer_id() const;
+    void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
 
-    Texture(uint renderer_id);
+    Texture(uint32_t renderer_id);
     Texture(const aiTexture& ai_texture, ColorSpace color_space);
     Texture(const StbImageWrapper& image, ColorSpace color_space);
     Texture(const StbImageWrapper& right, const StbImageWrapper& left,
         const StbImageWrapper& top, const StbImageWrapper& bottom,
         const StbImageWrapper& front, const StbImageWrapper& back);
 
-    static GLenum internal_format(uint channels_count, ColorSpace color_space);
-    static GLenum format(uint channels_count);
+    static GLenum internal_format(uint32_t channels_count, ColorSpace color_space);
+    static GLenum format(uint32_t channels_count);
 };
 
 }

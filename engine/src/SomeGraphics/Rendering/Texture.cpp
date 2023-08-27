@@ -23,20 +23,18 @@ Texture::Texture(const glm::vec2& dimensions)
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimensions.x, dimensions.y);
-    glTextureSubImage2D(m_renderer_id, 0, 0, 0, dimensions.x, dimensions.y,
-        GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 }
 
 std::unique_ptr<Texture> Texture::white_1px()
 {
-    uint renderer_id;
+    uint32_t renderer_id;
     glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id);
     glTextureParameteri(renderer_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTextureParameteri(renderer_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureStorage2D(renderer_id, 1, GL_RGB8, 1, 1);
-    u_char white[3] = { 255, 255, 255 };
+    uint8_t white[3] = { 255, 255, 255 };
     glTextureSubImage2D(renderer_id, 0, 0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, white);
     return std::unique_ptr<Texture>(new Texture(renderer_id));
 }
@@ -48,7 +46,7 @@ std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture
         return std::unique_ptr<Texture>(new Texture(ai_texture, color_space));
     }
     std::optional<StbImageWrapper> image_opt = StbImageWrapper::load_from_memory(
-        (const u_char*)ai_texture.pcData, ai_texture.mWidth);
+        (const uint8_t*)ai_texture.pcData, ai_texture.mWidth);
     if (!image_opt.has_value()) {
         return std::nullopt;
     }
@@ -68,7 +66,7 @@ std::optional<std::unique_ptr<Texture>> Texture::create_cubemap(const char* righ
         }
         images.emplace_back(std::move(image_opt.value()));
     }
-    for (uint i = 1; i < 6; i++) {
+    for (uint32_t i = 1; i < 6; i++) {
         const StbImageWrapper& image = images[i];
         if (image.width() != images[0].width() || image.height() != images[0].height()) {
             std::cerr << "Cubemap creation error : not all textures have the same dimensions" << std::endl;
@@ -100,22 +98,22 @@ Texture::~Texture()
     glDeleteTextures(1, &m_renderer_id);
 }
 
-void Texture::bind_to_unit(uint unit) const
+void Texture::bind_to_unit(uint32_t unit) const
 {
     glBindTextureUnit(unit, m_renderer_id);
 }
 
-uint Texture::renderer_id() const
+uint32_t Texture::renderer_id() const
 {
     return m_renderer_id;
 }
 
-void Texture::attach_to_framebuffer(uint frame_buffer, GLenum attachment) const
+void Texture::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const
 {
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
-Texture::Texture(uint renderer_id) :
+Texture::Texture(uint32_t renderer_id) :
     m_renderer_id(renderer_id)
 {
 }
@@ -149,7 +147,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     std::array<const StbImageWrapper*, 6> images({ &right, &left, &top, &bottom, &back, &front });
 #if SG_DEBUG
     const StbImageWrapper& first_image = *images[0];
-    for (uint i = 0; i < 6; i++) {
+    for (uint32_t i = 0; i < 6; i++) {
         const StbImageWrapper& image = *images[i];
         if (image.width() != first_image.width() || image.height() != first_image.height()
             || image.channels_count() != 3) {
@@ -171,7 +169,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     }
 }
 
-GLenum Texture::internal_format(uint channels_count, ColorSpace color_space)
+GLenum Texture::internal_format(uint32_t channels_count, ColorSpace color_space)
 {
     switch (color_space) {
         case ColorSpace::Srgb:
@@ -195,7 +193,7 @@ GLenum Texture::internal_format(uint channels_count, ColorSpace color_space)
     return GL_NONE;
 }
 
-GLenum Texture::format(uint channels_count)
+GLenum Texture::format(uint32_t channels_count)
 {
     switch (channels_count) {
         case 3:

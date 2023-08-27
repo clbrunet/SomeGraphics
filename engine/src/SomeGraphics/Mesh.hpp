@@ -19,7 +19,7 @@ public:
     Mesh(const aiNode& ai_node, const aiScene& ai_scene);
     template<typename T>
     Mesh(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes,
-        const std::vector<uint>& indices) :
+        const std::vector<uint32_t>& indices) :
         m_vertex_array(std::make_unique<VertexArray>(vertices, attributes, indices))
     {
     }

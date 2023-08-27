@@ -27,11 +27,11 @@ public:
     void set_vec4(const char* name, const glm::vec4& vec4) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
 
-    Program(uint renderer_id);
+    Program(uint32_t renderer_id);
 
-    static std::optional<uint> create_program(const Shader& vert, const Shader& frag);
+    static std::optional<uint32_t> create_program(const Shader& vert, const Shader& frag);
 };
 
 }

@@ -18,12 +18,12 @@ public:
     Shader& operator=(const Shader& other) = delete;
     ~Shader();
 
-    void attach(uint program) const;
-    void detach(uint program) const;
+    void attach(uint32_t program) const;
+    void detach(uint32_t program) const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
 
-    Shader(uint renderer_id);
+    Shader(uint32_t renderer_id);
 
     static std::optional<std::string> read_file(const char* filename);
 };

@@ -91,7 +91,7 @@ SceneEntity::SceneEntity(const std::string& filename,
     m_transform(AssimpToGlm::mat4(ai_node.mTransformation))
 {
     process_node(filename, ai_node, ai_scene);
-    for (uint i = 0; i < ai_node.mNumChildren; i++) {
+    for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
         const aiNode& child = *ai_node.mChildren[i];
         m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename,
                     child, ai_scene)));

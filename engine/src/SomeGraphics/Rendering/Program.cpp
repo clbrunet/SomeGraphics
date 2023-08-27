@@ -24,7 +24,7 @@ std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filenam
     }
     std::unique_ptr<Shader> vert = std::move(vert_opt.value());
     std::unique_ptr<Shader> frag = std::move(frag_opt.value());
-    std::optional<uint> program = create_program(*vert, *frag);
+    std::optional<uint32_t> program = create_program(*vert, *frag);
     if (!program.has_value()) {
         return std::nullopt;
     }
@@ -77,14 +77,14 @@ void Program::set_mat4(const char* name, const glm::mat4& mat4) const
     glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
 }
 
-Program::Program(uint renderer_id) :
+Program::Program(uint32_t renderer_id) :
     m_renderer_id(renderer_id)
 {
 }
 
-std::optional<uint> Program::create_program(const Shader& vert, const Shader& frag)
+std::optional<uint32_t> Program::create_program(const Shader& vert, const Shader& frag)
 {
-    uint program = glCreateProgram();
+    uint32_t program = glCreateProgram();
     vert.attach(program);
     frag.attach(program);
     glLinkProgram(program);

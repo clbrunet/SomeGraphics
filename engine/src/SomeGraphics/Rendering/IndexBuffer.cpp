@@ -5,11 +5,11 @@
 
 namespace sg {
 
-IndexBuffer::IndexBuffer(const std::vector<uint>& indices) :
+IndexBuffer::IndexBuffer(const std::vector<uint32_t>& indices) :
     m_count(indices.size())
 {
     glCreateBuffers(1, &m_renderer_id);
-    glNamedBufferStorage(m_renderer_id, m_count * sizeof(uint), indices.data(), 0);
+    glNamedBufferStorage(m_renderer_id, m_count * sizeof(uint32_t), indices.data(), 0);
 }
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other)
@@ -35,7 +35,7 @@ IndexBuffer::~IndexBuffer()
     glDeleteBuffers(1, &m_renderer_id);
 }
 
-uint IndexBuffer::count() const
+uint32_t IndexBuffer::count() const
 {
     return m_count;
 }
@@ -45,7 +45,7 @@ GLenum IndexBuffer::format() const
     return m_format;
 }
 
-void IndexBuffer::bind_to_vertex_array(uint vertex_array) const
+void IndexBuffer::bind_to_vertex_array(uint32_t vertex_array) const
 {
     glVertexArrayElementBuffer(vertex_array, m_renderer_id);
 }

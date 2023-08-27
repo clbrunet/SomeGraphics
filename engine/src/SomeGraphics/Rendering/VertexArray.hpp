@@ -20,19 +20,19 @@ public:
     VertexArray() = delete;
     template<typename T>
     VertexArray(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes,
-        const std::vector<uint> indices) :
+        const std::vector<uint32_t> indices) :
         m_vertex_buffer(std::make_unique<VertexBuffer>(vertices)),
         m_index_buffer(std::make_unique<IndexBuffer>(indices))
     {
         glCreateVertexArrays(1, &m_renderer_id);
-        uint stride = 0;
+        uint32_t stride = 0;
         for (const VertexAttribute& attribute : attributes) {
             stride += attribute.size();
         }
         m_vertex_buffer->bind_to_vertex_array(m_renderer_id, 0, 0, stride);
         m_index_buffer->bind_to_vertex_array(m_renderer_id);
-        uint index = 0;
-        uint offset = 0;
+        uint32_t index = 0;
+        uint32_t offset = 0;
         for (const VertexAttribute& attribute : attributes) {
             glEnableVertexArrayAttrib(m_renderer_id, index);
             glVertexArrayAttribFormat(m_renderer_id, index, attribute.count(),
@@ -51,7 +51,7 @@ public:
     void bind() const;
     const std::unique_ptr<IndexBuffer>& index_buffer() const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
     std::unique_ptr<VertexBuffer> m_vertex_buffer;
     std::unique_ptr<IndexBuffer> m_index_buffer;
 };

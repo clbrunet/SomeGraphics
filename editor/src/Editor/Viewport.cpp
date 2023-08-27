@@ -44,7 +44,7 @@ Viewport::Viewport(const Renderer& renderer)
     }), std::initializer_list<VertexAttribute>({
         VertexAttributeType::Vec2,
         VertexAttributeType::Vec2,
-    }), std::vector<uint>({
+    }), std::vector<uint32_t>({
         0, 1, 2, 0, 2, 3,
     }));
 }

@@ -24,7 +24,7 @@ public:
     void bind() const;
     const std::unique_ptr<Texture>& color_texture() const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
     std::unique_ptr<Texture> m_color_texture;
     std::unique_ptr<RenderBuffer> m_depth_and_stencil_render_buffer;
 };

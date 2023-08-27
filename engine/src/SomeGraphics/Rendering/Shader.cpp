@@ -16,7 +16,7 @@ std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* f
         return std::nullopt;
     }
     const char* source = source_opt.value().c_str();
-    uint shader = glCreateShader(type);
+    uint32_t shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
     int success;
@@ -59,17 +59,17 @@ Shader::~Shader()
     glDeleteShader(m_renderer_id);
 }
 
-void Shader::attach(uint program) const
+void Shader::attach(uint32_t program) const
 {
     glAttachShader(program, m_renderer_id);
 }
 
-void Shader::detach(uint program) const
+void Shader::detach(uint32_t program) const
 {
     glDetachShader(program, m_renderer_id);
 }
 
-Shader::Shader(uint renderer_id) :
+Shader::Shader(uint32_t renderer_id) :
     m_renderer_id(renderer_id)
 {
 }

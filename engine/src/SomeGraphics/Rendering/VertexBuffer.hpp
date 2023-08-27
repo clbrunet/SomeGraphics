@@ -27,10 +27,10 @@ public:
     VertexBuffer& operator=(const VertexBuffer& other) = delete;
     ~VertexBuffer();
 
-    void bind_to_vertex_array(uint vertex_array, uint binding_index,
-        intptr_t offset, uint stride) const;
+    void bind_to_vertex_array(uint32_t vertex_array, uint32_t binding_index,
+        intptr_t offset, uint32_t stride) const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
 };
 
 }

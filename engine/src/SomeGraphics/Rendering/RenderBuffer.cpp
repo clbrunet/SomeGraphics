@@ -34,7 +34,7 @@ RenderBuffer::~RenderBuffer()
     glDeleteRenderbuffers(1, &m_renderer_id);
 }
 
-void RenderBuffer::attach_to_framebuffer(uint frame_buffer, GLenum attachment) const
+void RenderBuffer::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const
 {
     glNamedFramebufferRenderbuffer(frame_buffer, attachment, GL_RENDERBUFFER, m_renderer_id);
 }

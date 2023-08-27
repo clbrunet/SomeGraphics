@@ -69,7 +69,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
         Vertex(glm::vec3(1.0f, -1.0f,  1.0f)),
     }), std::initializer_list<VertexAttribute>({
         VertexAttributeType::Vec3,
-    }), std::vector<uint>({
+    }), std::vector<uint32_t>({
         0, 1, 2, 3, 4, 5,
         6, 7, 8, 9, 10, 11,
         12, 13, 14, 15, 16, 17,

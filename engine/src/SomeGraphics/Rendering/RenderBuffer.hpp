@@ -17,9 +17,9 @@ public:
     RenderBuffer& operator=(const RenderBuffer& other) = delete;
     ~RenderBuffer();
 
-    void attach_to_framebuffer(uint frame_buffer, GLenum attachment) const;
+    void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
 private:
-    uint m_renderer_id = 0;
+    uint32_t m_renderer_id = 0;
 };
 
 };
