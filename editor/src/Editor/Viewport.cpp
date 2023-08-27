@@ -79,7 +79,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     post_processing(renderer);
     FrameBuffer::bind_default();
 
-    ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture().renderer_id(),
+    ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture()->renderer_id(),
         m_dimension, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
     ImGui::End();
@@ -91,7 +91,7 @@ void Viewport::post_processing(const Renderer& renderer) const
 {
     m_post_processing_program->use();
     m_post_processing_program->set_int("u_texture", 0);
-    m_frame_buffer->color_texture().bind_to_unit(0);
+    m_frame_buffer->color_texture()->bind_to_unit(0);
     renderer.draw(*m_quad);
 }
 

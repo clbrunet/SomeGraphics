@@ -17,6 +17,7 @@ public:
     Application& operator=(Application&& other) = delete;
     Application& operator=(const Application& other) = delete;
     virtual ~Application();
+
     void run();
     virtual void on_update(float delta_time);
     virtual void on_render();

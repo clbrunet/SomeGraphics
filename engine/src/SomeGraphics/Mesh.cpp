@@ -31,9 +31,9 @@ Mesh::Mesh(const aiNode& ai_node, const aiScene& ai_scene)
     }), indices);
 }
 
-const VertexArray& Mesh::vertex_array() const
+const std::unique_ptr<VertexArray>& Mesh::vertex_array() const
 {
-    return *m_vertex_array;
+    return m_vertex_array;
 }
 
 }

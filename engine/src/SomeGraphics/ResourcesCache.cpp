@@ -34,6 +34,25 @@ std::optional<std::shared_ptr<Texture>> ResourcesCache::texture_from_ai_texture(
     return texture;
 }
 
+std::optional<std::shared_ptr<Texture>> ResourcesCache::cubemap(const char* right,
+    const char* left, const char* top, const char* bottom, const char* front, const char* back)
+{
+    std::string key = std::string(right) + "-" + left + "-"
+        + top + "-" + bottom + "-" + front + "-" + back;
+    std::map<std::string, std::weak_ptr<Texture>>::iterator it = textures_cache.find(key);
+    if (it != textures_cache.end() && !it->second.expired()) {
+        return it->second.lock();
+    }
+    std::optional<std::unique_ptr<Texture>> cubemap_opt
+        = Texture::create_cubemap(right, left, top, bottom, front, back);
+    if (!cubemap_opt.has_value()) {
+        return std::nullopt;
+    }
+    std::shared_ptr<Texture> cubemap = std::move(cubemap_opt.value());
+    textures_cache[key] = cubemap;
+    return cubemap;
+}
+
 std::optional<std::shared_ptr<Program>> ResourcesCache::program(const char* vert_filename,
     const char* frag_filename)
 {

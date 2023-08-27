@@ -30,9 +30,9 @@ void VertexArray::bind() const
     glBindVertexArray(m_renderer_id);
 }
 
-const IndexBuffer& VertexArray::index_buffer() const
+const std::unique_ptr<IndexBuffer>& VertexArray::index_buffer() const
 {
-    return *m_index_buffer;
+    return m_index_buffer;
 }
 
 }

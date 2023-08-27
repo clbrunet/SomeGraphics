@@ -53,9 +53,9 @@ void FrameBuffer::bind() const
     glBindFramebuffer(GL_FRAMEBUFFER, m_renderer_id);
 }
 
-const Texture& FrameBuffer::color_texture() const
+const std::unique_ptr<Texture>& FrameBuffer::color_texture() const
 {
-    return *m_color_texture;
+    return m_color_texture;
 }
 
 }

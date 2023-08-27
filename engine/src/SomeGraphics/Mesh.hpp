@@ -30,7 +30,7 @@ public:
     Mesh& operator=(const Mesh& other) = delete;
     ~Mesh() = default;
 
-    const VertexArray& vertex_array() const;
+    const std::unique_ptr<VertexArray>& vertex_array() const;
 private:
     std::unique_ptr<VertexArray> m_vertex_array;
 

@@ -22,7 +22,7 @@ public:
 
     static void bind_default();
     void bind() const;
-    const Texture& color_texture() const;
+    const std::unique_ptr<Texture>& color_texture() const;
 private:
     uint m_renderer_id = 0;
     std::unique_ptr<Texture> m_color_texture;

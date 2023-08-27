@@ -49,7 +49,7 @@ public:
     ~VertexArray();
 
     void bind() const;
-    const IndexBuffer& index_buffer() const;
+    const std::unique_ptr<IndexBuffer>& index_buffer() const;
 private:
     uint m_renderer_id = 0;
     std::unique_ptr<VertexBuffer> m_vertex_buffer;

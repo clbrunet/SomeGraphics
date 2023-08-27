@@ -85,26 +85,26 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
 {
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
-    skybox.program().use();
-    skybox.program().set_mat4("u_view_projection",
+    skybox.program()->use();
+    skybox.program()->set_mat4("u_view_projection",
         camera.projection() * glm::mat4(glm::mat3(camera.view())));
-    skybox.program().set_int("u_skybox", 0);
-    skybox.texture().bind_to_unit(0);
-    draw(skybox.mesh());
+    skybox.program()->set_int("u_skybox", 0);
+    skybox.cubemap()->bind_to_unit(0);
+    draw(*skybox.mesh());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
 }
 
 void Renderer::draw(const Mesh& mesh) const
 {
-    draw(mesh.vertex_array());
+    draw(*mesh.vertex_array());
 }
 
 void Renderer::draw(const VertexArray& vertex_array) const
 {
     vertex_array.bind();
-    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer().count(),
-        vertex_array.index_buffer().format(), 0);
+    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),
+        vertex_array.index_buffer()->format(), 0);
 }
 
 void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
