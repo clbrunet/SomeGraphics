@@ -1,12 +1,12 @@
 [submodule "engine/ext/glfw"]
 	path = engine/ext/glfw
-	url = git@github.com:glfw/glfw.git
+	url = ../../glfw/glfw.git
 [submodule "engine/ext/glm"]
 	path = engine/ext/glm
-	url = git@github.com:g-truc/glm.git
+	url = ../../g-truc/glm.git
 [submodule "engine/ext/imgui/imgui"]
 	path = engine/ext/imgui/imgui
-	url = git@github.com:ocornut/imgui.git
+	url = ../../ocornut/imgui.git
 [submodule "engine/ext/assimp"]
 	path = engine/ext/assimp
-	url = git@github.com:assimp/assimp.git
+	url = ../../assimp/assimp.git
