@@ -12,15 +12,15 @@ Mesh::Mesh(const aiNode& ai_node, const aiScene& ai_scene)
     std::vector<uint32_t> indices;
     for (uint32_t i = 0; i < ai_node.mNumMeshes; i++) {
         const aiMesh& ai_mesh = *ai_scene.mMeshes[ai_node.mMeshes[i]];
-        for(uint32_t i = 0; i < ai_mesh.mNumVertices; i++) {
-            vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh.mVertices[i]),
-                    AssimpToGlm::vec3(ai_mesh.mNormals[i]),
-                    AssimpToGlm::vec3(ai_mesh.mTextureCoords[0][i])));
+        for(uint32_t j = 0; j < ai_mesh.mNumVertices; j++) {
+            vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh.mVertices[j]),
+                    AssimpToGlm::vec3(ai_mesh.mNormals[j]),
+                    AssimpToGlm::vec3(ai_mesh.mTextureCoords[0][j])));
         }
-        for (uint32_t i = 0; i < ai_mesh.mNumFaces; i++) {
-            const aiFace& ai_face = ai_mesh.mFaces[i];
-            for (uint32_t j = 0; j < ai_face.mNumIndices; j++) {
-                indices.push_back(ai_face.mIndices[j]);
+        for (uint32_t j = 0; j < ai_mesh.mNumFaces; j++) {
+            const aiFace& ai_face = ai_mesh.mFaces[j];
+            for (uint32_t k = 0; k < ai_face.mNumIndices; k++) {
+                indices.push_back(ai_face.mIndices[k]);
             }
         }
     }

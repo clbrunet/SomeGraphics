@@ -116,7 +116,7 @@ void Window::reset_time() const
 
 float Window::get_time() const
 {
-    return glfwGetTime();
+    return (float)glfwGetTime();
 }
 
 bool Window::is_key_pressed(int key) const

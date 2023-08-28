@@ -1,13 +1,13 @@
 #include <utility>
 
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
 #include "SomeGraphics/Rendering/RenderBuffer.hpp"
 
 namespace sg {
 
-RenderBuffer::RenderBuffer(const glm::vec2& dimension)
+RenderBuffer::RenderBuffer(const glm::ivec2& dimension)
 {
     glCreateRenderbuffers(1, &m_renderer_id);
     glNamedRenderbufferStorage(m_renderer_id, GL_DEPTH24_STENCIL8, dimension.x, dimension.y);

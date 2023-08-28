@@ -2,7 +2,7 @@
 
 #include <sys/types.h>
 
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
 namespace sg {
@@ -10,7 +10,7 @@ namespace sg {
 class RenderBuffer {
 public:
     RenderBuffer() = delete;
-    RenderBuffer(const glm::vec2& dimension);
+    RenderBuffer(const glm::ivec2& dimension);
     RenderBuffer(RenderBuffer&& other);
     RenderBuffer(const RenderBuffer& other) = delete;
     RenderBuffer& operator=(RenderBuffer&& other);

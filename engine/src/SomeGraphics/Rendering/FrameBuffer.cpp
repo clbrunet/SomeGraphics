@@ -8,7 +8,7 @@
 
 namespace sg {
 
-FrameBuffer::FrameBuffer(const glm::vec2& dimension) :
+FrameBuffer::FrameBuffer(const glm::ivec2& dimension) :
     m_color_texture(std::make_unique<Texture>(dimension)),
     m_depth_and_stencil_render_buffer(std::make_unique<RenderBuffer>(dimension))
 {

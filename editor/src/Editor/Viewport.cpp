@@ -67,7 +67,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
         || content_region_available.y != m_dimension.y) {
         m_dimension = content_region_available;
         renderer.set_viewport(glm::ivec2(m_dimension.x, m_dimension.y));
-        m_frame_buffer = std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y));
+        m_frame_buffer = std::make_unique<FrameBuffer>(glm::ivec2(m_dimension.x, m_dimension.y));
         m_editor_camera->set_projection(glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     }

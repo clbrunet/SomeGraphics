@@ -4,7 +4,7 @@
 #include <memory>
 #include <optional>
 
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 #include "assimp/texture.h"
 #include "glad/gl.h"
 
@@ -20,7 +20,7 @@ class StbImageWrapper;
 class Texture {
 public:
     Texture() = delete;
-    Texture(const glm::vec2& dimensions);
+    Texture(const glm::ivec2& dimensions);
     static std::unique_ptr<Texture> white_1px();
     static std::optional<std::unique_ptr<Texture>> from_ai_texture(const aiTexture& ai_texture, ColorSpace color_space);
     static std::optional<std::unique_ptr<Texture>> create_cubemap(const char* right,

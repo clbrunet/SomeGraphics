@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "assimp/texture.h"
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
 
 #include "SomeGraphics/Rendering/Texture.hpp"
@@ -15,7 +15,7 @@
 
 namespace sg {
 
-Texture::Texture(const glm::vec2& dimensions)
+Texture::Texture(const glm::ivec2& dimensions)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <memory>
 
-#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_int2.hpp"
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/RenderBuffer.hpp"
@@ -13,7 +13,7 @@ namespace sg {
 class FrameBuffer {
 public:
     FrameBuffer() = delete;
-    FrameBuffer(const glm::vec2& dimension);
+    FrameBuffer(const glm::ivec2& dimension);
     FrameBuffer(FrameBuffer&& other);
     FrameBuffer(const FrameBuffer& other) = delete;
     FrameBuffer& operator=(FrameBuffer&& other);
