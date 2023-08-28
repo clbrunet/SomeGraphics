@@ -9,7 +9,6 @@ else()
     "-Wall"
     "-Wextra"
     "-Wpedantic"
-    "-Wno-volatile"
     $<$<CONFIG:Debug>:-g3>
     )
 endif()

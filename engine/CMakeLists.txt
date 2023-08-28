@@ -1,15 +1,15 @@
 set(GLFW_BUILD_EXAMPLES Off)
 set(GLFW_BUILD_TESTS Off)
 set(GLFW_BUILD_DOCS Off)
-add_subdirectory("./ext/glfw")
+add_subdirectory("./ext/glfw" SYSTEM)
 
-add_subdirectory("./ext/glad")
+add_subdirectory("./ext/glad" SYSTEM)
 
-add_subdirectory("./ext/glm")
+add_subdirectory("./ext/glm" SYSTEM)
 
-add_subdirectory("./ext/stb")
+add_subdirectory("./ext/stb" SYSTEM)
 
-add_subdirectory("./ext/imgui")
+add_subdirectory("./ext/imgui" SYSTEM)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 "NEW")
 set(BUILD_SHARED_LIBS Off)
@@ -18,7 +18,7 @@ set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT Off)
 set(ASSIMP_BUILD_TESTS Off)
 set(ASSIMP_INSTALL Off)
 set(ASSIMP_BUILD_GLTF_IMPORTER On)
-add_subdirectory("./ext/assimp")
+add_subdirectory("./ext/assimp" SYSTEM)
 
 file(GLOB_RECURSE SRCS "src/*.cpp")
 
@@ -35,7 +35,6 @@ else()
     "-Wall"
     "-Wextra"
     "-Wpedantic"
-    "-Wno-volatile"
     $<$<CONFIG:Debug>:-g3>
     )
 endif()
