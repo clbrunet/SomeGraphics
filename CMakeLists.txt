@@ -11,3 +11,5 @@ endif()
 
 add_subdirectory("./engine")
 add_subdirectory("./editor")
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT SomeGraphicsEditor)

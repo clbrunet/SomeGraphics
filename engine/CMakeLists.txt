@@ -29,7 +29,7 @@ target_compile_definitions(SomeGraphicsEngine PUBLIC
   $<$<CONFIG:Debug>:SG_DEBUG=1>
   )
 if(CMAKE_HOST_WIN32)
-  target_compile_options(SomeGraphicsEngine PRIVATE "-Wall")
+  target_compile_options(SomeGraphicsEngine PRIVATE "/W4")
 else()
   target_compile_options(SomeGraphicsEngine PRIVATE
     "-Wall"
