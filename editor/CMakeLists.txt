@@ -2,7 +2,7 @@ file(GLOB_RECURSE SRCS "src/*.cpp")
 
 add_executable(SomeGraphicsEditor ${SRCS})
 
-if(CMAKE_HOST_WIN32)
+if(MSVC)
   target_compile_options(SomeGraphicsEditor PRIVATE "/W4" "/wd26439")
 else()
   target_compile_options(SomeGraphicsEditor PRIVATE

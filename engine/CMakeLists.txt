@@ -28,7 +28,7 @@ target_compile_definitions(SomeGraphicsEngine PUBLIC
   GLFW_INCLUDE_NONE
   $<$<CONFIG:Debug>:SG_DEBUG=1>
   )
-if(CMAKE_HOST_WIN32)
+if(MSVC)
   target_compile_options(SomeGraphicsEngine PRIVATE "/W4" "/wd26439")
 else()
   target_compile_options(SomeGraphicsEngine PRIVATE
