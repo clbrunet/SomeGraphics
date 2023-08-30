@@ -3,7 +3,11 @@ file(GLOB_RECURSE SRCS "src/*.cpp")
 add_executable(SomeGraphicsEditor ${SRCS})
 
 if(MSVC)
-  target_compile_options(SomeGraphicsEditor PRIVATE "/W4" "/wd26439")
+  target_compile_options(SomeGraphicsEditor PRIVATE
+    "/W4"
+    "/wd26439"
+    "/analyze:external-"
+    )
 else()
   target_compile_options(SomeGraphicsEditor PRIVATE
     "-Wall"

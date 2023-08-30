@@ -29,7 +29,11 @@ target_compile_definitions(SomeGraphicsEngine PUBLIC
   $<$<CONFIG:Debug>:SG_DEBUG=1>
   )
 if(MSVC)
-  target_compile_options(SomeGraphicsEngine PRIVATE "/W4" "/wd26439")
+  target_compile_options(SomeGraphicsEngine PRIVATE
+    "/W4"
+    "/wd26439"
+    "/analyze:external-"
+    )
 else()
   target_compile_options(SomeGraphicsEngine PRIVATE
     "-Wall"
