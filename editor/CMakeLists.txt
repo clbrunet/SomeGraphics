@@ -2,20 +2,7 @@ file(GLOB_RECURSE SRCS "src/*.cpp")
 
 add_executable(SomeGraphicsEditor ${SRCS})
 
-if(MSVC)
-  target_compile_options(SomeGraphicsEditor PRIVATE
-    "/W4"
-    "/wd26439"
-    "/analyze:external-"
-    )
-else()
-  target_compile_options(SomeGraphicsEditor PRIVATE
-    "-Wall"
-    "-Wextra"
-    "-Wpedantic"
-    $<$<CONFIG:Debug>:-g3>
-    )
-endif()
+target_compile_options(SomeGraphicsEditor PRIVATE ${SOME_GRAPHICS_FLAGS})
 target_include_directories(SomeGraphicsEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(SomeGraphicsEditor PUBLIC SomeGraphicsEngine)
 

@@ -27,21 +27,8 @@ add_library(SomeGraphicsEngine STATIC ${SRCS})
 target_compile_definitions(SomeGraphicsEngine PUBLIC
   GLFW_INCLUDE_NONE
   $<$<CONFIG:Debug>:SG_DEBUG=1>
-  )
-if(MSVC)
-  target_compile_options(SomeGraphicsEngine PRIVATE
-    "/W4"
-    "/wd26439"
-    "/analyze:external-"
-    )
-else()
-  target_compile_options(SomeGraphicsEngine PRIVATE
-    "-Wall"
-    "-Wextra"
-    "-Wpedantic"
-    $<$<CONFIG:Debug>:-g3>
-    )
-endif()
+)
+target_compile_options(SomeGraphicsEngine PRIVATE ${SOME_GRAPHICS_FLAGS})
 target_include_directories(SomeGraphicsEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(SomeGraphicsEngine PUBLIC
   glfw
@@ -50,4 +37,4 @@ target_link_libraries(SomeGraphicsEngine PUBLIC
   stb
   imgui
   assimp
-  )
+)

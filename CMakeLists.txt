@@ -9,6 +9,21 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
+if(MSVC)
+  set(SOME_GRAPHICS_FLAGS
+    "/W4"
+    "/wd26439"
+    "/analyze:external-"
+  )
+else()
+  set(SOME_GRAPHICS_FLAGS
+    "-Wall"
+    "-Wextra"
+    "-Wpedantic"
+    $<$<CONFIG:Debug>:-g3>
+  )
+endif()
+
 add_subdirectory("./engine")
 add_subdirectory("./editor")
 
