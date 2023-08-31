@@ -25,6 +25,9 @@ EditorApplication::EditorApplication(const std::string& name) :
     }
     m_selected_entity = scene_entity_opt.value();
     m_scene->add_entity(std::move(scene_entity_opt.value()));
+    ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = "editor/assets/imgui.ini";
+    io.LogFilename = "editor/assets/imgui_log.txt";
 }
 
 void EditorApplication::on_update(float delta_time)
