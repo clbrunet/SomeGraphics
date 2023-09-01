@@ -1,4 +1,5 @@
 #include <memory>
+#include <filesystem>
 
 #include "imgui.h"
 
@@ -25,6 +26,9 @@ EditorApplication::EditorApplication(const std::string& name) :
     }
     m_selected_entity = scene_entity_opt.value();
     m_scene->add_entity(std::move(scene_entity_opt.value()));
+    std::error_code ec;
+    std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
+        std::filesystem::copy_options::skip_existing, ec);
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = "editor/assets/imgui.ini";
     io.LogFilename = "editor/assets/imgui_log.txt";
