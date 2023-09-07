@@ -24,7 +24,7 @@ EditorApplication::EditorApplication(const std::string& name) :
     if (!scene_entity_opt.has_value()) {
         abort();
     }
-    m_selected_entity = scene_entity_opt.value();
+    m_selection = scene_entity_opt.value();
     m_scene->add_entity(std::move(scene_entity_opt.value()));
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
@@ -43,12 +43,8 @@ void EditorApplication::on_render()
 {
     ImGui::DockSpaceOverViewport();
     m_viewport->on_render(*m_renderer, *m_scene);
-    m_outliner->on_render(*m_scene, m_selected_entity);
-    if (m_selected_entity.expired()) {
-        m_properties->on_render();
-    } else {
-        m_properties->on_render(*m_selected_entity.lock());
-    }
+    m_outliner->on_render(*m_scene, m_selection);
+    m_properties->on_render(m_selection);
 }
 
 }

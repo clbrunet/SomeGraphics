@@ -7,6 +7,7 @@
 #include "glm/ext/vector_int2.hpp"
 #include "assimp/texture.h"
 #include "glad/gl.h"
+#include "imgui.h"
 
 namespace sg {
 
@@ -32,7 +33,7 @@ public:
     ~Texture();
 
     void bind_to_unit(uint32_t unit) const;
-    uint32_t renderer_id() const;
+    ImTextureID imgui_texture_id() const;
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
 private:
     uint32_t m_renderer_id = 0;

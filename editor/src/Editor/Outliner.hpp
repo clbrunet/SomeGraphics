@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "Editor/Selection.hpp"
+
 namespace sg {
 
 class Scene;
@@ -16,7 +18,7 @@ public:
     Outliner& operator=(const Outliner& other) = default;
     ~Outliner() = default;
 
-    void on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selected_entity);
+    void on_render(const Scene& scene, Selection& selection);
 };
 
 }

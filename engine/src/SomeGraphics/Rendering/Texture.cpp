@@ -1,5 +1,6 @@
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <iostream>
 #include <optional>
 #include <sys/types.h>
@@ -9,6 +10,7 @@
 #include "assimp/texture.h"
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
+#include "imgui.h"
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/StbImageWrapper.hpp"
@@ -103,9 +105,9 @@ void Texture::bind_to_unit(uint32_t unit) const
     glBindTextureUnit(unit, m_renderer_id);
 }
 
-uint32_t Texture::renderer_id() const
+ImTextureID Texture::imgui_texture_id() const
 {
-    return m_renderer_id;
+    return (void*)(intptr_t)m_renderer_id;
 }
 
 void Texture::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const

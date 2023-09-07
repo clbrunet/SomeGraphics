@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Editor/Selection.hpp"
+
 namespace sg {
 
 class SceneEntity;
@@ -13,8 +15,11 @@ public:
     Properties& operator=(const Properties& other) = default;
     ~Properties() = default;
 
-    void on_render();
-    void on_render(SceneEntity& entity);
+    void on_render(Selection& selection) const;
+private:
+    void on_render() const;
+    void on_render(SceneEntity& entity, Selection& selection) const;
+    void on_render(Material& material, Selection& selection) const;
 };
 
 }

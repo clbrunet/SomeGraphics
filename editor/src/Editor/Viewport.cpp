@@ -79,7 +79,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     post_processing(renderer);
     FrameBuffer::bind_default();
 
-    ImGui::Image((void*)(std::intptr_t)m_frame_buffer->color_texture()->renderer_id(),
+    ImGui::Image(m_frame_buffer->color_texture()->imgui_texture_id(),
         m_dimension, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 
     ImGui::End();

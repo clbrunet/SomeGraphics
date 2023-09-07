@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <stack>
+#include <variant>
 #include <vector>
 
 #include "imgui.h"
@@ -11,8 +12,12 @@
 
 namespace sg {
 
-void Outliner::on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selected_entity)
+void Outliner::on_render(const Scene& scene, Selection& selection)
 {
+    std::shared_ptr<SceneEntity> selected_entity;
+    if (std::holds_alternative<std::weak_ptr<SceneEntity>>(selection)) {
+        selected_entity = std::get<std::weak_ptr<SceneEntity>>(selection).lock();
+    }
     ImGui::Begin("Outliner");
     std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
         iterators_stack({ scene.root_entity()->children().cbegin() });
@@ -24,8 +29,8 @@ void Outliner::on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selecte
         ++iterators_stack.top();
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
             | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-        if (entity == selected_entity.lock()) {
-            flags |= ImGuiTreeNodeFlags_Selected;
+        if (entity == selected_entity) {
+            flags |= ImGuiTreeNodeFlags_Selected; 
         }
         if (entity->children().size() == 0) {
             flags |= ImGuiTreeNodeFlags_Leaf;
@@ -35,7 +40,7 @@ void Outliner::on_render(const Scene& scene, std::weak_ptr<SceneEntity>& selecte
             ends_stack.push(entity->children().cend());
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-            selected_entity = entity;
+            selection = entity;
         }
         while (iterators_stack.size() > 1 && iterators_stack.top() == ends_stack.top()) {
             ImGui::TreePop();

@@ -25,6 +25,11 @@ public:
     ~Material() = default;
 
     const std::shared_ptr<Program>& program() const;
+    const std::map<std::string, glm::vec4>& vec4s() const;
+    const std::map<std::string, std::shared_ptr<Texture>>& textures() const;
+
+    void set_vec4(const std::string& location, glm::vec4 vec4);
+
     void set_program_data() const;
 private:
     std::shared_ptr<Program> m_program;

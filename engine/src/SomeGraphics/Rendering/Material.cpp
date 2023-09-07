@@ -62,6 +62,21 @@ const std::shared_ptr<Program>& Material::program() const
     return m_program;
 }
 
+const std::map<std::string, glm::vec4>& Material::vec4s() const
+{
+    return m_vec4s;
+}
+
+const std::map<std::string, std::shared_ptr<Texture>>& Material::textures() const
+{
+    return m_textures;
+}
+
+void Material::set_vec4(const std::string& location, glm::vec4 vec4)
+{
+    m_vec4s[location] = std::move(vec4);
+}
+
 void Material::set_program_data() const
 {
     for (const auto& [location, vec4] : m_vec4s) {

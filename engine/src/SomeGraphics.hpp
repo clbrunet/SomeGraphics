@@ -10,6 +10,7 @@
 #include "SomeGraphics/Rendering/VertexArray.hpp"
 #include "SomeGraphics/Rendering/FrameBuffer.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
+#include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Camera.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/Skybox.hpp"
