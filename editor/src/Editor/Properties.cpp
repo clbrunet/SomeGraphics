@@ -18,30 +18,22 @@ namespace sg {
 
 void Properties::on_render(Selection& selection) const
 {
+    ImGui::Begin("Properties");
     std::visit([this, &selection](auto&& arg) {
         using T = std::decay_t<decltype(arg)>;
-        if constexpr (std::is_same_v<T, std::monostate>) {
-            on_render();
-        } else {
+        if constexpr (!(std::is_same_v<T, std::monostate>)) {
             if (arg.expired()) {
                 selection = std::monostate();
-                on_render();
             } else {
-                on_render(*arg.lock(), selection);
+                render(*arg.lock(), selection);
             }
         }
     }, selection);
-}
-
-void Properties::on_render() const
-{
-    ImGui::Begin("Properties");
     ImGui::End();
 }
 
-void Properties::on_render(SceneEntity& entity, Selection& selection) const
+void Properties::render(SceneEntity& entity, Selection& selection) const
 {
-    ImGui::Begin("Properties");
     ImGui::Text("%s", entity.name().c_str());
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         glm::vec3 local_position = entity.transform().local_position();
@@ -58,19 +50,27 @@ void Properties::on_render(SceneEntity& entity, Selection& selection) const
         }
         ImGui::TreePop();
     }
-    if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
-        if (entity.material() && ImGui::Button("Select material")) {
+    if (entity.material() && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen)) {
+        const char* edit_button_label = "Edit";
+        ImGuiStyle& style = ImGui::GetStyle();
+        float size = ImGui::CalcTextSize(edit_button_label).x + style.FramePadding.x * 2.0f;
+        float avail = ImGui::GetContentRegionAvail().x;
+        float off = (avail - size) * 0.5f;
+        if (off > 0.0f) {
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+        }
+        if (ImGui::Button("Edit")) {
             selection = entity.material();
         }
+        ImGui::BeginDisabled();
+        render(*entity.material(), selection);
+        ImGui::EndDisabled();
         ImGui::TreePop();
     }
-    ImGui::End();
 }
 
-void Properties::on_render(Material& material, Selection& selection) const
+void Properties::render(Material& material, [[maybe_unused]] Selection& selection) const
 {
-    static_cast<void>(selection);
-    ImGui::Begin("Properties");
     for (const auto& [location, vec4] : material.vec4s()) {
         glm::vec4 copy = vec4;
         if (ImGui::ColorEdit4(location.c_str(), glm::value_ptr(copy))) {
@@ -83,7 +83,6 @@ void Properties::on_render(Material& material, Selection& selection) const
         ImGui::Text("%s", location.c_str());
 
     }
-    ImGui::End();
 }
 
 }

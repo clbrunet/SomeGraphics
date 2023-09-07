@@ -34,9 +34,8 @@ void Application::run()
     }
 }
 
-void Application::on_update(float delta_time)
+void Application::on_update([[maybe_unused]] float delta_time)
 {
-    static_cast<void>(delta_time);
 }
 
 void Application::on_render()

@@ -107,12 +107,10 @@ void Renderer::draw(const VertexArray& vertex_array) const
         vertex_array.index_buffer()->format(), 0);
 }
 
-void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
-    GLenum severity, GLsizei length, const GLchar* message, const void* user_param)
+void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type,
+    [[maybe_unused]] GLuint id, GLenum severity, [[maybe_unused]] GLsizei length,
+    const GLchar* message, [[maybe_unused]] const void* user_param)
 {
-    static_cast<void>(id);
-    static_cast<void>(length);
-    static_cast<void>(user_param);
     std::cerr << std::hex;
     std::cerr << "OpenGL debug message :\n";
     std::cerr << "Source : ";
