@@ -1,5 +1,6 @@
-#include "SomeGraphics/Application.hpp"
 #include <cstdint>
+
+#include "SomeGraphics/Application.hpp"
 
 namespace sg {
 

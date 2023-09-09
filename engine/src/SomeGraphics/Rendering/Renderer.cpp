@@ -107,6 +107,15 @@ void Renderer::draw(const VertexArray& vertex_array) const
         vertex_array.index_buffer()->format(), 0);
 }
 
+void Renderer::set_framebuffer_srbg(bool state) const
+{
+    if (state) {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    } else {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+    }
+}
+
 void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type,
     [[maybe_unused]] GLuint id, GLenum severity, [[maybe_unused]] GLsizei length,
     const GLchar* message, [[maybe_unused]] const void* user_param)

@@ -14,6 +14,7 @@ namespace sg {
 enum class ColorSpace {
     Srgb,
     Linear,
+    Varying,
 };
 
 class StbImageWrapper;
@@ -32,13 +33,15 @@ public:
     Texture& operator=(const Texture& other) = delete;
     ~Texture();
 
+    ColorSpace color_space() const;
     void bind_to_unit(uint32_t unit) const;
     ImTextureID imgui_texture_id() const;
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
 private:
     uint32_t m_renderer_id = 0;
+    ColorSpace m_color_space;
 
-    Texture(uint32_t renderer_id);
+    Texture(uint32_t renderer_id, ColorSpace color_space);
     Texture(const aiTexture& ai_texture, ColorSpace color_space);
     Texture(const StbImageWrapper& image, ColorSpace color_space);
     Texture(const StbImageWrapper& right, const StbImageWrapper& left,

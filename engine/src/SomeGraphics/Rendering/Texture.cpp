@@ -17,7 +17,8 @@
 
 namespace sg {
 
-Texture::Texture(const glm::ivec2& dimensions)
+Texture::Texture(const glm::ivec2& dimensions) :
+    m_color_space(ColorSpace::Varying)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -38,7 +39,7 @@ std::unique_ptr<Texture> Texture::white_1px()
     glTextureStorage2D(renderer_id, 1, GL_RGB8, 1, 1);
     uint8_t white[3] = { 255, 255, 255 };
     glTextureSubImage2D(renderer_id, 0, 0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, white);
-    return std::unique_ptr<Texture>(new Texture(renderer_id));
+    return std::unique_ptr<Texture>(new Texture(renderer_id, ColorSpace::Linear));
 }
 
 std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture,
@@ -100,6 +101,11 @@ Texture::~Texture()
     glDeleteTextures(1, &m_renderer_id);
 }
 
+ColorSpace Texture::color_space() const
+{
+    return m_color_space;
+}
+
 void Texture::bind_to_unit(uint32_t unit) const
 {
     glBindTextureUnit(unit, m_renderer_id);
@@ -115,12 +121,14 @@ void Texture::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) co
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
-Texture::Texture(uint32_t renderer_id) :
-    m_renderer_id(renderer_id)
+Texture::Texture(uint32_t renderer_id, ColorSpace color_space) :
+    m_renderer_id(renderer_id),
+    m_color_space(color_space)
 {
 }
 
-Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space)
+Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space) :
+    m_color_space(color_space)
 {
     assert(ai_texture.mHeight != 0);
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
@@ -131,7 +139,8 @@ Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space)
         GL_RGBA, GL_UNSIGNED_BYTE, ai_texture.pcData);
 }
 
-Texture::Texture(const StbImageWrapper& image, ColorSpace color_space)
+Texture::Texture(const StbImageWrapper& image, ColorSpace color_space) :
+    m_color_space(color_space)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -144,7 +153,8 @@ Texture::Texture(const StbImageWrapper& image, ColorSpace color_space)
 
 Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     const StbImageWrapper& top, const StbImageWrapper& bottom,
-    const StbImageWrapper& front, const StbImageWrapper& back)
+    const StbImageWrapper& front, const StbImageWrapper& back) :
+    m_color_space(ColorSpace::Srgb)
 {
     std::array<const StbImageWrapper*, 6> images({ &right, &left, &top, &bottom, &back, &front });
 #if SG_DEBUG
@@ -189,6 +199,8 @@ GLenum Texture::internal_format(uint32_t channels_count, ColorSpace color_space)
                 case 4:
                     return GL_RGBA8;
             }
+            break;
+        default:
             break;
     }
     assert(false);

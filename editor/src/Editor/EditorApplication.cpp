@@ -44,7 +44,7 @@ void EditorApplication::on_render()
     ImGui::DockSpaceOverViewport();
     m_viewport->on_render(*m_renderer, *m_scene);
     m_outliner->on_render(*m_scene, m_selection);
-    m_properties->on_render(m_selection);
+    m_properties->on_render(*m_renderer, m_selection);
 }
 
 }

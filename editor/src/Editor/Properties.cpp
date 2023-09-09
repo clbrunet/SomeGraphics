@@ -1,10 +1,13 @@
 #include <cstdint>
 #include <deque>
 #include <iostream>
+#include <memory>
 #include <stack>
 #include <type_traits>
 #include <variant>
 
+#include "SomeGraphics/Rendering/Renderer.hpp"
+#include "SomeGraphics/Rendering/Texture.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -16,23 +19,23 @@
 
 namespace sg {
 
-void Properties::on_render(Selection& selection) const
+void Properties::on_render(const Renderer& renderer, Selection& selection) const
 {
     ImGui::Begin("Properties");
-    std::visit([this, &selection](auto&& arg) {
+    std::visit([this, &renderer, &selection](auto&& arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (!(std::is_same_v<T, std::monostate>)) {
             if (arg.expired()) {
                 selection = std::monostate();
             } else {
-                render(*arg.lock(), selection);
+                render(*arg.lock(), renderer, selection);
             }
         }
     }, selection);
     ImGui::End();
 }
 
-void Properties::render(SceneEntity& entity, Selection& selection) const
+void Properties::render(SceneEntity& entity, const Renderer& renderer, Selection& selection) const
 {
     ImGui::Text("%s", entity.name().c_str());
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -63,13 +66,20 @@ void Properties::render(SceneEntity& entity, Selection& selection) const
             selection = entity.material();
         }
         ImGui::BeginDisabled();
-        render(*entity.material(), selection);
+        render(*entity.material(), renderer, selection);
         ImGui::EndDisabled();
         ImGui::TreePop();
     }
 }
 
-void Properties::render(Material& material, [[maybe_unused]] Selection& selection) const
+void Properties::srgb_texture_callback([[maybe_unused]] const ImDrawList* parent_list,
+    const ImDrawCmd* cmd)
+{
+    SrgbTextureCallbackData* data = static_cast<SrgbTextureCallbackData*>(cmd->UserCallbackData);
+    data->renderer.set_framebuffer_srbg(data->framebuffer_srgb_state);
+}
+
+void Properties::render(Material& material, const Renderer& renderer, [[maybe_unused]] Selection& selection) const
 {
     for (const auto& [location, vec4] : material.vec4s()) {
         glm::vec4 copy = vec4;
@@ -77,8 +87,19 @@ void Properties::render(Material& material, [[maybe_unused]] Selection& selectio
             material.set_vec4(location, std::move(copy));
         }
     }
+    static SrgbTextureCallbackData enabling = { .renderer = renderer,
+        .framebuffer_srgb_state = true };
+    static SrgbTextureCallbackData disabling = { .renderer = renderer,
+        .framebuffer_srgb_state = false };
     for (const auto& [location, texture] : material.textures()) {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        if (texture->color_space() == ColorSpace::Srgb) {
+            draw_list->AddCallback(srgb_texture_callback, &enabling);
+        }
         ImGui::Image(texture->imgui_texture_id(), ImVec2(64.0, 64.0));
+        if (texture->color_space() == ColorSpace::Srgb) {
+            draw_list->AddCallback(srgb_texture_callback, &disabling);
+        }
         ImGui::SameLine();
         ImGui::Text("%s", location.c_str());
 
