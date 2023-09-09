@@ -78,7 +78,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
         30, 31, 32, 33, 34, 35,
     }));
     return std::unique_ptr<Skybox>(new Skybox(std::move(program_opt.value()),
-            std::move(mesh) , std::move(cubemap_opt.value())));
+            std::move(mesh), std::move(cubemap_opt.value())));
 }
 
 Skybox::~Skybox()

@@ -1,18 +1,14 @@
 #include <iostream>
 #include <memory>
-#include <stack>
 
-#include "SomeGraphics/Rendering/Material.hpp"
-#include "SomeGraphics/ResourcesCache.hpp"
-#include "SomeGraphics/SceneEntity.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 #include "glm/ext/vector_float2.hpp"
 #include "glm/ext/vector_int2.hpp"
 #include "imgui.h"
 
 #include "Editor/Viewport.hpp"
-#include "Editor/EditorCamera.hpp"
 #include "SomeGraphics.hpp"
+#include "Editor/EditorCamera.hpp"
 
 namespace sg {
 
@@ -29,24 +25,6 @@ Viewport::Viewport(const Renderer& renderer)
         abort();
     }
     m_skybox = std::move(skybox_opt.value());
-    std::optional<std::shared_ptr<Program>> program_opt
-        = ResourcesCache::program("editor/assets/shaders/post_processing.vert",
-            "editor/assets/shaders/post_processing.frag");
-    if (!program_opt.has_value()) {
-        abort();
-    }
-    m_post_processing_program = std::move(program_opt.value());
-    m_quad = std::make_unique<Mesh>(std::vector<QuadVertex>({
-        QuadVertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
-        QuadVertex(glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
-        QuadVertex(glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
-        QuadVertex(glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
-    }), std::initializer_list<VertexAttribute>({
-        VertexAttributeType::Vec2,
-        VertexAttributeType::Vec2,
-    }), std::vector<uint32_t>({
-        0, 1, 2, 0, 2, 3,
-    }));
 }
 
 void Viewport::on_update(const Window& window, float delta_time)
@@ -76,7 +54,7 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     renderer.clear();
     renderer.draw(scene, *m_editor_camera);
     renderer.draw(*m_skybox, *m_editor_camera);
-    post_processing(renderer);
+    renderer.post_process(*m_post_process, *m_frame_buffer->color_texture());
     FrameBuffer::bind_default();
 
     ImGui::Image(m_frame_buffer->color_texture()->imgui_texture_id(),
@@ -85,14 +63,6 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
-}
-
-void Viewport::post_processing(const Renderer& renderer) const
-{
-    m_post_processing_program->use();
-    m_post_processing_program->set_int("u_texture", 0);
-    m_frame_buffer->color_texture()->bind_to_unit(0);
-    renderer.draw(*m_quad);
 }
 
 }

@@ -8,11 +8,12 @@
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/VertexArray.hpp"
+#include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Camera.hpp"
 #include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/Skybox.hpp"
+#include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/Mesh.hpp"
-#include "SomeGraphics/Rendering/Material.hpp"
 
 namespace sg {
 
@@ -81,6 +82,18 @@ void Renderer::draw(const Scene& scene, const Camera& camera) const
     }
 }
 
+void Renderer::draw(const Mesh& mesh) const
+{
+    draw(*mesh.vertex_array());
+}
+
+void Renderer::draw(const VertexArray& vertex_array) const
+{
+    vertex_array.bind();
+    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),
+        vertex_array.index_buffer()->format(), 0);
+}
+
 void Renderer::draw(const Skybox& skybox, const Camera& camera) const
 {
     glDepthMask(GL_FALSE);
@@ -95,16 +108,12 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     glDepthMask(GL_TRUE);
 }
 
-void Renderer::draw(const Mesh& mesh) const
+void Renderer::post_process(const PostProcess& post_process, const Texture& texture) const
 {
-    draw(*mesh.vertex_array());
-}
-
-void Renderer::draw(const VertexArray& vertex_array) const
-{
-    vertex_array.bind();
-    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),
-        vertex_array.index_buffer()->format(), 0);
+    post_process.program()->use();
+    post_process.program()->set_int("u_texture", 0);
+    texture.bind_to_unit(0);
+    draw(*post_process.quad());
 }
 
 void Renderer::set_framebuffer_srbg(bool state) const

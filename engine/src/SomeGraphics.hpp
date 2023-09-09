@@ -14,6 +14,7 @@
 #include "SomeGraphics/Camera.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/Skybox.hpp"
+#include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/SceneEntity.hpp"
 

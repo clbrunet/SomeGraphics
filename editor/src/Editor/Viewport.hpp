@@ -20,6 +20,7 @@ class EditorCamera;
 class Skybox;
 class Program;
 class Scene;
+class PostProcess;
 
 class Viewport {
 public:
@@ -43,27 +44,7 @@ private:
             glm::vec2(-35.0f, 45.0f), glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     std::unique_ptr<Skybox> m_skybox;
-    std::unique_ptr<Mesh> m_quad;
-    std::shared_ptr<Program> m_post_processing_program;
-
-    void post_processing(const Renderer& renderer) const;
-
-    struct QuadVertex {
-        glm::vec2 position;
-        glm::vec2 texture_coordinates;
-
-        QuadVertex() = delete;
-        QuadVertex(const glm::vec2& position, const glm::vec2& texture_coordinates) :
-            position(position),
-            texture_coordinates(texture_coordinates)
-        {
-        }
-        QuadVertex(QuadVertex&& other) = default;
-        QuadVertex(const QuadVertex& other) = default;
-        QuadVertex& operator=(QuadVertex&& other) = default;
-        QuadVertex& operator=(const QuadVertex& other) = default;
-        ~QuadVertex() = default;
-    };
+    std::unique_ptr<PostProcess> m_post_process = std::make_unique<PostProcess>();
 };
 
 }

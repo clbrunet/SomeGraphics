@@ -6,8 +6,6 @@
 #include <type_traits>
 #include <variant>
 
-#include "SomeGraphics/Rendering/Renderer.hpp"
-#include "SomeGraphics/Rendering/Texture.hpp"
 #include "glm/ext/vector_float3.hpp"
 #include "glm/ext/vector_float4.hpp"
 #include "glm/gtc/type_ptr.hpp"
