@@ -70,13 +70,6 @@ void Properties::render(SceneEntity& entity, const Renderer& renderer, Selection
     }
 }
 
-void Properties::srgb_texture_callback([[maybe_unused]] const ImDrawList* parent_list,
-    const ImDrawCmd* cmd)
-{
-    SrgbTextureCallbackData* data = static_cast<SrgbTextureCallbackData*>(cmd->UserCallbackData);
-    data->renderer.set_framebuffer_srbg(data->framebuffer_srgb_state);
-}
-
 void Properties::render(Material& material, const Renderer& renderer, [[maybe_unused]] Selection& selection) const
 {
     for (const auto& [location, vec4] : material.vec4s()) {
@@ -85,6 +78,16 @@ void Properties::render(Material& material, const Renderer& renderer, [[maybe_un
             material.set_vec4(location, std::move(copy));
         }
     }
+    struct SrgbTextureCallbackData {
+        const Renderer& renderer;
+        bool framebuffer_srgb_state;
+    };
+    auto srgb_texture_callback = []([[maybe_unused]] const ImDrawList* parent_list,
+        const ImDrawCmd* cmd) {
+        SrgbTextureCallbackData* data
+            = reinterpret_cast<SrgbTextureCallbackData*>(cmd->UserCallbackData);
+        data->renderer.set_framebuffer_srbg(data->framebuffer_srgb_state);
+    };
     static SrgbTextureCallbackData enabling = { .renderer = renderer,
         .framebuffer_srgb_state = true };
     static SrgbTextureCallbackData disabling = { .renderer = renderer,

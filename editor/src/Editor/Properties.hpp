@@ -21,11 +21,6 @@ public:
     void on_render(const Renderer& renderer, Selection& selection) const;
 private:
     void render(SceneEntity& entity, const Renderer& renderer, Selection& selection) const;
-    struct SrgbTextureCallbackData {
-        const Renderer& renderer;
-        bool framebuffer_srgb_state;
-    };
-    static void srgb_texture_callback(const ImDrawList* parent_list, const ImDrawCmd* cmd);
     void render(Material& material, const Renderer& renderer, Selection& selection) const;
 };
 
