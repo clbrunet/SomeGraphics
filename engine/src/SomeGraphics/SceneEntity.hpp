@@ -42,9 +42,10 @@ private:
 
     // Scene root constructor
     SceneEntity();
-    SceneEntity(const std::string& filename, const aiNode& node, const aiScene& scene);
-
-    void process_node(const std::string& filename, const aiNode& node, const aiScene& scene);
+    static std::optional<std::shared_ptr<SceneEntity>> from_ai_node(const std::string& filename,
+        const aiNode& ai_node, const aiScene& ai_scene);
+    SceneEntity(std::string name, Transform transform, std::shared_ptr<Mesh> mesh,
+        std::shared_ptr<Material> material, std::vector<std::shared_ptr<SceneEntity>>&& children);
 };
 
 }

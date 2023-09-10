@@ -41,8 +41,7 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
         std::cerr << "Model loading error : " << importer.GetErrorString() << std::endl;
         return std::nullopt;
     }
-    return std::shared_ptr<SceneEntity>(new SceneEntity(filename,
-            *ai_scene->mRootNode, *ai_scene));
+    return from_ai_node(filename, *ai_scene->mRootNode, *ai_scene);
 }
 
 const std::string& SceneEntity::name() const
@@ -85,34 +84,45 @@ SceneEntity::SceneEntity() :
 {
 }
 
-SceneEntity::SceneEntity(const std::string& filename,
-    const aiNode& ai_node, const aiScene& ai_scene) :
-    m_name(ai_node.mName.C_Str()),
-    m_transform(AssimpToGlm::mat4(ai_node.mTransformation))
+std::optional<std::shared_ptr<SceneEntity>> SceneEntity::from_ai_node(
+    const std::string& filename, const aiNode& ai_node, const aiScene& ai_scene)
 {
-    process_node(filename, ai_node, ai_scene);
-    for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
-        const aiNode& child = *ai_node.mChildren[i];
-        m_children.emplace_back(std::shared_ptr<SceneEntity>(new SceneEntity(filename,
-                    child, ai_scene)));
+    std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<Material> material;
+    if (ai_node.mNumMeshes > 0) {
+        const aiMaterial& ai_material = *ai_scene.mMaterials[
+            ai_scene.mMeshes[ai_node.mMeshes[0]]->mMaterialIndex];
+        std::optional<std::shared_ptr<Material>> material_opt
+            = ResourcesCache::material_from_ai_material(filename, ai_material, ai_scene);
+        if (!material_opt.has_value()) {
+            return std::nullopt;
+        }
+        mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
+        material = material_opt.value();
     }
+    std::vector<std::shared_ptr<SceneEntity>> children;
+    for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
+        std::optional<std::shared_ptr<SceneEntity>> child_opt
+            = from_ai_node(filename, *ai_node.mChildren[i], ai_scene);
+        if (!child_opt.has_value()) {
+            return std::nullopt;
+        }
+        children.emplace_back(std::move(child_opt.value()));
+    }
+    std::string name = ai_node.mName.C_Str();
+    Transform transform = Transform(AssimpToGlm::mat4(ai_node.mTransformation));
+    return std::shared_ptr<SceneEntity>(new SceneEntity(std::move(name), std::move(transform),
+            std::move(mesh), std::move(material), std::move(children)));
 }
 
-void SceneEntity::process_node(const std::string& filename,
-    const aiNode& ai_node, const aiScene& ai_scene)
+SceneEntity::SceneEntity(std::string name, Transform transform, std::shared_ptr<Mesh> mesh,
+    std::shared_ptr<Material> material, std::vector<std::shared_ptr<SceneEntity>>&& children) :
+    m_name(std::move(name)),
+    m_transform(std::move(transform)),
+    m_mesh(std::move(mesh)),
+    m_material(std::move(material)),
+    m_children(std::move(children))
 {
-    if (ai_node.mNumMeshes == 0) {
-        return;
-    }
-    m_mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
-    const aiMaterial& ai_material = *ai_scene.mMaterials[
-        ai_scene.mMeshes[ai_node.mMeshes[0]]->mMaterialIndex];
-    std::optional<std::shared_ptr<Material>> material_opt
-        = ResourcesCache::material_from_ai_material(filename, ai_material, ai_scene);
-    if (!material_opt.has_value()) {
-        abort();
-    }
-    m_material = std::move(material_opt.value());
 }
 
 }

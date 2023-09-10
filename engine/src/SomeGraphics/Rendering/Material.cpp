@@ -18,9 +18,6 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::s
     std::optional<std::shared_ptr<Program>> program_opt
         = ResourcesCache::program("engine/assets/shaders/pbr.vert",
             "engine/assets/shaders/pbr.frag");
-    if (!program_opt.has_value()) {
-        return std::nullopt;
-    }
     std::map<std::string, glm::vec4> vec4s;
     aiColor3D ai_color3;
     ai_material.Get(AI_MATKEY_BASE_COLOR, ai_color3);
