@@ -7,7 +7,7 @@ namespace sg {
 class Transform {
 public:
     Transform() = default;
-    Transform(const glm::mat4& local);
+    Transform(glm::mat4 local);
     Transform(Transform&& other) = default;
     Transform(const Transform& other) = default;
     Transform& operator=(Transform&& other) = default;
@@ -19,9 +19,9 @@ public:
     const glm::vec3& local_rotation() const;
     const glm::vec3& local_scale() const;
 
-    void set_local_position(const glm::vec3& local_position);
-    void set_local_rotation(const glm::vec3& local_rotation);
-    void set_local_scale(const glm::vec3& local_scale);
+    void set_local_position(glm::vec3 local_position);
+    void set_local_rotation(glm::vec3 local_rotation);
+    void set_local_scale(glm::vec3 local_scale);
 private:
     glm::mat4 m_local = glm::mat4(1.0f);
     glm::vec3 m_local_position = glm::vec3(0.0f);

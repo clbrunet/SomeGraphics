@@ -9,7 +9,7 @@ namespace sg {
 class Camera {
 public:
     Camera() = delete;
-    Camera(const glm::vec3& position, const glm::quat& rotation, const glm::mat4& projection);
+    Camera(glm::vec3 position, glm::quat rotation, glm::mat4 projection);
     Camera(Camera&& other) = default;
     Camera(const Camera& other) = default;
     Camera& operator=(Camera&& other) = default;
@@ -20,9 +20,9 @@ public:
     const glm::mat4& view() const;
     const glm::mat4& projection() const;
     const glm::mat4& view_projection() const;
-    void set_position(const glm::vec3& position);
-    void set_rotation(const glm::quat& rotation);
-    void set_projection(const glm::mat4& projection);
+    void set_position(glm::vec3 position);
+    void set_rotation(glm::quat rotation);
+    void set_projection(glm::mat4 projection);
 protected:
     glm::vec3 m_position;
     glm::quat m_rotation;

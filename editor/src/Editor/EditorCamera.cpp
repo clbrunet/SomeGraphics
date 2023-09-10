@@ -14,9 +14,10 @@
 
 namespace sg {
 
-EditorCamera::EditorCamera(const glm::vec3& position, const glm::vec2& euler_angles,
-    const glm::mat4& projection) :
-    Camera(position, glm::quat(glm::radians(glm::vec3(euler_angles, 0.0f))), projection),
+EditorCamera::EditorCamera(glm::vec3 position, const glm::vec2& euler_angles,
+    glm::mat4 projection) :
+    Camera(std::move(position), glm::quat(glm::radians(glm::vec3(euler_angles, 0.0f))),
+        std::move(projection)),
     m_pitch(euler_angles.x),
     m_yaw(euler_angles.y)
 {

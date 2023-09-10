@@ -4,9 +4,9 @@
 
 namespace sg {
 
-Application::Application(const std::string& name, uint16_t width, uint16_t height) :
-    m_name(name),
-    m_window(std::make_unique<Window>(name.c_str(), width, height))
+Application::Application(std::string name, uint16_t width, uint16_t height) :
+    m_name(std::move(name)),
+    m_window(std::make_unique<Window>(m_name.c_str(), width, height))
 {
     assert(!is_instantiated && "Multiple instances are not allowed");
     is_instantiated = true;

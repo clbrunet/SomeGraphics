@@ -70,7 +70,8 @@ void Properties::render(SceneEntity& entity, const Renderer& renderer, Selection
     }
 }
 
-void Properties::render(Material& material, const Renderer& renderer, [[maybe_unused]] Selection& selection) const
+void Properties::render(Material& material, const Renderer& renderer,
+    [[maybe_unused]] Selection& selection) const
 {
     for (const auto& [location, vec4] : material.vec4s()) {
         glm::vec4 copy = vec4;

@@ -9,10 +9,10 @@
 
 namespace sg {
 
-Camera::Camera(const glm::vec3& position, const glm::quat& rotation, const glm::mat4& projection) :
-    m_position(position),
-    m_rotation(rotation),
-    m_projection(projection)
+Camera::Camera(glm::vec3 position, glm::quat rotation, glm::mat4 projection) :
+    m_position(std::move(position)),
+    m_rotation(std::move(rotation)),
+    m_projection(std::move(projection))
 {
     set_view();
 }
@@ -37,21 +37,21 @@ const glm::mat4& Camera::view_projection() const
     return m_view_projection;
 }
 
-void Camera::set_position(const glm::vec3& position)
+void Camera::set_position(glm::vec3 position)
 {
-    m_position = position;
+    m_position = std::move(position);
     set_view();
 }
 
-void Camera::set_rotation(const glm::quat& rotation)
+void Camera::set_rotation(glm::quat rotation)
 {
-    m_rotation = rotation;
+    m_rotation = std::move(rotation);
     set_view();
 }
 
-void Camera::set_projection(const glm::mat4& projection)
+void Camera::set_projection(glm::mat4 projection)
 {
-    m_projection = projection;
+    m_projection = std::move(projection);
     set_view_projection();
 }
 

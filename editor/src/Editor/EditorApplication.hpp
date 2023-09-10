@@ -14,7 +14,7 @@ class Properties;
 class EditorApplication final : public Application {
 public:
     EditorApplication() = delete;
-    EditorApplication(const std::string& name);
+    EditorApplication(std::string name);
     EditorApplication(EditorApplication&& other) = default;
     EditorApplication(const EditorApplication& other) = delete;
     EditorApplication& operator=(EditorApplication&& other) = delete;

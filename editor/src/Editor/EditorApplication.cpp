@@ -15,8 +15,8 @@ std::unique_ptr<sg::Application> create_app()
 
 namespace sg {
 
-EditorApplication::EditorApplication(const std::string& name) :
-    Application(name, 1280, 720),
+EditorApplication::EditorApplication(std::string name) :
+    Application(std::move(name), 1280, 720),
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt

@@ -11,7 +11,7 @@ namespace sg {
 class Application {
 public:
     Application() = delete;
-    Application(const std::string& name, uint16_t width, uint16_t height);
+    Application(std::string name, uint16_t width, uint16_t height);
     Application(Application&& other) = default;
     Application(const Application& other) = delete;
     Application& operator=(Application&& other) = delete;
