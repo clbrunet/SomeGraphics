@@ -60,11 +60,17 @@ void Renderer::draw(const Scene& scene, const Camera& camera) const
         const std::shared_ptr<SceneEntity>& entity = *iterators_stack.top();
         iterators_stack.top() += 1;
         glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
-        if (entity->mesh()) {
+        if (entity->mesh() && entity->material()) {
             const std::shared_ptr<Program> program = entity->material()->program();
             program->use();
             program->set_mat4("u_view_projection", camera.view_projection());
             program->set_vec3("u_camera_position", camera.position());
+            program->set_uint("u_point_lights_count", 2);
+            program->set_vec3("u_point_lights[0].position", glm::vec3(0.0, 1.0, 2.0));
+            program->set_vec3("u_point_lights[0].color", glm::vec3(3.0));
+            program->set_vec3("u_point_lights[1].position", glm::vec3(1.0, 3.0, 0.0));
+            program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
+            program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
             program->set_mat4("u_model", model_matrix);
             entity->material()->set_program_data();
             draw(*entity->mesh());

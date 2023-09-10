@@ -62,6 +62,11 @@ void Program::set_int(const char* name, int i) const
     glUniform1i(glGetUniformLocation(m_renderer_id, name), i);
 }
 
+void Program::set_uint(const char* name, unsigned u) const
+{
+    glUniform1ui(glGetUniformLocation(m_renderer_id, name), u);
+}
+
 void Program::set_vec3(const char* name, const glm::vec3& vec3) const
 {
     glUniform3fv(glGetUniformLocation(m_renderer_id, name), 1, glm::value_ptr(vec3));

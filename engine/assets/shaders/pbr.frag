@@ -2,11 +2,19 @@
 
 const float PI = 3.14159265359;
 
+const uint MAX_LIGHTS_COUNT = 32;
+struct PointLight {
+    vec3 position;
+    vec3 color;
+};
+
 in vec3 v_position;
 in vec3 v_normal;
 in vec2 v_texture_coordinates;
 
 uniform vec3 u_camera_position;
+uniform uint u_point_lights_count;
+uniform PointLight u_point_lights[MAX_LIGHTS_COUNT];
 
 uniform vec4 u_color;
 uniform sampler2D u_albedo_map;
@@ -23,17 +31,20 @@ void main()
     vec4 albedo = texture(u_albedo_map, v_texture_coordinates) * u_color;
     float roughness = texture(u_roughness_map, v_texture_coordinates).g;
     float metalness = texture(u_metalness_map, v_texture_coordinates).b;
-    vec3 light_position = vec3(0.0, 1.0, 2.0);
-    vec3 light_color = vec3(3.0);
-    vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
-            v_normal, v_position, u_camera_position, light_position);
-    vec3 fragment_to_light = light_position - v_position;
-    float fragment_to_light_distance = length(fragment_to_light);
-    float attenuation = 1.0 / (fragment_to_light_distance * fragment_to_light_distance);
-    vec3 radiance = light_color * attenuation;
-    float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light), 0.0);
+    vec3 irradiance = vec3(0.0);
+    for(uint i = 0; i < u_point_lights_count; i++){
+        PointLight point_light = u_point_lights[i];
+        vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
+                v_normal, v_position, u_camera_position, point_light.position);
+        vec3 fragment_to_light = point_light.position - v_position;
+        float fragment_to_light_distance = length(fragment_to_light);
+        float attenuation = 1.0 / (fragment_to_light_distance * fragment_to_light_distance);
+        vec3 radiance = point_light.color * attenuation;
+        float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light), 0.0);
+        irradiance += brdf * radiance * normal_dot_fragment_to_light;
+    }
     vec3 ambient = vec3(0.03) * albedo.rgb;
-    color = vec4(brdf * radiance * normal_dot_fragment_to_light + ambient, albedo.a);
+    color = vec4(irradiance + ambient, albedo.a);
 }
 
 vec3 lambertian_diffuse(vec3 albedo)
