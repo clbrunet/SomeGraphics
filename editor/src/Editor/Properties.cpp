@@ -2,7 +2,6 @@
 #include <deque>
 #include <iostream>
 #include <memory>
-#include <stack>
 #include <type_traits>
 #include <variant>
 

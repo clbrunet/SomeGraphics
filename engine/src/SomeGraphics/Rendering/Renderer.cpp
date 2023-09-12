@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stack>
 
 #include "glm/ext/vector_int2.hpp"
 #include "glad/gl.h"
@@ -51,41 +50,7 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
 
 void Renderer::draw(const Scene& scene, const Camera& camera) const
 {
-    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
-        iterators_stack({ scene.root_entity()->children().cbegin() });
-    std::stack<std::vector<std::shared_ptr<SceneEntity>>::const_iterator>
-        ends_stack({ scene.root_entity()->children().cend() });
-    std::stack<glm::mat4> model_matrices_stack({ scene.root_entity()->transform().local() });
-    while (!iterators_stack.empty()) {
-        const std::shared_ptr<SceneEntity>& entity = *iterators_stack.top();
-        iterators_stack.top() += 1;
-        glm::mat4 model_matrix = model_matrices_stack.top() * entity->transform().local();
-        if (entity->mesh() && entity->material()) {
-            const std::shared_ptr<Program> program = entity->material()->program();
-            program->use();
-            program->set_mat4("u_view_projection", camera.view_projection());
-            program->set_vec3("u_camera_position", camera.position());
-            program->set_uint("u_point_lights_count", 2);
-            program->set_vec3("u_point_lights[0].position", glm::vec3(0.0, 1.0, 2.0));
-            program->set_vec3("u_point_lights[0].color", glm::vec3(3.0));
-            program->set_vec3("u_point_lights[1].position", glm::vec3(1.0, 3.0, 0.0));
-            program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
-            program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
-            program->set_mat4("u_model", model_matrix);
-            entity->material()->set_program_data();
-            draw(*entity->mesh());
-        }
-        if (entity->children().size() > 0) {
-            iterators_stack.push(entity->children().cbegin());
-            ends_stack.push(entity->children().cend());
-            model_matrices_stack.push(model_matrix);
-        }
-        while (!iterators_stack.empty() && iterators_stack.top() == ends_stack.top()) {
-            iterators_stack.pop();
-            ends_stack.pop();
-            model_matrices_stack.pop();
-        }
-    }
+    draw(*scene.root_entity(), scene.root_entity()->transform().local(), camera);
 }
 
 void Renderer::draw(const Mesh& mesh) const
@@ -128,6 +93,29 @@ void Renderer::set_framebuffer_srbg(bool state) const
         glEnable(GL_FRAMEBUFFER_SRGB);
     } else {
         glDisable(GL_FRAMEBUFFER_SRGB);
+    }
+}
+
+void Renderer::draw(const SceneEntity& entity, const glm::mat4& parent_transform, const Camera& camera) const
+{
+    glm::mat4 transform = parent_transform * entity.transform().local();
+    if (entity.mesh() && entity.material()) {
+        const std::shared_ptr<Program> program = entity.material()->program();
+        program->use();
+        program->set_mat4("u_view_projection", camera.view_projection());
+        program->set_vec3("u_camera_position", camera.position());
+        program->set_uint("u_point_lights_count", 2);
+        program->set_vec3("u_point_lights[0].position", glm::vec3(0.0, 1.0, 2.0));
+        program->set_vec3("u_point_lights[0].color", glm::vec3(3.0));
+        program->set_vec3("u_point_lights[1].position", glm::vec3(1.0, 3.0, 0.0));
+        program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
+        program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
+        program->set_mat4("u_model", transform);
+        entity.material()->set_program_data();
+        draw(*entity.mesh());
+    }
+    for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
+        draw(*child, transform, camera);
     }
 }
 

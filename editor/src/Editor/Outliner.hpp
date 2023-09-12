@@ -19,6 +19,9 @@ public:
     ~Outliner() = default;
 
     void on_render(const Scene& scene, Selection& selection);
+private:
+    void render(const std::shared_ptr<SceneEntity>& entity,
+        const std::shared_ptr<SceneEntity>& selected_entity, Selection& selection);
 };
 
 }
