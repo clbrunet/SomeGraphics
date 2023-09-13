@@ -13,19 +13,19 @@ namespace sg {
 
 void Outliner::on_render(const Scene& scene, Selection& selection)
 {
-    std::shared_ptr<SceneEntity> selected_entity;
-    if (std::holds_alternative<std::weak_ptr<SceneEntity>>(selection)) {
-        selected_entity = std::get<std::weak_ptr<SceneEntity>>(selection).lock();
+    std::shared_ptr<Entity> selected_entity;
+    if (std::holds_alternative<std::weak_ptr<Entity>>(selection)) {
+        selected_entity = std::get<std::weak_ptr<Entity>>(selection).lock();
     }
     ImGui::Begin("Outliner");
-    for (const std::shared_ptr<SceneEntity>& child : scene.root_entity()->children()) {
+    for (const std::shared_ptr<Entity>& child : scene.root()->children()) {
         render(child, selected_entity, selection);
     }
     ImGui::End();
 }
 
-void Outliner::render(const std::shared_ptr<SceneEntity>& entity,
-    const std::shared_ptr<SceneEntity>& selected_entity, Selection& selection)
+void Outliner::render(const std::shared_ptr<Entity>& entity,
+    const std::shared_ptr<Entity>& selected_entity, Selection& selection)
 {
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
         | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -40,7 +40,7 @@ void Outliner::render(const std::shared_ptr<SceneEntity>& entity,
         selection = entity;
     }
     if (open) {
-        for (const std::shared_ptr<SceneEntity>& child : entity->children()) {
+        for (const std::shared_ptr<Entity>& child : entity->children()) {
             render(child, selected_entity, selection);
         }
         ImGui::TreePop();

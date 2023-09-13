@@ -13,7 +13,7 @@ class Mesh;
 class VertexArray;
 class PostProcess;
 class Texture;
-class SceneEntity;
+class Entity;
 
 class Renderer {
 public:
@@ -34,7 +34,7 @@ public:
     void post_process(const PostProcess& post_process, const Texture& texture) const;
     void set_framebuffer_srbg(bool state) const;
 private:
-    void draw(const SceneEntity& entity, const glm::mat4& parent_transform, const Camera& camera) const;
+    void draw(const Entity& entity, const glm::mat4& parent_transform, const Camera& camera) const;
 
     static void GLAPIENTRY gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* user_param);

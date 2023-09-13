@@ -32,7 +32,7 @@ void Properties::on_render(const Renderer& renderer, Selection& selection) const
     ImGui::End();
 }
 
-void Properties::render(SceneEntity& entity, const Renderer& renderer, Selection& selection) const
+void Properties::render(Entity& entity, const Renderer& renderer, Selection& selection) const
 {
     ImGui::Text("%s", entity.name().c_str());
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {

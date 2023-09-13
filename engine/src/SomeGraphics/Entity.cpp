@@ -20,19 +20,19 @@
 #include "glm/ext/vector_float4.hpp"
 #include "glm/gtx/string_cast.hpp"
 
-#include "SomeGraphics/SceneEntity.hpp"
+#include "SomeGraphics/Entity.hpp"
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/AssimpToGlm.hpp"
 
 namespace sg {
 
-std::unique_ptr<SceneEntity> SceneEntity::create_scene_root()
+std::unique_ptr<Entity> Entity::create_scene_root()
 {
-    return std::unique_ptr<SceneEntity>(new SceneEntity());
+    return std::unique_ptr<Entity>(new Entity());
 }
 
-std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* filename)
+std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename)
 {
     Assimp::Importer importer;
     const aiScene* ai_scene = importer.ReadFile(filename,
@@ -44,47 +44,47 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::load_model(const char* 
     return from_ai_node(filename, *ai_scene->mRootNode, *ai_scene);
 }
 
-const std::string& SceneEntity::name() const
+const std::string& Entity::name() const
 {
     return m_name;
 }
 
-const Transform& SceneEntity::transform() const
+const Transform& Entity::transform() const
 {
     return m_transform;
 }
 
-Transform& SceneEntity::transform()
+Transform& Entity::transform()
 {
     return m_transform;
 }
 
-const std::shared_ptr<Mesh>& SceneEntity::mesh() const
+const std::shared_ptr<Mesh>& Entity::mesh() const
 {
     return m_mesh;
 }
 
-const std::shared_ptr<Material>& SceneEntity::material() const
+const std::shared_ptr<Material>& Entity::material() const
 {
     return m_material;
 }
 
-const std::vector<std::shared_ptr<SceneEntity>>& SceneEntity::children() const
+const std::vector<std::shared_ptr<Entity>>& Entity::children() const
 {
     return m_children;
 }
 
-void SceneEntity::add_child(std::shared_ptr<SceneEntity>&& child)
+void Entity::add_child(std::shared_ptr<Entity>&& child)
 {
     m_children.emplace_back(std::move(child));
 }
 
-SceneEntity::SceneEntity() :
+Entity::Entity() :
     m_name("SceneRoot")
 {
 }
 
-std::optional<std::shared_ptr<SceneEntity>> SceneEntity::from_ai_node(
+std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(
     const std::string& filename, const aiNode& ai_node, const aiScene& ai_scene)
 {
     std::shared_ptr<Mesh> mesh;
@@ -100,9 +100,9 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::from_ai_node(
         mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
         material = material_opt.value();
     }
-    std::vector<std::shared_ptr<SceneEntity>> children;
+    std::vector<std::shared_ptr<Entity>> children;
     for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
-        std::optional<std::shared_ptr<SceneEntity>> child_opt
+        std::optional<std::shared_ptr<Entity>> child_opt
             = from_ai_node(filename, *ai_node.mChildren[i], ai_scene);
         if (!child_opt.has_value()) {
             return std::nullopt;
@@ -111,12 +111,12 @@ std::optional<std::shared_ptr<SceneEntity>> SceneEntity::from_ai_node(
     }
     std::string name = ai_node.mName.C_Str();
     Transform transform = Transform(AssimpToGlm::mat4(ai_node.mTransformation));
-    return std::shared_ptr<SceneEntity>(new SceneEntity(std::move(name), std::move(transform),
+    return std::shared_ptr<Entity>(new Entity(std::move(name), std::move(transform),
             std::move(mesh), std::move(material), std::move(children)));
 }
 
-SceneEntity::SceneEntity(std::string name, Transform transform, std::shared_ptr<Mesh> mesh,
-    std::shared_ptr<Material> material, std::vector<std::shared_ptr<SceneEntity>>&& children) :
+Entity::Entity(std::string name, Transform transform, std::shared_ptr<Mesh> mesh,
+    std::shared_ptr<Material> material, std::vector<std::shared_ptr<Entity>>&& children) :
     m_name(std::move(name)),
     m_transform(std::move(transform)),
     m_mesh(std::move(mesh)),

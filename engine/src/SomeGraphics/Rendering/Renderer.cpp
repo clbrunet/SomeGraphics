@@ -50,7 +50,7 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
 
 void Renderer::draw(const Scene& scene, const Camera& camera) const
 {
-    draw(*scene.root_entity(), scene.root_entity()->transform().local(), camera);
+    draw(*scene.root(), scene.root()->transform().local(), camera);
 }
 
 void Renderer::draw(const Mesh& mesh) const
@@ -96,7 +96,7 @@ void Renderer::set_framebuffer_srbg(bool state) const
     }
 }
 
-void Renderer::draw(const SceneEntity& entity, const glm::mat4& parent_transform, const Camera& camera) const
+void Renderer::draw(const Entity& entity, const glm::mat4& parent_transform, const Camera& camera) const
 {
     glm::mat4 transform = parent_transform * entity.transform().local();
     if (entity.mesh() && entity.material()) {
@@ -114,7 +114,7 @@ void Renderer::draw(const SceneEntity& entity, const glm::mat4& parent_transform
         entity.material()->set_program_data();
         draw(*entity.mesh());
     }
-    for (const std::shared_ptr<SceneEntity>& child : entity.children()) {
+    for (const std::shared_ptr<Entity>& child : entity.children()) {
         draw(*child, transform, camera);
     }
 }

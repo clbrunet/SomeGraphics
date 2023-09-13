@@ -6,7 +6,7 @@
 
 namespace sg {
 
-class SceneEntity;
+class Entity;
 class Renderer;
 
 class Properties {
@@ -20,7 +20,7 @@ public:
 
     void on_render(const Renderer& renderer, Selection& selection) const;
 private:
-    void render(SceneEntity& entity, const Renderer& renderer, Selection& selection) const;
+    void render(Entity& entity, const Renderer& renderer, Selection& selection) const;
     void render(Material& material, const Renderer& renderer, Selection& selection) const;
 };
 

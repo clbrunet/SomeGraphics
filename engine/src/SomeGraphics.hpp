@@ -16,6 +16,6 @@
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/Scene.hpp"
-#include "SomeGraphics/SceneEntity.hpp"
+#include "SomeGraphics/Entity.hpp"
 
 extern std::unique_ptr<sg::Application> create_app();

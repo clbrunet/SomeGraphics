@@ -20,13 +20,13 @@ EditorApplication::EditorApplication(std::string name) :
     Application(std::move(name), 1280, 720),
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
-    std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt
-        = SceneEntity::load_model("editor/assets/models/rusted_iron_sphere.glb");
-    if (!scene_entity_opt.has_value()) {
+    std::optional<std::shared_ptr<Entity>> entity_opt
+        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb");
+    if (!entity_opt.has_value()) {
         assert(false);
     }
-    m_selection = scene_entity_opt.value();
-    m_scene->add_entity(std::move(scene_entity_opt.value()));
+    m_selection = entity_opt.value();
+    m_scene->add_entity(std::move(entity_opt.value()));
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);

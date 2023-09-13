@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "SomeGraphics/SceneEntity.hpp"
+#include "SomeGraphics/Entity.hpp"
 
 namespace sg {
 
-class SceneEntity;
+class Entity;
 
 class Scene {
 public:
@@ -17,10 +17,10 @@ public:
     Scene& operator=(const Scene& other) = delete;
     ~Scene() = default;
 
-    const std::shared_ptr<SceneEntity>& root_entity() const;
-    void add_entity(std::shared_ptr<SceneEntity>&& entity);
+    const std::shared_ptr<Entity>& root() const;
+    void add_entity(std::shared_ptr<Entity>&& entity);
 private:
-    std::shared_ptr<SceneEntity> m_root_entity = SceneEntity::create_scene_root();
+    std::shared_ptr<Entity> m_root = Entity::create_scene_root();
 };
 
 }
