@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <memory>
 
@@ -22,7 +23,7 @@ Viewport::Viewport(const Renderer& renderer)
             "editor/assets/textures/skybox/bottom.jpg", "editor/assets/textures/skybox/front.jpg",
             "editor/assets/textures/skybox/back.jpg");
     if (!skybox_opt.has_value()) {
-        abort();
+        assert(false);
     }
     m_skybox = std::move(skybox_opt.value());
 }

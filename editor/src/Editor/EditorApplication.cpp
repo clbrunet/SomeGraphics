@@ -1,3 +1,4 @@
+#include <cassert>
 #include <memory>
 #include <filesystem>
 
@@ -22,7 +23,7 @@ EditorApplication::EditorApplication(std::string name) :
     std::optional<std::shared_ptr<SceneEntity>> scene_entity_opt
         = SceneEntity::load_model("editor/assets/models/rusted_iron_sphere.glb");
     if (!scene_entity_opt.has_value()) {
-        abort();
+        assert(false);
     }
     m_selection = scene_entity_opt.value();
     m_scene->add_entity(std::move(scene_entity_opt.value()));
