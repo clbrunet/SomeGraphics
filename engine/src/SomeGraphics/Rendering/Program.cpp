@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Shader.hpp"

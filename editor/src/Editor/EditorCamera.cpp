@@ -1,14 +1,14 @@
 #include <cassert>
 
-#include "GLFW/glfw3.h"
-#include "glm/common.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/quaternion_float.hpp"
-#include "glm/ext/quaternion_transform.hpp"
-#include "glm/ext/vector_float2.hpp"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/gtc/constants.hpp"
-#include "glm/gtc/quaternion.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/common.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_float.hpp>
+#include <glm/ext/quaternion_transform.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Editor/EditorCamera.hpp"
 

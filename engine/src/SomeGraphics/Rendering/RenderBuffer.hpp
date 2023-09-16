@@ -2,8 +2,8 @@
 
 #include <sys/types.h>
 
-#include "glm/ext/vector_int2.hpp"
-#include "glad/gl.h"
+#include <glm/ext/vector_int2.hpp>
+#include <glad/gl.h>
 
 namespace sg {
 

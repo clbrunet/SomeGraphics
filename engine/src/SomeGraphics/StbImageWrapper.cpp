@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "stb_image.h"
+#include <stb_image.h>
 
 #include "SomeGraphics/StbImageWrapper.hpp"
 

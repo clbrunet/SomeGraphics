@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <SomeGraphics.hpp>
 
-#include "SomeGraphics.hpp"
 #include "Editor/Selection.hpp"
 
 namespace sg {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glm/ext/vector_int2.hpp"
-#include "glad/gl.h"
-#include "glm/ext/matrix_float4x4.hpp"
+#include <glm/ext/vector_int2.hpp>
+#include <glad/gl.h>
+#include <glm/ext/matrix_float4x4.hpp>
 
 namespace sg {
 

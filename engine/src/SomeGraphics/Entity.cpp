@@ -5,19 +5,19 @@
 #include <optional>
 #include <utility>
 
-#include "assimp/Importer.hpp"
-#include "assimp/StringUtils.h"
-#include "assimp/material.h"
-#include "assimp/matrix4x4.h"
-#include "assimp/mesh.h"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
-#include "assimp/texture.h"
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/ext/vector_float4.hpp"
-#include "glm/gtx/string_cast.hpp"
+#include <assimp/Importer.hpp>
+#include <assimp/StringUtils.h>
+#include <assimp/material.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/texture.h>
+#include <assimp/types.h>
+#include <assimp/vector3.h>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "SomeGraphics/Entity.hpp"
 #include "SomeGraphics/Mesh.hpp"

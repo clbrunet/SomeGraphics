@@ -5,9 +5,9 @@
 #include <sys/types.h>
 #include <vector>
 
-#include "assimp/scene.h"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/gtx/string_cast.hpp"
+#include <assimp/scene.h>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "SomeGraphics/Rendering/VertexArray.hpp"
 

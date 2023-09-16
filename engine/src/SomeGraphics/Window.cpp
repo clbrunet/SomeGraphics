@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <iostream>
 
-#include "GLFW/glfw3.h"
-#include "glad/gl.h"
-#include "glm/ext/vector_float2.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include <GLFW/glfw3.h>
+#include <glad/gl.h>
+#include <glm/ext/vector_float2.hpp>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include "SomeGraphics/Window.hpp"
 

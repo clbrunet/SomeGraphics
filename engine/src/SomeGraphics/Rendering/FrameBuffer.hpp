@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <memory>
 
-#include "glm/ext/vector_int2.hpp"
+#include <glm/ext/vector_int2.hpp>
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/RenderBuffer.hpp"

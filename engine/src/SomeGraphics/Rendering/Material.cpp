@@ -1,8 +1,8 @@
 #include <optional>
 #include <array>
 
-#include "assimp/scene.h"
-#include "glm/ext/vector_float4.hpp"
+#include <assimp/scene.h>
+#include <glm/ext/vector_float4.hpp>
 
 #include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"

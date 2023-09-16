@@ -1,10 +1,10 @@
 #pragma once
 
-#include "assimp/matrix4x4.h"
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-#include "glm/ext/matrix_float4x4.hpp"
-#include "glm/ext/vector_float3.hpp"
+#include <assimp/matrix4x4.h>
+#include <assimp/types.h>
+#include <assimp/vector3.h>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 namespace sg {
 

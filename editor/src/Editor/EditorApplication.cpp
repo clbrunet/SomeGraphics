@@ -2,7 +2,7 @@
 #include <memory>
 #include <filesystem>
 
-#include "imgui.h"
+#include <imgui.h>
 
 #include "Editor/EditorApplication.hpp"
 #include "Editor/Viewport.hpp"

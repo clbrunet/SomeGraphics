@@ -3,7 +3,7 @@
 #include <optional>
 #include <memory>
 
-#include "glm/ext/vector_float3.hpp"
+#include <glm/ext/vector_float3.hpp>
 
 namespace sg {
 

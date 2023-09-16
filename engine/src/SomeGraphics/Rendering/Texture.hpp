@@ -4,10 +4,10 @@
 #include <memory>
 #include <optional>
 
-#include "glm/ext/vector_int2.hpp"
-#include "assimp/texture.h"
-#include "glad/gl.h"
-#include "imgui.h"
+#include <glm/ext/vector_int2.hpp>
+#include <assimp/texture.h>
+#include <glad/gl.h>
+#include <imgui.h>
 
 namespace sg {
 

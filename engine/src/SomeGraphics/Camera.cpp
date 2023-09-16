@@ -1,9 +1,9 @@
-#include "glm/ext/matrix_float4x4.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/geometric.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/matrix.hpp"
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/matrix.hpp>
 
 #include "SomeGraphics/Camera.hpp"
 

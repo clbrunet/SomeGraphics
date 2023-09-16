@@ -4,10 +4,10 @@
 #include <memory>
 #include <vector>
 
-#include "assimp/mesh.h"
-#include "assimp/scene.h"
-#include "glm/ext/vector_float3.hpp"
-#include "glm/ext/matrix_float4x4.hpp"
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
 
 #include "SomeGraphics/Transform.hpp"
 #include "SomeGraphics/Mesh.hpp"

@@ -5,9 +5,9 @@
 #include <memory>
 #include <optional>
 
-#include "glm/ext/vector_float2.hpp"
-#include "assimp/scene.h"
-#include "assimp/texture.h"
+#include <glm/ext/vector_float2.hpp>
+#include <assimp/scene.h>
+#include <assimp/texture.h>
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"

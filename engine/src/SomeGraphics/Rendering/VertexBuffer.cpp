@@ -1,6 +1,6 @@
-#include "SomeGraphics/Rendering/VertexBuffer.hpp"
+#include <glad/gl.h>
 
-#include "glad/gl.h"
+#include "SomeGraphics/Rendering/VertexBuffer.hpp"
 
 namespace sg {
 

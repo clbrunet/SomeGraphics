@@ -1,9 +1,8 @@
 #pragma once
 
-#include "glm/ext/quaternion_float.hpp"
-#include "glm/ext/vector_float2.hpp"
-
-#include "SomeGraphics.hpp"
+#include <glm/ext/quaternion_float.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <SomeGraphics.hpp>
 
 namespace sg {
 

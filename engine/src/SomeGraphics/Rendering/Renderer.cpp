@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "glm/ext/vector_int2.hpp"
-#include "glad/gl.h"
+#include <glm/ext/vector_int2.hpp>
+#include <glad/gl.h>
 
 #include "SomeGraphics/Rendering/Renderer.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"

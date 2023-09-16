@@ -7,10 +7,10 @@
 #include <utility>
 #include <vector>
 
-#include "assimp/texture.h"
-#include "glm/ext/vector_int2.hpp"
-#include "glad/gl.h"
-#include "imgui.h"
+#include <assimp/texture.h>
+#include <glm/ext/vector_int2.hpp>
+#include <glad/gl.h>
+#include <imgui.h>
 
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/StbImageWrapper.hpp"

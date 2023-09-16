@@ -4,9 +4,9 @@
 #include <optional>
 #include <memory>
 
-#include "assimp/material.h"
-#include "assimp/scene.h"
-#include "glm/ext/vector_float4.hpp"
+#include <assimp/material.h>
+#include <assimp/scene.h>
+#include <glm/ext/vector_float4.hpp>
 
 namespace sg {
 

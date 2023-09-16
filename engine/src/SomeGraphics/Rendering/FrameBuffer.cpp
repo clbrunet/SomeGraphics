@@ -1,8 +1,8 @@
-#include "glad/gl.h"
-
 #include <cassert>
 #include <iostream>
 #include <memory>
+
+#include <glad/gl.h>
 
 #include "SomeGraphics/Rendering/FrameBuffer.hpp"
 

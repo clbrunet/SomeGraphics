@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include "GLFW/glfw3.h"
-#include "glm/ext/vector_float2.hpp"
-#include "glm/ext/vector_int2.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_int2.hpp>
 
 namespace sg {
 

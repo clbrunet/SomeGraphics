@@ -5,13 +5,13 @@
 #include <type_traits>
 #include <variant>
 
-#include "glm/ext/vector_float3.hpp"
-#include "glm/ext/vector_float4.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "imgui.h"
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
+#include <SomeGraphics.hpp>
 
 #include "Editor/Properties.hpp"
-#include "SomeGraphics.hpp"
 #include "Editor/Selection.hpp"
 
 namespace sg {
