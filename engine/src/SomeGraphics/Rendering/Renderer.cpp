@@ -50,7 +50,7 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
 
 void Renderer::draw(const Scene& scene, const Camera& camera) const
 {
-    draw(*scene.root(), scene.root()->transform().local(), camera);
+    draw(*scene.root(), camera);
 }
 
 void Renderer::draw(const Mesh& mesh) const
@@ -96,9 +96,8 @@ void Renderer::set_framebuffer_srbg(bool state) const
     }
 }
 
-void Renderer::draw(const Entity& entity, const glm::mat4& parent_transform, const Camera& camera) const
+void Renderer::draw(const Entity& entity, const Camera& camera) const
 {
-    glm::mat4 transform = parent_transform * entity.transform().local();
     if (entity.mesh() && entity.material()) {
         const std::shared_ptr<Program> program = entity.material()->program();
         program->use();
@@ -110,12 +109,12 @@ void Renderer::draw(const Entity& entity, const glm::mat4& parent_transform, con
         program->set_vec3("u_point_lights[1].position", glm::vec3(1.0, 3.0, 0.0));
         program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
         program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
-        program->set_mat4("u_model", transform);
+        program->set_mat4("u_model", entity.model_matrix());
         entity.material()->set_program_data();
         draw(*entity.mesh());
     }
     for (const std::shared_ptr<Entity>& child : entity.children()) {
-        draw(*child, transform, camera);
+        draw(*child, camera);
     }
 }
 

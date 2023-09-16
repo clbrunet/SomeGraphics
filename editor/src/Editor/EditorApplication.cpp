@@ -21,12 +21,12 @@ EditorApplication::EditorApplication(std::string name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<Entity>> entity_opt
-        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb");
+        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
     if (!entity_opt.has_value()) {
         assert(false);
     }
-    m_selection = entity_opt.value();
-    m_scene->add_entity(std::move(entity_opt.value()));
+    m_selection = std::move(entity_opt.value());
+    Entity::load_model("editor/assets/models/survival_guitar_backpack.glb", m_scene->root());
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);
