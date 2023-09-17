@@ -116,7 +116,7 @@ const std::shared_ptr<Material>& Entity::material() const
     return m_material;
 }
 
-const std::unique_ptr<Light>& Entity::light() const
+std::unique_ptr<Light>& Entity::light()
 {
     return m_light;
 }

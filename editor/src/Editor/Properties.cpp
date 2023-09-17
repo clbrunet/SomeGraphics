@@ -1,3 +1,4 @@
+#include <cfloat>
 #include <cstdint>
 #include <deque>
 #include <iostream>
@@ -36,18 +37,7 @@ void Properties::render(Entity& entity, const Renderer& renderer, Selection& sel
 {
     ImGui::Text("%s", entity.name().c_str());
     if (ImGui::TreeNodeEx("Local Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-        glm::vec3 local_position = entity.local_position();
-        if (ImGui::DragFloat3("Position", glm::value_ptr(local_position), 0.2f)) {
-            entity.set_local_position(local_position);
-        }
-        glm::vec3 local_rotation_degrees = glm::degrees(entity.local_rotation());
-        if (ImGui::DragFloat3("Rotation", glm::value_ptr((local_rotation_degrees)), 1.0f)) {
-            entity.set_local_rotation(glm::radians(local_rotation_degrees));
-        }
-        glm::vec3 local_scale = entity.local_scale();
-        if (ImGui::DragFloat3("Scale", glm::value_ptr(local_scale), 0.1f)) {
-            entity.set_local_scale(local_scale);
-        }
+        render_local_transform(entity);
         ImGui::TreePop();
     }
     if (entity.material() && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -65,6 +55,10 @@ void Properties::render(Entity& entity, const Renderer& renderer, Selection& sel
         ImGui::BeginDisabled();
         render(*entity.material(), renderer, selection);
         ImGui::EndDisabled();
+        ImGui::TreePop();
+    }
+    if (entity.light() && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_light(*entity.light());
         ImGui::TreePop();
     }
 }
@@ -105,6 +99,29 @@ void Properties::render(Material& material, const Renderer& renderer,
         ImGui::Text("%s", location.c_str());
 
     }
+}
+
+void Properties::render_local_transform(Entity& entity) const
+{
+    glm::vec3 local_position = entity.local_position();
+    if (ImGui::DragFloat3("Position", glm::value_ptr(local_position), 0.2f)) {
+        entity.set_local_position(local_position);
+    }
+    glm::vec3 local_rotation_degrees = glm::degrees(entity.local_rotation());
+    if (ImGui::DragFloat3("Rotation", glm::value_ptr((local_rotation_degrees)), 1.0f)) {
+        entity.set_local_rotation(glm::radians(local_rotation_degrees));
+    }
+    glm::vec3 local_scale = entity.local_scale();
+    if (ImGui::DragFloat3("Scale", glm::value_ptr(local_scale), 0.1f)) {
+        entity.set_local_scale(local_scale);
+    }
+}
+
+void Properties::render_light(Light& light) const
+{
+    ImGui::ColorEdit3("Color", glm::value_ptr(light.color));
+    ImGui::DragFloat("Intensity", &light.intensity, 0.1f, 0.0f,
+        FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp);
 }
 
 }

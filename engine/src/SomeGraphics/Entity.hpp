@@ -44,7 +44,7 @@ public:
 
     const std::shared_ptr<Mesh>& mesh() const;
     const std::shared_ptr<Material>& material() const;
-    const std::unique_ptr<Light>& light() const;
+    std::unique_ptr<Light>& light();
     const std::vector<std::shared_ptr<Entity>>& children() const;
 
     void set_light(std::unique_ptr<Light>&& light);

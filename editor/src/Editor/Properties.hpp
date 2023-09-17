@@ -7,6 +7,7 @@
 namespace sg {
 
 class Entity;
+class Light;
 class Renderer;
 
 class Properties {
@@ -22,6 +23,8 @@ public:
 private:
     void render(Entity& entity, const Renderer& renderer, Selection& selection) const;
     void render(Material& material, const Renderer& renderer, Selection& selection) const;
+    void render_local_transform(Entity& entity) const;
+    void render_light(Light& light) const;
 };
 
 }
