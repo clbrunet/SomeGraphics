@@ -18,9 +18,13 @@ public:
     ~Scene() = default;
 
     const std::shared_ptr<Entity>& root() const;
-    void add_entity(std::shared_ptr<Entity>&& entity);
+    void add_entity(std::shared_ptr<Entity> entity);
+    std::shared_ptr<Entity> add_light(std::string name, std::shared_ptr<Entity> parent);
+
+    const std::vector<std::shared_ptr<Entity>>& lights() const;
 private:
     std::shared_ptr<Entity> m_root = Entity::create_scene_root();
+    mutable std::vector<std::shared_ptr<Entity>> m_lights;
 };
 
 }

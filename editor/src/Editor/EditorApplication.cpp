@@ -26,7 +26,8 @@ EditorApplication::EditorApplication(std::string name) :
         assert(false);
     }
     m_selection = std::move(entity_opt.value());
-    Entity::load_model("editor/assets/models/survival_guitar_backpack.glb", m_scene->root());
+    m_scene->add_light("Light1", m_scene->root())->set_local_position(glm::vec3(0.0f, 1.0f, 2.0f));
+    m_scene->add_light("Light2", m_scene->root())->set_local_position(glm::vec3(0.0f, 4.0f, 0.0f));;
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);

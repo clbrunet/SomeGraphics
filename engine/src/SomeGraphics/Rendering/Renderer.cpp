@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <iostream>
+#include <string>
 
 #include <glm/ext/vector_int2.hpp>
 #include <glad/gl.h>
@@ -50,7 +52,33 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
 
 void Renderer::draw(const Scene& scene, const Camera& camera) const
 {
-    draw(*scene.root(), camera);
+    draw(*scene.root(), scene, camera);
+}
+
+void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& camera) const
+{
+    if (entity.mesh() && entity.material()) {
+        const std::shared_ptr<Program> program = entity.material()->program();
+        program->use();
+        program->set_mat4("u_view_projection", camera.view_projection());
+        program->set_vec3("u_camera_position", camera.position());
+        const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
+        program->set_uint("u_lights_count", lights.size());
+        for (uint8_t i = 0; i < lights.size(); i++) {
+            const std::shared_ptr<Entity>& light = lights[i];
+            std::string light_location = "u_lights[" + std::to_string(i) + "]";
+            program->set_vec3((light_location + ".position").c_str(),
+                glm::vec3(light->model_matrix()[3]));
+            program->set_vec3((light_location + ".hdr_color").c_str(),
+                light->light()->color * light->light()->intensity);
+        }
+        program->set_mat4("u_model", entity.model_matrix());
+        entity.material()->set_program_data();
+        draw(*entity.mesh());
+    }
+    for (const std::shared_ptr<Entity>& child : entity.children()) {
+        draw(*child, scene, camera);
+    }
 }
 
 void Renderer::draw(const Mesh& mesh) const
@@ -93,28 +121,6 @@ void Renderer::set_framebuffer_srbg(bool state) const
         glEnable(GL_FRAMEBUFFER_SRGB);
     } else {
         glDisable(GL_FRAMEBUFFER_SRGB);
-    }
-}
-
-void Renderer::draw(const Entity& entity, const Camera& camera) const
-{
-    if (entity.mesh() && entity.material()) {
-        const std::shared_ptr<Program> program = entity.material()->program();
-        program->use();
-        program->set_mat4("u_view_projection", camera.view_projection());
-        program->set_vec3("u_camera_position", camera.position());
-        program->set_uint("u_point_lights_count", 2);
-        program->set_vec3("u_point_lights[0].position", glm::vec3(0.0, 1.0, 2.0));
-        program->set_vec3("u_point_lights[0].color", glm::vec3(3.0));
-        program->set_vec3("u_point_lights[1].position", glm::vec3(1.0, 3.0, 0.0));
-        program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
-        program->set_vec3("u_point_lights[1].color", glm::vec3(3.0));
-        program->set_mat4("u_model", entity.model_matrix());
-        entity.material()->set_program_data();
-        draw(*entity.mesh());
-    }
-    for (const std::shared_ptr<Entity>& child : entity.children()) {
-        draw(*child, camera);
     }
 }
 

@@ -3,9 +3,10 @@
 const float PI = 3.14159265359;
 
 const uint MAX_LIGHTS_COUNT = 32;
-struct PointLight {
+
+struct Light {
     vec3 position;
-    vec3 color;
+    vec3 hdr_color;
 };
 
 in vec3 v_position;
@@ -13,8 +14,8 @@ in vec3 v_normal;
 in vec2 v_texture_coordinates;
 
 uniform vec3 u_camera_position;
-uniform uint u_point_lights_count;
-uniform PointLight u_point_lights[MAX_LIGHTS_COUNT];
+uniform uint u_lights_count;
+uniform Light u_lights[MAX_LIGHTS_COUNT];
 
 uniform vec4 u_color;
 uniform sampler2D u_albedo_map;
@@ -32,14 +33,14 @@ void main()
     float roughness = texture(u_roughness_map, v_texture_coordinates).g;
     float metalness = texture(u_metalness_map, v_texture_coordinates).b;
     vec3 irradiance = vec3(0.0);
-    for(uint i = 0; i < u_point_lights_count; i++){
-        PointLight point_light = u_point_lights[i];
+    for(uint i = 0; i < u_lights_count; i++){
+        Light light = u_lights[i];
         vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
-                v_normal, v_position, u_camera_position, point_light.position);
-        vec3 fragment_to_light = point_light.position - v_position;
+                v_normal, v_position, u_camera_position, light.position);
+        vec3 fragment_to_light = light.position - v_position;
         float fragment_to_light_distance = length(fragment_to_light);
         float attenuation = 1.0 / (fragment_to_light_distance * fragment_to_light_distance);
-        vec3 radiance = point_light.color * attenuation;
+        vec3 radiance = light.hdr_color * attenuation;
         float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light), 0.0);
         irradiance += brdf * radiance * normal_dot_fragment_to_light;
     }

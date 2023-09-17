@@ -45,6 +45,19 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename,
     return from_ai_node(filename, *ai_scene->mRootNode, *ai_scene, std::move(parent));
 }
 
+Entity::Entity(std::string name, std::weak_ptr<Entity> parent) :
+    m_name(std::move(name)),
+    m_parent(std::move(parent))
+{
+}
+
+Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent) :
+    m_name(std::move(name)),
+    m_local_transform(std::move(local_transform)),
+    m_parent(std::move(parent))
+{
+}
+
 const std::string& Entity::name() const
 {
     return m_name;
@@ -103,9 +116,19 @@ const std::shared_ptr<Material>& Entity::material() const
     return m_material;
 }
 
+const std::unique_ptr<Light>& Entity::light() const
+{
+    return m_light;
+}
+
 const std::vector<std::shared_ptr<Entity>>& Entity::children() const
 {
     return m_children;
+}
+
+void Entity::set_light(std::unique_ptr<Light>&& light)
+{
+    m_light = std::move(light);
 }
 
 void Entity::add_child(std::shared_ptr<Entity> child)
@@ -138,7 +161,7 @@ std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& f
     std::string name = ai_node.mName.C_Str();
     Transform transform = Transform(AssimpToGlm::mat4(ai_node.mTransformation));
     std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(std::move(name),
-            std::move(transform), std::move(mesh), std::move(material), parent));
+            std::move(transform), parent, std::move(mesh), std::move(material)));
     for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
         if (!from_ai_node(filename, *ai_node.mChildren[i], ai_scene, entity).has_value()) {
             return std::nullopt;
@@ -148,13 +171,13 @@ std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& f
     return entity;
 }
 
-Entity::Entity(std::string name, Transform transform, std::shared_ptr<Mesh> mesh,
-    std::shared_ptr<Material> material, std::weak_ptr<Entity> parent) :
+Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
+    std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material) :
     m_name(std::move(name)),
-    m_local_transform(std::move(transform)),
+    m_local_transform(std::move(local_transform)),
+    m_parent(std::move(parent)),
     m_mesh(std::move(mesh)),
-    m_material(std::move(material)),
-    m_parent(std::move(parent))
+    m_material(std::move(material))
 {
 }
 

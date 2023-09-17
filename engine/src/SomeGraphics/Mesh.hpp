@@ -23,7 +23,6 @@ public:
         m_vertex_array(std::make_unique<VertexArray>(vertices, attributes, indices))
     {
     }
-
     Mesh(Mesh&& other) = default;
     Mesh(const Mesh& other) = delete;
     Mesh& operator=(Mesh&& other) = default;
