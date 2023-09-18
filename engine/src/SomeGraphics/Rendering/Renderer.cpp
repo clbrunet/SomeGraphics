@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <iostream>
-#include <string>
 
 #include <glm/ext/vector_int2.hpp>
 #include <glad/gl.h>
@@ -66,10 +65,8 @@ void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& came
         program->set_uint("u_lights_count", lights.size());
         for (uint8_t i = 0; i < lights.size(); i++) {
             const std::shared_ptr<Entity>& light = lights[i];
-            std::string light_location = "u_lights[" + std::to_string(i) + "]";
-            program->set_vec3((light_location + ".position").c_str(),
-                glm::vec3(light->model_matrix()[3]));
-            program->set_vec3((light_location + ".hdr_color").c_str(),
+            program->set_vec3(light_position_locations[i], glm::vec3(light->model_matrix()[3]));
+            program->set_vec3(light_hdr_color_locations[i],
                 light->light()->color * light->light()->intensity);
         }
         program->set_mat4("u_model", entity.model_matrix());

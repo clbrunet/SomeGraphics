@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <iostream>
 
 #include "SomeGraphics/Application.hpp"
 
