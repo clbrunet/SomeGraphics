@@ -26,6 +26,8 @@ public:
     void set_vec3(const char* name, const glm::vec3& vec3) const;
     void set_vec4(const char* name, const glm::vec4& vec4) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
+
+    void print_uniform_block_layout(const char* name) const;
 private:
     uint32_t m_renderer_id = 0;
 

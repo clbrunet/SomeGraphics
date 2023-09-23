@@ -1,8 +1,8 @@
 #version 450 core
 
-in vec2 v_texture_coordinates;
-
 uniform sampler2D u_texture;
+
+in vec2 v_texture_coordinates;
 
 out vec4 color;
 

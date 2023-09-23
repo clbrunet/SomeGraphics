@@ -1,7 +1,9 @@
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 #include <glm/ext/vector_int2.hpp>
+#include <glm/common.hpp>
 #include <glad/gl.h>
 
 #include "SomeGraphics/Rendering/Renderer.hpp"
@@ -17,7 +19,8 @@
 
 namespace sg {
 
-Renderer::Renderer()
+Renderer::Renderer() :
+    m_globals_uniform_buffer(0, sizeof(GlobalsUniformBlockData))
 {
 #if SG_DEBUG
     GLint flags;
@@ -51,31 +54,23 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
 
 void Renderer::draw(const Scene& scene, const Camera& camera) const
 {
+    const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
+    uint8_t lights_count = glm::min(lights.size(), (size_t)32);
+    GlobalsUniformBlockData globals = {
+        .view_projection = camera.view_projection(),
+        .camera_position = camera.position(),
+        .lights_count = lights_count,
+        .lights = {},
+    };
+    for (uint8_t i = 0; i < lights_count; i++) {
+        const std::shared_ptr<Entity>& light = lights[i];
+        globals.lights[i] = {
+            .position = light->model_matrix()[3],
+            .hdr_color = light->light()->color * light->light()->intensity,
+        };
+    }
+    m_globals_uniform_buffer.update_data<GlobalsUniformBlockData>(globals);
     draw(*scene.root(), scene, camera);
-}
-
-void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& camera) const
-{
-    if (entity.mesh() && entity.material()) {
-        const std::shared_ptr<Program> program = entity.material()->program();
-        program->use();
-        program->set_mat4("u_view_projection", camera.view_projection());
-        program->set_vec3("u_camera_position", camera.position());
-        const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
-        program->set_uint("u_lights_count", lights.size());
-        for (uint8_t i = 0; i < lights.size(); i++) {
-            const std::shared_ptr<Entity>& light = lights[i];
-            program->set_vec3(light_position_locations[i], glm::vec3(light->model_matrix()[3]));
-            program->set_vec3(light_hdr_color_locations[i],
-                light->light()->color * light->light()->intensity);
-        }
-        program->set_mat4("u_model", entity.model_matrix());
-        entity.material()->set_program_data();
-        draw(*entity.mesh());
-    }
-    for (const std::shared_ptr<Entity>& child : entity.children()) {
-        draw(*child, scene, camera);
-    }
 }
 
 void Renderer::draw(const Mesh& mesh) const
@@ -95,8 +90,8 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
     skybox.program()->use();
-    skybox.program()->set_mat4("u_view_projection",
-        camera.projection() * glm::mat4(glm::mat3(camera.view())));
+    skybox.program()->set_mat4("u_view", camera.view());
+    skybox.program()->set_mat4("u_projection", camera.projection());
     skybox.program()->set_int("u_skybox", 0);
     skybox.cubemap()->bind_to_unit(0);
     draw(*skybox.mesh());
@@ -118,6 +113,20 @@ void Renderer::set_framebuffer_srbg(bool state) const
         glEnable(GL_FRAMEBUFFER_SRGB);
     } else {
         glDisable(GL_FRAMEBUFFER_SRGB);
+    }
+}
+
+void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& camera) const
+{
+    if (entity.mesh() && entity.material()) {
+        const std::shared_ptr<Program> program = entity.material()->program();
+        program->use();
+        program->set_mat4("u_model", entity.model_matrix());
+        entity.material()->set_program_data();
+        draw(*entity.mesh());
+    }
+    for (const std::shared_ptr<Entity>& child : entity.children()) {
+        draw(*child, scene, camera);
     }
 }
 

@@ -9,18 +9,21 @@ struct Light {
     vec3 hdr_color;
 };
 
-in vec3 v_position;
-in vec3 v_normal;
-in vec2 v_texture_coordinates;
-
-uniform vec3 u_camera_position;
-uniform uint u_lights_count;
-uniform Light u_lights[MAX_LIGHTS_COUNT];
+layout(std140, binding = 0) uniform Globals {
+    mat4 u_view_projection;
+    vec3 u_camera_position;
+    uint u_lights_count;
+    Light u_lights[MAX_LIGHTS_COUNT];
+};
 
 uniform vec4 u_color;
 uniform sampler2D u_albedo_map;
 uniform sampler2D u_roughness_map;
 uniform sampler2D u_metalness_map;
+
+in vec3 v_position;
+in vec3 v_normal;
+in vec2 v_texture_coordinates;
 
 out vec4 color;
 

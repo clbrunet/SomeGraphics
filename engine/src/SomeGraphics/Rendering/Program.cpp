@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -79,7 +81,52 @@ void Program::set_vec4(const char* name, const glm::vec4& vec4) const
 
 void Program::set_mat4(const char* name, const glm::mat4& mat4) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name), 1, GL_FALSE, glm::value_ptr(mat4));
+    glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name),
+        1, GL_FALSE, glm::value_ptr(mat4));
+}
+
+void Program::print_uniform_block_layout(const char* name) const
+{
+    uint32_t index = glGetUniformBlockIndex(m_renderer_id, name);
+    int binding;
+    int size;
+    glGetActiveUniformBlockiv(m_renderer_id, index, GL_UNIFORM_BLOCK_BINDING, &binding);
+    glGetActiveUniformBlockiv(m_renderer_id, index, GL_UNIFORM_BLOCK_DATA_SIZE, &size);
+    std::cout << "Uniform block '" << name << "' :\n";
+    std::cout << "  index : " << index << '\n';
+    std::cout << "  binding : " << binding << '\n';
+    std::cout << "  size : " << size << '\n';
+    int members_count;
+    glGetActiveUniformBlockiv(m_renderer_id, index,
+        GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &members_count);
+    if (members_count == 0) {
+        std::cout << std::flush;
+        return;
+    }
+    std::vector<uint32_t> indices(members_count);
+    glGetActiveUniformBlockiv(m_renderer_id, index,
+        GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, (int*)indices.data());
+    std::vector<int> offsets(members_count);
+    std::vector<int> sizes(members_count);
+    std::vector<int> names_lengths(members_count);
+    glGetActiveUniformsiv(m_renderer_id, members_count,
+        indices.data(), GL_UNIFORM_OFFSET, offsets.data());
+    glGetActiveUniformsiv(m_renderer_id, members_count,
+        indices.data(), GL_UNIFORM_SIZE, sizes.data());
+    glGetActiveUniformsiv(m_renderer_id, members_count,
+        indices.data(), GL_UNIFORM_NAME_LENGTH, names_lengths.data());
+    int maximum_name_length = *std::max_element(names_lengths.begin(), names_lengths.end());
+    std::unique_ptr<char[]> member_name = std::make_unique<char[]>(maximum_name_length);
+    std::cout << "  members :\n";
+    for (int i = 0; i < members_count; i++) {
+        glGetActiveUniformName(m_renderer_id, indices[i],
+            maximum_name_length, NULL, member_name.get());
+        std::cout << "    " << member_name.get() << " :\n";
+        std::cout << "      index : " << indices[i] << '\n';
+        std::cout << "      offset : " << offsets[i] << '\n';
+        std::cout << "      size(units of the type) : " << sizes[i] << '\n';
+    }
+    std::cout << std::flush;
 }
 
 Program::Program(uint32_t renderer_id) :

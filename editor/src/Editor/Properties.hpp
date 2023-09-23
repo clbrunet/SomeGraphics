@@ -7,7 +7,7 @@
 namespace sg {
 
 class Entity;
-class Light;
+struct Light;
 class Renderer;
 
 class Properties {
