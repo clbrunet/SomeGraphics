@@ -22,7 +22,7 @@ class StbImageWrapper;
 class Texture {
 public:
     Texture() = delete;
-    Texture(const glm::ivec2& dimensions);
+    Texture(const glm::ivec2& dimensions, bool is_floating_point = false);
     static std::unique_ptr<Texture> white_1px();
     static std::optional<std::unique_ptr<Texture>> from_ai_texture(const aiTexture& ai_texture, ColorSpace color_space);
     static std::optional<std::unique_ptr<Texture>> create_cubemap(const char* right,

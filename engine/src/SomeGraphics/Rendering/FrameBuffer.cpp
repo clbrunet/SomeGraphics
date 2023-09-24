@@ -8,8 +8,8 @@
 
 namespace sg {
 
-FrameBuffer::FrameBuffer(const glm::ivec2& dimension) :
-    m_color_texture(std::make_unique<Texture>(dimension)),
+FrameBuffer::FrameBuffer(const glm::ivec2& dimension, bool is_floating_point) :
+    m_color_texture(std::make_unique<Texture>(dimension, is_floating_point)),
     m_depth_and_stencil_render_buffer(std::make_unique<RenderBuffer>(dimension))
 {
 

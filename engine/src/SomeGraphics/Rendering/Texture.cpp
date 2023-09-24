@@ -17,7 +17,7 @@
 
 namespace sg {
 
-Texture::Texture(const glm::ivec2& dimensions) :
+Texture::Texture(const glm::ivec2& dimensions, bool is_floating_point) :
     m_color_space(ColorSpace::Varying)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
@@ -25,7 +25,13 @@ Texture::Texture(const glm::ivec2& dimensions) :
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTextureStorage2D(m_renderer_id, 1, GL_RGB8, dimensions.x, dimensions.y);
+    GLenum internal_format;
+    if (is_floating_point) {
+        internal_format = GL_RGB16F;
+    } else {
+        internal_format = GL_RGB8;
+    }
+    glTextureStorage2D(m_renderer_id, 1, internal_format, dimensions.x, dimensions.y);
 }
 
 std::unique_ptr<Texture> Texture::white_1px()

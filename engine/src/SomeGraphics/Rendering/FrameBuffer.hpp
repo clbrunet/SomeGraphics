@@ -13,7 +13,7 @@ namespace sg {
 class FrameBuffer {
 public:
     FrameBuffer() = delete;
-    FrameBuffer(const glm::ivec2& dimension);
+    FrameBuffer(const glm::ivec2& dimension, bool is_floating_point = false);
     FrameBuffer(FrameBuffer&& other);
     FrameBuffer(const FrameBuffer& other) = delete;
     FrameBuffer& operator=(FrameBuffer&& other);
