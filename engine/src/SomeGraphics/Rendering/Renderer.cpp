@@ -100,9 +100,11 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
 
 void Renderer::post_process(const PostProcess& post_process, const Texture& texture) const
 {
+    glDisable(GL_DEPTH_TEST);
     post_process.program()->use();
     post_process.program()->set_texture("u_texture", 0, texture);
     draw(*post_process.quad());
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::set_framebuffer_srbg(bool state) const

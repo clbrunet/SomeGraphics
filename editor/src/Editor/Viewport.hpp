@@ -37,7 +37,9 @@ public:
 private:
     ImVec2 m_dimension = ImVec2(800.0f, 450.0f);
     bool m_is_hovered = false;
-    std::unique_ptr<FrameBuffer> m_frame_buffer
+    std::unique_ptr<FrameBuffer> m_frame_buffer_a
+        = std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y), true);
+    std::unique_ptr<FrameBuffer> m_frame_buffer_b
         = std::make_unique<FrameBuffer>(glm::vec2(m_dimension.x, m_dimension.y), true);
     std::unique_ptr<EditorCamera> m_editor_camera
         = std::make_unique<EditorCamera>(glm::vec3(2.0f, 2.0f, 2.0f),

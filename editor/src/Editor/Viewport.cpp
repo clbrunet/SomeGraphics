@@ -46,22 +46,22 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
         || content_region_available.y != m_dimension.y) {
         m_dimension = content_region_available;
         renderer.set_viewport(glm::ivec2(m_dimension.x, m_dimension.y));
-        m_frame_buffer
+        m_frame_buffer_a
+            = std::make_unique<FrameBuffer>(glm::ivec2(m_dimension.x, m_dimension.y), true);
+        m_frame_buffer_b
             = std::make_unique<FrameBuffer>(glm::ivec2(m_dimension.x, m_dimension.y), true);
         m_editor_camera->set_projection(glm::perspective(glm::radians(60.0f),
                 m_dimension.x / m_dimension.y, 0.01f, 1000.0f));
     }
-
-    m_frame_buffer->bind();
+    m_frame_buffer_a->bind();
     renderer.clear();
     renderer.draw(scene, *m_editor_camera);
     renderer.draw(*m_skybox, *m_editor_camera);
-    renderer.post_process(*m_post_process, *m_frame_buffer->color_texture());
+    m_frame_buffer_b->bind();
+    renderer.post_process(*m_post_process, *m_frame_buffer_a->color_texture());
     FrameBuffer::bind_default();
-
-    ImGui::Image(m_frame_buffer->color_texture()->imgui_texture_id(),
+    ImGui::Image(m_frame_buffer_b->color_texture()->imgui_texture_id(),
         m_dimension, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
