@@ -92,8 +92,7 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     skybox.program()->use();
     skybox.program()->set_mat4("u_view", camera.view());
     skybox.program()->set_mat4("u_projection", camera.projection());
-    skybox.program()->set_int("u_skybox", 0);
-    skybox.cubemap()->bind_to_unit(0);
+    skybox.program()->set_texture("u_skybox", 0, *skybox.cubemap());
     draw(*skybox.mesh());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -102,8 +101,7 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
 void Renderer::post_process(const PostProcess& post_process, const Texture& texture) const
 {
     post_process.program()->use();
-    post_process.program()->set_int("u_texture", 0);
-    texture.bind_to_unit(0);
+    post_process.program()->set_texture("u_texture", 0, texture);
     draw(*post_process.quad());
 }
 

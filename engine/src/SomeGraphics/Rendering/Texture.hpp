@@ -34,7 +34,7 @@ public:
     ~Texture();
 
     ColorSpace color_space() const;
-    void bind_to_unit(uint32_t unit) const;
+    void bind_to_unit(uint8_t unit) const;
     ImTextureID imgui_texture_id() const;
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
 private:

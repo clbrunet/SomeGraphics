@@ -11,6 +11,7 @@
 
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Shader.hpp"
+#include "SomeGraphics/Rendering/Texture.hpp"
 
 namespace sg {
 
@@ -83,6 +84,12 @@ void Program::set_mat4(const char* name, const glm::mat4& mat4) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name),
         1, GL_FALSE, glm::value_ptr(mat4));
+}
+
+void Program::set_texture(const char* name, uint8_t unit, const Texture& texture) const
+{
+    set_int(name, unit);
+    texture.bind_to_unit(unit);
 }
 
 void Program::print_uniform_block_layout(const char* name) const

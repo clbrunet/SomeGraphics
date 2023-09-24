@@ -106,7 +106,7 @@ ColorSpace Texture::color_space() const
     return m_color_space;
 }
 
-void Texture::bind_to_unit(uint32_t unit) const
+void Texture::bind_to_unit(uint8_t unit) const
 {
     glBindTextureUnit(unit, m_renderer_id);
 }
