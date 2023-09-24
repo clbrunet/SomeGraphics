@@ -1,6 +1,8 @@
 # SomeGraphics
 Some graphics using C++ / OpenGL
 
+![SomeGraphicsEditor screenshot](https://github.com/clbrunet/SomeGraphics/assets/53996617/b3ba7107-9568-466f-97b0-9a2ca546e4b2)
+
 ## Building
 First, you'll need to install [Git](https://git-scm.com/downloads) and [CMake](https://cmake.org/download/).
 
