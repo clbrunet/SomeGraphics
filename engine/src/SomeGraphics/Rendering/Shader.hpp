@@ -1,5 +1,7 @@
 #pragma once
 
+#if SG_ENGINE
+
 #include <sys/types.h>
 #include <memory>
 #include <optional>
@@ -29,3 +31,5 @@ private:
 };
 
 }
+
+#endif

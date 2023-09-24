@@ -36,7 +36,9 @@ public:
     ColorSpace color_space() const;
     void bind_to_unit(uint8_t unit) const;
     ImTextureID imgui_texture_id() const;
+#if SG_ENGINE
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
+#endif
 private:
     uint32_t m_renderer_id = 0;
     ColorSpace m_color_space;

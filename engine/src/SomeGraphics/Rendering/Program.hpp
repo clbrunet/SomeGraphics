@@ -8,7 +8,9 @@
 
 namespace sg {
 
+#if SG_ENGINE
 class Shader;
+#endif
 class Texture;
 
 class Program {
@@ -36,7 +38,9 @@ private:
 
     Program(uint32_t renderer_id);
 
+#if SG_ENGINE
     static std::optional<uint32_t> create_program(const Shader& vert, const Shader& frag);
+#endif
 };
 
 }

@@ -26,6 +26,9 @@ add_library(SomeGraphicsEngine STATIC ${SRCS})
 
 target_compile_definitions(SomeGraphicsEngine PUBLIC
   GLFW_INCLUDE_NONE
+)
+target_compile_definitions(SomeGraphicsEngine PRIVATE
+  SG_ENGINE=1
   $<$<CONFIG:Debug>:SG_DEBUG=1>
 )
 target_compile_options(SomeGraphicsEngine PRIVATE ${SOME_GRAPHICS_FLAGS})
