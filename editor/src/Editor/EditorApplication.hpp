@@ -21,7 +21,7 @@ public:
     EditorApplication& operator=(const EditorApplication& other) = delete;
     ~EditorApplication() final override = default;
 
-    void on_update(float delta_time) final override;
+    void on_update() final override;
     void on_render() final override;
 private:
     std::unique_ptr<Scene> m_scene = std::make_unique<Scene>();

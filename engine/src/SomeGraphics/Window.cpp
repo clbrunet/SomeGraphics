@@ -48,6 +48,10 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
     ImGui_ImplGlfw_SetCallbacksChainForAllWindows(true);
+
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
 }
 
 Window::Window(Window&& other) :
@@ -74,9 +78,15 @@ bool Window::should_close() const
     return glfwWindowShouldClose(m_window);
 }
 
-void Window::poll_event() const
+void Window::poll_event()
 {
     glfwPollEvents();
+    float time = this->time();
+    m_delta_time = time - m_last_time;
+    m_last_time = time;
+    glm::vec2 cursor_position = this->cursor_position();
+    m_cursor_delta = cursor_position - m_last_cursor_position;
+    m_last_cursor_position = cursor_position;
 }
 
 void Window::begin_frame() const
@@ -104,21 +114,27 @@ void Window::swap_buffers() const
     glfwSwapBuffers(m_window);
 }
 
-glm::ivec2 Window::get_dimension() const
+glm::ivec2 Window::dimensions() const
 {
     int width, height;
     glfwGetWindowSize(m_window, &width, &height);
     return glm::ivec2(width, height);
 }
 
-void Window::reset_time() const
+void Window::reset_time()
 {
-    return glfwSetTime(0.0);
+    m_last_time = 0.0f;
+    glfwSetTime(0.0);
 }
 
-float Window::get_time() const
+float Window::time() const
 {
     return (float)glfwGetTime();
+}
+
+float Window::delta_time() const
+{
+    return m_delta_time;
 }
 
 bool Window::is_key_pressed(int key) const
@@ -138,11 +154,25 @@ bool Window::is_mouse_button_pressed(int button) const
     });
 }
 
-glm::vec2 Window::get_cursor_position() const
+glm::vec2 Window::cursor_position() const
 {
     double xpos, ypos;
     glfwGetCursorPos(m_window, &xpos, &ypos);
     return glm::vec2(xpos, ypos);
+}
+
+void Window::set_cursor_visibility(bool state) const
+{
+    if (state) {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+}
+
+glm::vec2 Window::cursor_delta() const
+{
+    return m_cursor_delta;
 }
 
 bool Window::is_instantiated = false;

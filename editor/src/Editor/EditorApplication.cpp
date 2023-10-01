@@ -21,8 +21,7 @@ EditorApplication::EditorApplication(std::string name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<Entity>> entity_opt
-        // = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
-        = Entity::load_model("editor/assets/models/two_materials_cube.glb", m_scene->root());
+        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
     if (!entity_opt.has_value()) {
         assert(false);
     }
@@ -37,9 +36,9 @@ EditorApplication::EditorApplication(std::string name) :
     io.LogFilename = "editor/assets/imgui_log.txt";
 }
 
-void EditorApplication::on_update(float delta_time)
+void EditorApplication::on_update()
 {
-    m_viewport->on_update(*m_window, delta_time);
+    m_viewport->on_update(*m_window);
 }
 
 void EditorApplication::on_render()
