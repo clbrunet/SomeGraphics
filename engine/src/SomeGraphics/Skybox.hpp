@@ -8,7 +8,7 @@
 namespace sg {
 
 class Program;
-class Mesh;
+class VertexArray;
 class Texture;
 
 class Skybox {
@@ -23,16 +23,16 @@ public:
     ~Skybox();
 
     const std::shared_ptr<Program>& program() const;
-    const std::unique_ptr<Mesh>& mesh() const;
+    const std::unique_ptr<VertexArray>& vertex_array() const;
     const std::shared_ptr<Texture>& cubemap() const;
 private:
     std::shared_ptr<Program> m_program;
-    std::unique_ptr<Mesh> m_mesh;
+    std::unique_ptr<VertexArray> m_vertex_array;
     std::shared_ptr<Texture> m_cubemap;
     static bool is_instantiated;
 
     Skybox(std::shared_ptr<Program>&& program,
-        std::unique_ptr<Mesh>&& mesh, std::shared_ptr<Texture>&& cubemap);
+        std::unique_ptr<VertexArray>&& vertex_array, std::shared_ptr<Texture>&& cubemap);
 
     struct Vertex {
         glm::vec3 position;

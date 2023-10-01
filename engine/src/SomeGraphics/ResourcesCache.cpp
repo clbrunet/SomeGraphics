@@ -89,15 +89,20 @@ std::optional<std::shared_ptr<Material>> ResourcesCache::material_from_ai_materi
     return material;
 }
 
-std::shared_ptr<Mesh> ResourcesCache::mesh_from_ai_node(const std::string& filename,
+std::optional<std::shared_ptr<Mesh>> ResourcesCache::mesh_from_ai_node(const std::string& filename,
     const aiNode& ai_node, const aiScene& ai_scene)
 {
-    std::string key = filename + "/" + ai_scene.mMeshes[ai_node.mMeshes[0]]->mName.C_Str();
+    std::string key = filename + "/" + ai_node.mName.C_Str();
     std::map<std::string, std::weak_ptr<Mesh>>::iterator it = meshes_cache.find(key);
     if (it != meshes_cache.end() && !it->second.expired()) {
         return it->second.lock();
     }
-    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(ai_node, ai_scene);
+    std::optional<std::shared_ptr<Mesh>> mesh_opt
+        = Mesh::from_ai_node(filename, ai_node, ai_scene);
+    if (!mesh_opt.has_value()) {
+        return std::nullopt;
+    }
+    std::shared_ptr<Mesh> mesh = std::move(mesh_opt.value());
     meshes_cache[key] = mesh;
     return mesh;
 }

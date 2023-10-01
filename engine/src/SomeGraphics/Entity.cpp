@@ -111,11 +111,6 @@ const std::shared_ptr<Mesh>& Entity::mesh() const
     return m_mesh;
 }
 
-const std::shared_ptr<Material>& Entity::material() const
-{
-    return m_material;
-}
-
 std::unique_ptr<Light>& Entity::light()
 {
     return m_light;
@@ -146,22 +141,18 @@ std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& f
     const aiNode& ai_node, const aiScene& ai_scene, std::shared_ptr<Entity> parent)
 {
     std::shared_ptr<Mesh> mesh;
-    std::shared_ptr<Material> material;
     if (ai_node.mNumMeshes > 0) {
-        const aiMaterial& ai_material = *ai_scene.mMaterials[
-            ai_scene.mMeshes[ai_node.mMeshes[0]]->mMaterialIndex];
-        std::optional<std::shared_ptr<Material>> material_opt
-            = ResourcesCache::material_from_ai_material(filename, ai_material, ai_scene);
-        if (!material_opt.has_value()) {
+        std::optional<std::shared_ptr<Mesh>> mesh_opt
+            = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
+        if (!mesh_opt.value()) {
             return std::nullopt;
         }
-        mesh = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
-        material = material_opt.value();
+        mesh = mesh_opt.value();
     }
     std::string name = ai_node.mName.C_Str();
     Transform transform = Transform(AssimpToGlm::mat4(ai_node.mTransformation));
     std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(std::move(name),
-            std::move(transform), parent, std::move(mesh), std::move(material)));
+            std::move(transform), parent, std::move(mesh)));
     for (uint32_t i = 0; i < ai_node.mNumChildren; i++) {
         if (!from_ai_node(filename, *ai_node.mChildren[i], ai_scene, entity).has_value()) {
             return std::nullopt;
@@ -172,12 +163,11 @@ std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& f
 }
 
 Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
-    std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material) :
+    std::shared_ptr<Mesh> mesh) :
     m_name(std::move(name)),
     m_local_transform(std::move(local_transform)),
     m_parent(std::move(parent)),
-    m_mesh(std::move(mesh)),
-    m_material(std::move(material))
+    m_mesh(std::move(mesh))
 {
 }
 

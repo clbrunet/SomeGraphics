@@ -3,7 +3,6 @@
 #include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
-#include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
 
@@ -13,7 +12,7 @@ PostProcess::PostProcess()
         = ResourcesCache::program("engine/assets/shaders/post_processing.vert",
             "engine/assets/shaders/post_processing.frag");
     m_program = std::move(program_opt.value());
-    m_quad = std::make_unique<Mesh>(std::vector<Vertex>({
+    m_vertex_array = std::make_unique<VertexArray>(std::vector<Vertex>({
         Vertex(glm::vec2(-1.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
         Vertex(glm::vec2(-1.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
         Vertex(glm::vec2(1.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
@@ -31,9 +30,9 @@ const std::shared_ptr<Program>& PostProcess::program() const
     return m_program;
 }
 
-const std::unique_ptr<Mesh>& PostProcess::quad() const
+const std::unique_ptr<VertexArray>& PostProcess::vertex_array() const
 {
-    return m_quad;
+    return m_vertex_array;
 }
 
 }

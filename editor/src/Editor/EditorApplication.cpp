@@ -21,7 +21,8 @@ EditorApplication::EditorApplication(std::string name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::optional<std::shared_ptr<Entity>> entity_opt
-        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
+        // = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
+        = Entity::load_model("editor/assets/models/two_materials_cube.glb", m_scene->root());
     if (!entity_opt.has_value()) {
         assert(false);
     }

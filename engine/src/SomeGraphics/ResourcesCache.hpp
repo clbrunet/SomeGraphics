@@ -27,7 +27,7 @@ public:
         const char* frag_filename);
     static std::optional<std::shared_ptr<Material>> material_from_ai_material(
         const std::string& filename, const aiMaterial& ai_material, const aiScene& ai_scene);
-    static std::shared_ptr<Mesh> mesh_from_ai_node(const std::string& filename,
+    static std::optional<std::shared_ptr<Mesh>> mesh_from_ai_node(const std::string& filename,
         const aiNode& ai_node, const aiScene& ai_scene);
 
     static void clear_unused();

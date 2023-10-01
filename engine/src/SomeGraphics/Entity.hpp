@@ -15,8 +15,6 @@
 
 namespace sg {
 
-class Material;
-
 class Entity {
 public:
     static std::unique_ptr<Entity> create_scene_root();
@@ -43,7 +41,6 @@ public:
     const glm::mat4& model_matrix() const;
 
     const std::shared_ptr<Mesh>& mesh() const;
-    const std::shared_ptr<Material>& material() const;
     std::unique_ptr<Light>& light();
     const std::vector<std::shared_ptr<Entity>>& children() const;
 
@@ -58,7 +55,6 @@ private:
     std::weak_ptr<Entity> m_parent;
     std::vector<std::shared_ptr<Entity>> m_children;
     std::shared_ptr<Mesh> m_mesh;
-    std::shared_ptr<Material> m_material;
     std::unique_ptr<Light> m_light;
 
     // Scene root constructor
@@ -66,7 +62,7 @@ private:
     static std::optional<std::shared_ptr<Entity>> from_ai_node(const std::string& filename,
         const aiNode& ai_node, const aiScene& ai_scene, std::shared_ptr<Entity> parent);
     Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
-        std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material);
+        std::shared_ptr<Mesh> mesh);
 
     void set_model_matrix_dirty();
 };

@@ -7,7 +7,6 @@
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
-#include "SomeGraphics/Mesh.hpp"
 
 namespace sg {
 
@@ -25,7 +24,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
     if (!cubemap_opt.has_value()) {
         return std::nullopt;
     }
-    std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(std::vector<Vertex>({
+    std::unique_ptr<VertexArray> vertex_array = std::make_unique<VertexArray>(std::vector<Vertex>({
         Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
         Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
         Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
@@ -78,7 +77,7 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
         30, 31, 32, 33, 34, 35,
     }));
     return std::unique_ptr<Skybox>(new Skybox(std::move(program_opt.value()),
-            std::move(mesh), std::move(cubemap_opt.value())));
+            std::move(vertex_array), std::move(cubemap_opt.value())));
 }
 
 Skybox::~Skybox()
@@ -91,9 +90,9 @@ const std::shared_ptr<Program>& Skybox::program() const
     return m_program;
 }
 
-const std::unique_ptr<Mesh>& Skybox::mesh() const
+const std::unique_ptr<VertexArray>& Skybox::vertex_array() const
 {
-    return m_mesh;
+    return m_vertex_array;
 }
 
 const std::shared_ptr<Texture>& Skybox::cubemap() const
@@ -104,9 +103,9 @@ const std::shared_ptr<Texture>& Skybox::cubemap() const
 bool Skybox::is_instantiated = false;
 
 Skybox::Skybox(std::shared_ptr<Program>&& program,
-    std::unique_ptr<Mesh>&& mesh, std::shared_ptr<Texture>&& cubemap) :
+    std::unique_ptr<VertexArray>&& vertex_array, std::shared_ptr<Texture>&& cubemap) :
     m_program(std::move(program)),
-    m_mesh(std::move(mesh)),
+    m_vertex_array(std::move(vertex_array)),
     m_cubemap(std::move(cubemap))
 {
     assert(!is_instantiated && "Multiple instances are not allowed");

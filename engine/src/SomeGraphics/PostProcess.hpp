@@ -8,7 +8,7 @@
 namespace sg {
 
 class Program;
-class Mesh;
+class VertexArray;
 class Texture;
 
 class PostProcess {
@@ -21,10 +21,10 @@ public:
     ~PostProcess() = default;
 
     const std::shared_ptr<Program>& program() const;
-    const std::unique_ptr<Mesh>& quad() const;
+    const std::unique_ptr<VertexArray>& vertex_array() const;
 private:
     std::shared_ptr<Program> m_program;
-    std::unique_ptr<Mesh> m_quad;
+    std::unique_ptr<VertexArray> m_vertex_array;
 
     struct Vertex {
         glm::vec2 position;

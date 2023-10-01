@@ -73,9 +73,19 @@ void Renderer::draw(const Scene& scene, const Camera& camera) const
     draw(*scene.root(), scene, camera);
 }
 
-void Renderer::draw(const Mesh& mesh) const
+void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
 {
-    draw(*mesh.vertex_array());
+    const VertexArray& vertex_array = *mesh.vertex_array();
+    vertex_array.bind();
+    GLenum index_buffer_format = vertex_array.index_buffer()->format();
+    for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {
+        const std::shared_ptr<Program>& program = sub_mesh_info.material()->program();
+        program->use();
+        program->set_mat4("u_model", model_matrix);
+        sub_mesh_info.material()->set_program_data();
+        glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+            sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
+    }
 }
 
 void Renderer::draw(const VertexArray& vertex_array) const
@@ -93,7 +103,7 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     skybox.program()->set_mat4("u_view", camera.view());
     skybox.program()->set_mat4("u_projection", camera.projection());
     skybox.program()->set_texture("u_skybox", 0, *skybox.cubemap());
-    draw(*skybox.mesh());
+    draw(*skybox.vertex_array());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
 }
@@ -103,7 +113,7 @@ void Renderer::post_process(const PostProcess& post_process, const Texture& text
     glDisable(GL_DEPTH_TEST);
     post_process.program()->use();
     post_process.program()->set_texture("u_texture", 0, texture);
-    draw(*post_process.quad());
+    draw(*post_process.vertex_array());
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -118,12 +128,8 @@ void Renderer::set_framebuffer_srbg(bool state) const
 
 void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& camera) const
 {
-    if (entity.mesh() && entity.material()) {
-        const std::shared_ptr<Program> program = entity.material()->program();
-        program->use();
-        program->set_mat4("u_model", entity.model_matrix());
-        entity.material()->set_program_data();
-        draw(*entity.mesh());
+    if (entity.mesh()) {
+        draw(*entity.mesh(), entity.model_matrix());
     }
     for (const std::shared_ptr<Entity>& child : entity.children()) {
         draw(*child, scene, camera);

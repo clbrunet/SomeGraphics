@@ -3,6 +3,7 @@
 #include <deque>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <variant>
 
@@ -40,21 +41,8 @@ void Properties::render(Entity& entity, const Renderer& renderer, Selection& sel
         render_local_transform(entity);
         ImGui::TreePop();
     }
-    if (entity.material() && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen)) {
-        const char* edit_button_label = "Edit";
-        ImGuiStyle& style = ImGui::GetStyle();
-        float size = ImGui::CalcTextSize(edit_button_label).x + style.FramePadding.x * 2.0f;
-        float avail = ImGui::GetContentRegionAvail().x;
-        float off = (avail - size) * 0.5f;
-        if (off > 0.0f) {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-        }
-        if (ImGui::Button("Edit")) {
-            selection = entity.material();
-        }
-        ImGui::BeginDisabled();
-        render(*entity.material(), renderer, selection);
-        ImGui::EndDisabled();
+    if (entity.mesh() && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_mesh(*entity.mesh(), renderer, selection);
         ImGui::TreePop();
     }
     if (entity.light() && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -98,6 +86,34 @@ void Properties::render(Material& material, const Renderer& renderer,
         ImGui::SameLine();
         ImGui::Text("%s", location.c_str());
 
+    }
+}
+
+void Properties::render_mesh(Mesh& mesh, const Renderer& renderer, Selection& selection) const
+{
+    uint8_t i = 0;
+    for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {
+        if (!ImGui::TreeNodeEx(("Material " + std::to_string(i)).c_str(),
+                ImGuiTreeNodeFlags_DefaultOpen)) {
+            i++;
+            continue;
+        }
+        const char* edit_button_label = "Edit";
+        ImGuiStyle& style = ImGui::GetStyle();
+        float size = ImGui::CalcTextSize(edit_button_label).x + style.FramePadding.x * 2.0f;
+        float avail = ImGui::GetContentRegionAvail().x;
+        float off = (avail - size) * 0.5f;
+        if (off > 0.0f) {
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+        }
+        if (ImGui::Button("Edit")) {
+            selection = sub_mesh_info.material();
+        }
+        ImGui::BeginDisabled();
+        render(*sub_mesh_info.material(), renderer, selection);
+        ImGui::EndDisabled();
+        ImGui::TreePop();
+        i++;
     }
 }
 

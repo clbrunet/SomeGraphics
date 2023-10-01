@@ -33,7 +33,7 @@ public:
     void clear() const;
     void set_clear_color(float red, float green, float blue, float opacity) const;
     void draw(const Scene& scene, const Camera& camera) const;
-    void draw(const Mesh& mesh) const;
+    void draw(const Mesh& mesh, const glm::mat4& model_matrix) const;
     void draw(const VertexArray& vertex_array) const;
     void draw(const Skybox& skybox, const Camera& camera) const;
     void post_process(const PostProcess& post_process, const Texture& texture) const;
