@@ -28,3 +28,11 @@ Follow the MinGW-w64 installation instructions [here](https://code.visualstudio.
 ```sh
 cmake -B build -G "MinGW Makefiles" && cmake --build build --parallel 4 && "./build/editor/SomeGraphicsEditor"
 ```
+
+## Dependencies
+* [GLFW](https://github.com/glfw/glfw)
+* [glad](https://github.com/Dav1dde/glad)
+* [glm](https://github.com/g-truc/glm)
+* [Dear ImGui](https://github.com/ocornut/imgui)
+* [stb_image](https://github.com/nothings/stb)
+* [assimp](https://github.com/assimp/assimp)
