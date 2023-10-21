@@ -60,6 +60,18 @@ void Properties::render(Material& material, const Renderer& renderer,
             material.set_vec4(location, std::move(copy));
         }
     }
+    for (const auto& [location, f] : material.floats()) {
+        float copy = f;
+        if (ImGui::SliderFloat(location.c_str(), &copy, 0.0f, 1.0f)) {
+            material.set_float(location, copy);
+        }
+    }
+    for (const auto& [location, b] : material.bools()) {
+        bool copy = b;
+        if (ImGui::Checkbox(location.c_str(), &copy)) {
+            material.set_bool(location, copy);
+        }
+    }
     struct SrgbTextureCallbackData {
         const Renderer& renderer;
         bool framebuffer_srgb_state;

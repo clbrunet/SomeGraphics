@@ -60,6 +60,11 @@ void Program::use() const
     glUseProgram(m_renderer_id);
 }
 
+void Program::set_bool(const char* name, bool b) const
+{
+    glUniform1i(glGetUniformLocation(m_renderer_id, name), (int)b);
+}
+
 void Program::set_int(const char* name, int i) const
 {
     glUniform1i(glGetUniformLocation(m_renderer_id, name), i);
@@ -68,6 +73,11 @@ void Program::set_int(const char* name, int i) const
 void Program::set_uint(const char* name, unsigned u) const
 {
     glUniform1ui(glGetUniformLocation(m_renderer_id, name), u);
+}
+
+void Program::set_float(const char* name, float f) const
+{
+    glUniform1f(glGetUniformLocation(m_renderer_id, name), f);
 }
 
 void Program::set_vec3(const char* name, const glm::vec3& vec3) const

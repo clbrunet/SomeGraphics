@@ -1,3 +1,4 @@
+#include <iostream>
 #include <optional>
 #include <array>
 
@@ -18,25 +19,29 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::s
     std::optional<std::shared_ptr<Program>> program_opt
         = ResourcesCache::program("engine/assets/shaders/pbr.vert",
             "engine/assets/shaders/pbr.frag");
-    std::map<std::string, glm::vec4> vec4s;
-    aiColor3D ai_color3;
-    ai_material.Get(AI_MATKEY_BASE_COLOR, ai_color3);
-    vec4s["u_color"] = glm::vec4(AssimpToGlm::vec3(ai_color3), 1.0f);
-
+    if (!program_opt.has_value()) {
+        return std::nullopt;
+    }
     std::map<std::string, std::shared_ptr<Texture>> textures;
+    std::map<std::string, bool> bools;
     struct TextureInfo {
-        std::string location;
+        std::string bool_name;
+        std::string name;
         aiTextureType type;
         ColorSpace color_space;
     };
     std::array<TextureInfo, 3> textures_info = {
-        TextureInfo { "u_albedo_map", aiTextureType_BASE_COLOR, ColorSpace::Srgb },
-        TextureInfo { "u_roughness_map", aiTextureType_DIFFUSE_ROUGHNESS, ColorSpace::Linear },
-        TextureInfo { "u_metalness_map", aiTextureType_METALNESS, ColorSpace::Linear },
+        TextureInfo { "", "u_albedo_map", aiTextureType_BASE_COLOR, ColorSpace::Srgb },
+        TextureInfo { "u_use_roughness_map", "u_roughness_map",
+            aiTextureType_DIFFUSE_ROUGHNESS, ColorSpace::Linear },
+        TextureInfo { "u_use_metalness_map", "u_metalness_map",
+            aiTextureType_METALNESS, ColorSpace::Linear },
     };
     for (const TextureInfo& texture_info : textures_info) {
+        bool use_map;
         if (ai_material.GetTextureCount(texture_info.type) == 0) {
-            textures[texture_info.location] = ResourcesCache::white_1px_texture();
+            textures[texture_info.name] = ResourcesCache::white_1px_texture();
+            use_map = false;
         } else {
             aiString path;
             ai_material.GetTexture(texture_info.type, 0, &path);
@@ -47,16 +52,38 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::s
             if (!texture_opt.has_value()) {
                 return std::nullopt;
             }
-            textures[texture_info.location] = std::move(texture_opt.value());
+            textures[texture_info.name] = std::move(texture_opt.value());
+            use_map = true;
+        }
+        if (!texture_info.bool_name.empty()) {
+            bools[texture_info.bool_name] = use_map;
         }
     }
-    return std::unique_ptr<Material>(new Material(std::move(program_opt.value()),
-            std::move(vec4s), std::move(textures)));
+    std::unique_ptr<Material> material
+        = std::unique_ptr<Material>(new Material(std::move(program_opt.value())));
+    material->m_textures = std::move(textures);
+    material->m_bools = std::move(bools);
+    aiColor3D ai_color3;
+    ai_material.Get(AI_MATKEY_BASE_COLOR, ai_color3);
+    material->m_vec4s["u_color"] = glm::vec4(AssimpToGlm::vec3(ai_color3), 1.0f);
+    ai_material.Get(AI_MATKEY_ROUGHNESS_FACTOR, material->m_floats["u_roughness"]);
+    ai_material.Get(AI_MATKEY_METALLIC_FACTOR, material->m_floats["u_metalness"]);
+    return material;
 }
 
 const std::shared_ptr<Program>& Material::program() const
 {
     return m_program;
+}
+
+const std::map<std::string, bool>& Material::bools() const
+{
+    return m_bools;
+}
+
+const std::map<std::string, float>& Material::floats() const
+{
+    return m_floats;
 }
 
 const std::map<std::string, glm::vec4>& Material::vec4s() const
@@ -69,6 +96,16 @@ const std::map<std::string, std::shared_ptr<Texture>>& Material::textures() cons
     return m_textures;
 }
 
+void Material::set_bool(const std::string& location, bool b)
+{
+    m_bools[location] = b;
+}
+
+void Material::set_float(const std::string& location, float f)
+{
+    m_floats[location] = f;
+}
+
 void Material::set_vec4(const std::string& location, glm::vec4 vec4)
 {
     m_vec4s[location] = std::move(vec4);
@@ -76,6 +113,12 @@ void Material::set_vec4(const std::string& location, glm::vec4 vec4)
 
 void Material::set_program_data() const
 {
+    for (const auto& [location, b] : m_bools) {
+        m_program->set_bool(location.c_str(), b);
+    }
+    for (const auto& [location, f] : m_floats) {
+        m_program->set_float(location.c_str(), f);
+    }
     for (const auto& [location, vec4] : m_vec4s) {
         m_program->set_vec4(location.c_str(), vec4);
     }
@@ -86,11 +129,8 @@ void Material::set_program_data() const
     }
 }
 
-Material::Material(std::shared_ptr<Program>&& program, std::map<std::string, glm::vec4>&& vec4s,
-        std::map<std::string, std::shared_ptr<Texture>>&& textures) :
-    m_program(std::move(program)),
-    m_vec4s(std::move(vec4s)),
-    m_textures(std::move(textures))
+Material::Material(std::shared_ptr<Program> program) :
+    m_program(std::move(program))
 {
 }
 

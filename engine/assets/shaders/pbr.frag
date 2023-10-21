@@ -17,6 +17,10 @@ layout(std140, binding = 0) uniform Globals {
 };
 
 uniform vec4 u_color;
+uniform float u_roughness;
+uniform float u_metalness;
+uniform bool u_use_roughness_map;
+uniform bool u_use_metalness_map;
 uniform sampler2D u_albedo_map;
 uniform sampler2D u_roughness_map;
 uniform sampler2D u_metalness_map;
@@ -33,8 +37,18 @@ vec3 cook_torrance_brdf(vec3 albedo, float roughness, float metalness, vec3 norm
 void main()
 {
     vec4 albedo = texture(u_albedo_map, v_texture_coordinates) * u_color;
-    float roughness = texture(u_roughness_map, v_texture_coordinates).g;
-    float metalness = texture(u_metalness_map, v_texture_coordinates).b;
+    float roughness;
+    if (u_use_roughness_map) {
+        roughness = texture(u_roughness_map, v_texture_coordinates).g;
+    } else {
+        roughness = u_roughness;
+    }
+    float metalness;
+    if (u_use_metalness_map) {
+        metalness = texture(u_metalness_map, v_texture_coordinates).b;
+    } else {
+        metalness = u_metalness;
+    }
     vec3 irradiance = vec3(0.0);
     for(uint i = 0; i < u_lights_count; i++){
         Light light = u_lights[i];

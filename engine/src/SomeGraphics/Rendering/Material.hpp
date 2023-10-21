@@ -25,19 +25,24 @@ public:
     ~Material() = default;
 
     const std::shared_ptr<Program>& program() const;
+    const std::map<std::string, bool>& bools() const;
+    const std::map<std::string, float>& floats() const;
     const std::map<std::string, glm::vec4>& vec4s() const;
     const std::map<std::string, std::shared_ptr<Texture>>& textures() const;
 
+    void set_bool(const std::string& location, bool b);
+    void set_float(const std::string& location, float f);
     void set_vec4(const std::string& location, glm::vec4 vec4);
 
     void set_program_data() const;
 private:
     std::shared_ptr<Program> m_program;
+    std::map<std::string, bool> m_bools;
+    std::map<std::string, float> m_floats;
     std::map<std::string, glm::vec4> m_vec4s;
     std::map<std::string, std::shared_ptr<Texture>> m_textures;
 
-    Material(std::shared_ptr<Program>&& program, std::map<std::string, glm::vec4>&& vec4s,
-        std::map<std::string, std::shared_ptr<Texture>>&& textures);
+    Material(std::shared_ptr<Program> program);
 };
 
 }
