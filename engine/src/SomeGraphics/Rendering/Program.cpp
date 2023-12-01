@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -15,8 +14,7 @@
 
 namespace sg {
 
-std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filename,
-    const char* frag_filename)
+std::optional<Program> Program::create(const char* vert_filename, const char* frag_filename)
 {
     std::optional<std::unique_ptr<Shader>> vert_opt = Shader::create(GL_VERTEX_SHADER,
         vert_filename);
@@ -31,7 +29,7 @@ std::optional<std::unique_ptr<Program>> Program::create(const char* vert_filenam
     if (!program.has_value()) {
         return std::nullopt;
     }
-    return std::unique_ptr<Program>(new Program(program.value()));
+    return Program(program.value());
 }
 
 Program::Program(Program&& other)
@@ -94,12 +92,6 @@ void Program::set_mat4(const char* name, const glm::mat4& mat4) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_renderer_id, name),
         1, GL_FALSE, glm::value_ptr(mat4));
-}
-
-void Program::set_texture(const char* name, uint8_t unit, const Texture& texture) const
-{
-    set_int(name, unit);
-    texture.bind_to_unit(unit);
 }
 
 void Program::print_uniform_block_layout(const char* name) const

@@ -7,10 +7,10 @@
 
 namespace sg {
 
-RenderBuffer::RenderBuffer(const glm::ivec2& dimension)
+RenderBuffer::RenderBuffer(const glm::ivec2& dimensions)
 {
     glCreateRenderbuffers(1, &m_renderer_id);
-    glNamedRenderbufferStorage(m_renderer_id, GL_DEPTH24_STENCIL8, dimension.x, dimension.y);
+    glNamedRenderbufferStorage(m_renderer_id, GL_DEPTH24_STENCIL8, dimensions.x, dimensions.y);
 }
 
 RenderBuffer::RenderBuffer(RenderBuffer&& other)

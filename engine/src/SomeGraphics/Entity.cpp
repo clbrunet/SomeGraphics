@@ -144,7 +144,7 @@ std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& f
     if (ai_node.mNumMeshes > 0) {
         std::optional<std::shared_ptr<Mesh>> mesh_opt
             = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
-        if (!mesh_opt.value()) {
+        if (!mesh_opt.has_value()) {
             return std::nullopt;
         }
         mesh = mesh_opt.value();

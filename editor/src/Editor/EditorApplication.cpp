@@ -1,4 +1,6 @@
 #include <cassert>
+#include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <filesystem>
 
@@ -20,14 +22,13 @@ EditorApplication::EditorApplication(std::string name) :
     Application(std::move(name), 1280, 720),
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
-    std::optional<std::shared_ptr<Entity>> entity_opt
-        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root());
-    if (!entity_opt.has_value()) {
-        assert(false);
-    }
-    m_selection = std::move(entity_opt.value());
-    m_scene->add_light("Light1", m_scene->root())->set_local_position(glm::vec3(0.0f, 1.0f, 2.0f));
-    m_scene->add_light("Light2", m_scene->root())->set_local_position(glm::vec3(0.0f, 4.0f, 0.0f));;
+    std::shared_ptr<Entity> entity
+        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root()).value();
+    entity->set_local_position(glm::vec3(5.0f, 5.0f, -5.0f));
+    m_selection = std::move(entity);
+    Entity::load_model("editor/assets/models/axes.glb", m_scene->root());
+    Entity::load_model("editor/assets/models/cube.glb", m_scene->root());
+    m_scene->add_light("Light1", m_scene->root())->light()->intensity = 300.0f;
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);

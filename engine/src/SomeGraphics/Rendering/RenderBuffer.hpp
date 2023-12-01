@@ -10,7 +10,7 @@ namespace sg {
 class RenderBuffer {
 public:
     RenderBuffer() = delete;
-    RenderBuffer(const glm::ivec2& dimension);
+    RenderBuffer(const glm::ivec2& dimensions);
     RenderBuffer(RenderBuffer&& other);
     RenderBuffer(const RenderBuffer& other) = delete;
     RenderBuffer& operator=(RenderBuffer&& other);

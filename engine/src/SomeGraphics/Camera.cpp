@@ -22,6 +22,11 @@ const glm::vec3& Camera::position() const
     return m_position;
 }
 
+const glm::quat& Camera::rotation() const
+{
+    return m_rotation;
+}
+
 const glm::mat4& Camera::view() const
 {
     return m_view;

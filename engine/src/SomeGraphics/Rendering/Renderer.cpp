@@ -1,11 +1,18 @@
+#include <array>
 #include <cstdint>
+#include <cstdlib>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <glm/ext/vector_int2.hpp>
 #include <glm/common.hpp>
 #include <glad/gl.h>
 
+#include "SomeGraphics/Rendering/DepthFrameBuffer.hpp"
 #include "SomeGraphics/Rendering/Renderer.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
@@ -16,6 +23,7 @@
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/ResourcesCache.hpp"
 
 namespace sg {
 
@@ -35,11 +43,23 @@ Renderer::Renderer() :
     }
 #endif
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    for (std::unique_ptr<DepthFrameBuffer>& frame_buffer : m_shadow_pass_frame_buffers) {
+        frame_buffer = std::make_unique<DepthFrameBuffer>(
+            DepthFrameBuffer::create_cubemap(glm::ivec2(1024, 1024)));
+    }
+    std::optional<Program> program_opt
+        = Program::create("engine/assets/shaders/shadow_mapping.vert",
+            "engine/assets/shaders/shadow_mapping.frag");
+    if (!program_opt.has_value()) {
+        std::abort();
+    }
+    m_shadow_mapping_program = std::make_unique<Program>(std::move(program_opt.value()));
 }
 
-void Renderer::set_viewport(glm::ivec2 dimension) const
+void Renderer::set_viewport(glm::ivec2 dimensions) const
 {
-    glViewport(0, 0, dimension.x, dimension.y);
+    glViewport(0, 0, dimensions.x, dimensions.y);
 }
 
 void Renderer::clear() const
@@ -52,15 +72,35 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
     glClearColor(red, green, blue, opacity);
 }
 
-void Renderer::draw(const Scene& scene, const Camera& camera) const
+void Renderer::draw(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const
 {
+    m_is_shadow_pass = true;
+    set_viewport(glm::ivec2(1024, 1024));
+    m_shadow_mapping_program->use();
+    int frame_buffer_renderer_id;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frame_buffer_renderer_id);
     const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
-    uint8_t lights_count = glm::min(lights.size(), (size_t)32);
+    uint8_t shadow_maps_count = glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
+    for (uint8_t i = 0; i < shadow_maps_count; i++) {
+        m_shadow_pass_light = lights[i].get();
+        m_shadow_pass_frame_buffer = m_shadow_pass_frame_buffers[i].get();
+        m_shadow_pass_frame_buffer->bind();
+        for (CubemapFace face = CubemapFace::Begin;
+            face < CubemapFace::End; face = CubemapFace(face + 1)) {
+            m_shadow_pass_frame_buffer->attach_face(face);
+            glClear(GL_DEPTH_BUFFER_BIT);
+        }
+        draw(*scene.root(), scene, camera);
+    }
+    m_is_shadow_pass = false;
+    set_viewport(viewport_dimensions);
+    uint8_t lights_count = glm::min(lights.size(), (size_t)MAX_LIGHTS_COUNT);
     GlobalsUniformBlockData globals = {
         .view_projection = camera.view_projection(),
         .camera_position = camera.position(),
         .lights_count = lights_count,
         .lights = {},
+        .shadow_maps_count = shadow_maps_count,
     };
     for (uint8_t i = 0; i < lights_count; i++) {
         const std::shared_ptr<Entity>& light = lights[i];
@@ -70,29 +110,11 @@ void Renderer::draw(const Scene& scene, const Camera& camera) const
         };
     }
     m_globals_uniform_buffer.update_data<GlobalsUniformBlockData>(globals);
-    draw(*scene.root(), scene, camera);
-}
-
-void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
-{
-    const VertexArray& vertex_array = *mesh.vertex_array();
-    vertex_array.bind();
-    GLenum index_buffer_format = vertex_array.index_buffer()->format();
-    for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {
-        const std::shared_ptr<Program>& program = sub_mesh_info.material()->program();
-        program->use();
-        program->set_mat4("u_model", model_matrix);
-        sub_mesh_info.material()->set_program_data();
-        glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
-            sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
+    for (uint8_t i = 0; i < m_shadow_pass_frame_buffers.size(); i++) {
+        m_shadow_pass_frame_buffers[i]->depth_texture().bind_to_unit(15 - i);
     }
-}
-
-void Renderer::draw(const VertexArray& vertex_array) const
-{
-    vertex_array.bind();
-    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),
-        vertex_array.index_buffer()->format(), 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_renderer_id);
+    draw(*scene.root(), scene, camera);
 }
 
 void Renderer::draw(const Skybox& skybox, const Camera& camera) const
@@ -102,7 +124,9 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     skybox.program()->use();
     skybox.program()->set_mat4("u_view", camera.view());
     skybox.program()->set_mat4("u_projection", camera.projection());
-    skybox.program()->set_texture("u_skybox", 0, *skybox.cubemap());
+    skybox.program()->set_int("u_skybox", 0);
+    skybox.cubemap()->bind_to_unit(0);
+
     draw(*skybox.vertex_array());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
@@ -112,7 +136,8 @@ void Renderer::post_process(const PostProcess& post_process, const Texture& text
 {
     glDisable(GL_DEPTH_TEST);
     post_process.program()->use();
-    post_process.program()->set_texture("u_texture", 0, texture);
+    post_process.program()->set_int("u_texture", 0);
+    texture.bind_to_unit(0);
     draw(*post_process.vertex_array());
     glEnable(GL_DEPTH_TEST);
 }
@@ -134,6 +159,59 @@ void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& came
     for (const std::shared_ptr<Entity>& child : entity.children()) {
         draw(*child, scene, camera);
     }
+}
+
+void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
+{
+    const VertexArray& vertex_array = *mesh.vertex_array();
+    vertex_array.bind();
+    GLenum index_buffer_format = vertex_array.index_buffer()->format();
+    for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {
+        if (m_is_shadow_pass) {
+            glm::vec3 light_position = m_shadow_pass_light->model_matrix()[3];
+            std::array<glm::mat4, 6> views = {
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+                glm::lookAt(light_position, light_position
+                    + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            };
+            for (CubemapFace face = CubemapFace::Begin;
+                face < CubemapFace::End; face = CubemapFace(face + 1)) {
+                m_shadow_pass_frame_buffer->attach_face(face);
+                glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.01f, 30.0f);
+                m_shadow_mapping_program->set_mat4("u_view_projection", projection * views[face]);
+                m_shadow_mapping_program->set_mat4("u_model", model_matrix);
+                m_shadow_mapping_program->set_vec3("u_light_position", light_position);
+                glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+                    sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
+            }
+        } else {
+            const std::shared_ptr<Program>& program = sub_mesh_info.material()->program();
+            program->use();
+            program->set_mat4("u_model", model_matrix);
+            for (uint8_t i = 0; i < m_shadow_pass_frame_buffers.size(); i++) {
+                program->set_int(("u_shadow_maps[" + std::to_string(i) + "]").c_str(), 15 - i);
+            }
+            sub_mesh_info.material()->set_program_data();
+            glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+                sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
+        }
+    }
+}
+
+void Renderer::draw(const VertexArray& vertex_array) const
+{
+    vertex_array.bind();
+    glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),
+        vertex_array.index_buffer()->format(), 0);
 }
 
 void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type,

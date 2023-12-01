@@ -8,21 +8,28 @@
 
 namespace sg {
 
-FrameBuffer::FrameBuffer(const glm::ivec2& dimension, bool is_floating_point) :
-    m_color_texture(std::make_unique<Texture>(dimension, is_floating_point)),
-    m_depth_and_stencil_render_buffer(std::make_unique<RenderBuffer>(dimension))
+FrameBuffer::FrameBuffer(const glm::ivec2& dimensions, TextureFormat texture_format) :
+    m_color_texture(dimensions, texture_format),
+    m_depth_and_stencil_render_buffer(dimensions)
 {
 
     glCreateFramebuffers(1, &m_renderer_id);
-    m_color_texture->attach_to_framebuffer(m_renderer_id, GL_COLOR_ATTACHMENT0);
-    m_depth_and_stencil_render_buffer->attach_to_framebuffer(m_renderer_id,
+    m_color_texture.attach_to_framebuffer(m_renderer_id, GL_COLOR_ATTACHMENT0);
+    m_depth_and_stencil_render_buffer.attach_to_framebuffer(m_renderer_id,
         GL_DEPTH_STENCIL_ATTACHMENT);
     assert(glCheckNamedFramebufferStatus(m_renderer_id, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
-FrameBuffer::FrameBuffer(FrameBuffer&& other)
+FrameBuffer::FrameBuffer(FrameBuffer&& other) :
+    m_color_texture(std::move(other.m_color_texture)),
+    m_depth_and_stencil_render_buffer(std::move(other.m_depth_and_stencil_render_buffer))
 {
-    *this = std::move(other);
+    if (this == &other) {
+        return;
+    }
+    glDeleteFramebuffers(1, &m_renderer_id);
+    m_renderer_id = other.m_renderer_id;
+    other.m_renderer_id = 0;
 }
 
 FrameBuffer& FrameBuffer::operator=(FrameBuffer&& other)
@@ -53,7 +60,7 @@ void FrameBuffer::bind() const
     glBindFramebuffer(GL_FRAMEBUFFER, m_renderer_id);
 }
 
-const std::unique_ptr<Texture>& FrameBuffer::color_texture() const
+const Texture& FrameBuffer::color_texture() const
 {
     return m_color_texture;
 }

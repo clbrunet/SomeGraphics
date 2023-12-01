@@ -17,6 +17,7 @@ public:
     virtual ~Camera() = default;
 
     const glm::vec3& position() const;
+    const glm::quat& rotation() const;
     const glm::mat4& view() const;
     const glm::mat4& projection() const;
     const glm::mat4& view_projection() const;

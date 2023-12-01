@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <optional>
 
 #include <glm/ext/matrix_float4x4.hpp>
@@ -15,8 +14,7 @@ class Texture;
 
 class Program {
 public:
-    static std::optional<std::unique_ptr<Program>> create(const char* vert_filename,
-        const char* frag_filename);
+    static std::optional<Program> create(const char* vert_filename, const char* frag_filename);
     Program() = delete;
     Program(Program&& other);
     Program(const Program& other) = delete;
@@ -32,7 +30,6 @@ public:
     void set_vec3(const char* name, const glm::vec3& vec3) const;
     void set_vec4(const char* name, const glm::vec4& vec4) const;
     void set_mat4(const char* name, const glm::mat4& mat4) const;
-    void set_texture(const char* name, uint8_t unit, const Texture& texture) const;
 
     void print_uniform_block_layout(const char* name) const;
 private:

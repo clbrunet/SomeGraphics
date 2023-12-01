@@ -21,6 +21,7 @@ public:
     {
         glNamedBufferSubData(m_renderer_id, 0, sizeof(T), &data);
     }
+
     void update_data(uint32_t offset, uint32_t size, const uint8_t* data) const;
 private:
     uint32_t m_renderer_id = 0;

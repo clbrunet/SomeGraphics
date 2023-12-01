@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdint>
 #include <sys/types.h>
-#include <memory>
 #include <optional>
 
 #include <glm/ext/vector_int2.hpp>
@@ -11,10 +11,27 @@
 
 namespace sg {
 
+enum class TextureFormat {
+    Rgb,
+    F16Rgb,
+    Depth,
+};
+
 enum class ColorSpace {
+    Unknown,
     Srgb,
     Linear,
-    Varying,
+};
+
+enum CubemapFace {
+    Begin,
+    PositiveX = Begin,
+    NegativeX,
+    PositiveY,
+    NegativeY,
+    PositiveZ,
+    NegativeZ,
+    End,
 };
 
 class StbImageWrapper;
@@ -22,11 +39,12 @@ class StbImageWrapper;
 class Texture {
 public:
     Texture() = delete;
-    Texture(const glm::ivec2& dimensions, bool is_floating_point = false);
-    static std::unique_ptr<Texture> white_1px();
-    static std::optional<std::unique_ptr<Texture>> from_ai_texture(const aiTexture& ai_texture, ColorSpace color_space);
-    static std::optional<std::unique_ptr<Texture>> create_cubemap(const char* right,
+    Texture(glm::ivec2 dimensions, TextureFormat format);
+    static Texture white_1px();
+    static std::optional<Texture> from_ai_texture(const aiTexture& ai_texture, ColorSpace color_space);
+    static std::optional<Texture> create_cubemap(const char* right,
         const char* left, const char* top, const char* bottom, const char* front, const char* back);
+    static Texture create_cubemap(glm::ivec2 dimensions, TextureFormat format);
     Texture(Texture&& other);
     Texture(const Texture& other) = delete;
     Texture& operator=(Texture&& other);
@@ -38,6 +56,7 @@ public:
     ImTextureID imgui_texture_id() const;
 #if SG_ENGINE
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
+    void attach_face_to_framebuffer(uint32_t frame_buffer, GLenum attachment, CubemapFace face) const;
 #endif
 private:
     uint32_t m_renderer_id = 0;
@@ -50,8 +69,10 @@ private:
         const StbImageWrapper& top, const StbImageWrapper& bottom,
         const StbImageWrapper& front, const StbImageWrapper& back);
 
-    static GLenum internal_format(uint32_t channels_count, ColorSpace color_space);
-    static GLenum format(uint32_t channels_count);
+    static GLenum sized_internal_format(uint32_t channels_count, ColorSpace color_space);
+    static GLenum sized_internal_format(TextureFormat format);
+    static GLenum internal_format(uint32_t channels_count);
+    static GLenum internal_format(TextureFormat format);
 };
 
 }

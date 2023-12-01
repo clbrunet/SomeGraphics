@@ -3,6 +3,7 @@
 const float PI = 3.14159265359;
 
 const uint MAX_LIGHTS_COUNT = 32;
+const uint MAX_SHADOW_MAPS_COUNT = 8;
 
 struct Light {
     vec3 position;
@@ -14,7 +15,10 @@ layout(std140, binding = 0) uniform Globals {
     vec3 u_camera_position;
     uint u_lights_count;
     Light u_lights[MAX_LIGHTS_COUNT];
+    uint u_shadow_maps_count;
 };
+
+uniform samplerCube u_shadow_maps[MAX_SHADOW_MAPS_COUNT];
 
 uniform vec4 u_color;
 uniform float u_roughness;
@@ -52,16 +56,24 @@ void main()
     vec3 irradiance = vec3(0.0);
     for(uint i = 0; i < u_lights_count; i++){
         Light light = u_lights[i];
-        vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
-                v_normal, v_position, u_camera_position, light.position);
         vec3 fragment_to_light = light.position - v_position;
         float fragment_to_light_distance = length(fragment_to_light);
+        float shadow_factor = 1.0;
+        if (i < u_shadow_maps_count) {
+            float far = 30.0;
+            float distance = texture(u_shadow_maps[i], -fragment_to_light).r * far;
+            float bias = 0.05;
+            shadow_factor = fragment_to_light_distance > distance + bias ? 0.0 : 1.0;
+        }
+        vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
+                v_normal, v_position, u_camera_position, light.position);
         float attenuation = 1.0 / (fragment_to_light_distance * fragment_to_light_distance);
-        vec3 radiance = light.hdr_color * attenuation;
-        float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light), 0.0);
-        irradiance += brdf * radiance * normal_dot_fragment_to_light;
+        vec3 fragment_to_light_direction = fragment_to_light / fragment_to_light_distance;
+        float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light_direction), 0.0);
+        vec3 radiance = light.hdr_color * attenuation * normal_dot_fragment_to_light;
+        irradiance += shadow_factor * brdf * radiance;
     }
-    vec3 ambient = vec3(0.03) * albedo.rgb;
+    vec3 ambient = vec3(0.075) * albedo.rgb;
     color = vec4(irradiance + ambient, albedo.a);
 }
 

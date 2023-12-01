@@ -124,7 +124,9 @@ void Material::set_program_data() const
     }
     int i = 0;
     for (const auto& [location, texture] : m_textures) {
-        m_program->set_texture(location.c_str(), i, *texture);
+        m_program->set_int(location.c_str(), i);
+        texture->bind_to_unit(i);
+
         i++;
     }
 }

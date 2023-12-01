@@ -11,7 +11,6 @@ UniformBuffer::UniformBuffer(uint32_t binding, uint32_t size)
 {
     glCreateBuffers(1, &m_renderer_id);
     glNamedBufferStorage(m_renderer_id, size, nullptr, GL_DYNAMIC_STORAGE_BIT);
-    // TODO: test to glbufferbind 0 for GL_UNIFORM_BUFFER
     glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_renderer_id);
 }
 

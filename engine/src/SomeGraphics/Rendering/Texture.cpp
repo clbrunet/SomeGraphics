@@ -17,24 +17,18 @@
 
 namespace sg {
 
-Texture::Texture(const glm::ivec2& dimensions, bool is_floating_point) :
-    m_color_space(ColorSpace::Varying)
+Texture::Texture(glm::ivec2 dimensions, TextureFormat format) :
+    m_color_space(ColorSpace::Unknown)
 {
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    GLenum internal_format;
-    if (is_floating_point) {
-        internal_format = GL_RGB16F;
-    } else {
-        internal_format = GL_RGB8;
-    }
-    glTextureStorage2D(m_renderer_id, 1, internal_format, dimensions.x, dimensions.y);
+    glTextureStorage2D(m_renderer_id, 1, sized_internal_format(format), dimensions.x, dimensions.y);
 }
 
-std::unique_ptr<Texture> Texture::white_1px()
+Texture Texture::white_1px()
 {
     uint32_t renderer_id;
     glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id);
@@ -45,24 +39,24 @@ std::unique_ptr<Texture> Texture::white_1px()
     glTextureStorage2D(renderer_id, 1, GL_RGB8, 1, 1);
     uint8_t white[3] = { 255, 255, 255 };
     glTextureSubImage2D(renderer_id, 0, 0, 0, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, white);
-    return std::unique_ptr<Texture>(new Texture(renderer_id, ColorSpace::Linear));
+    return Texture(renderer_id, ColorSpace::Linear);
 }
 
-std::optional<std::unique_ptr<Texture>> Texture::from_ai_texture(const aiTexture& ai_texture,
+std::optional<Texture> Texture::from_ai_texture(const aiTexture& ai_texture,
     ColorSpace color_space)
 {
     if (ai_texture.mHeight != 0) {
-        return std::unique_ptr<Texture>(new Texture(ai_texture, color_space));
+        return Texture(ai_texture, color_space);
     }
     std::optional<StbImageWrapper> image_opt = StbImageWrapper::load_from_memory(
         (const uint8_t*)ai_texture.pcData, ai_texture.mWidth);
     if (!image_opt.has_value()) {
         return std::nullopt;
     }
-    return std::unique_ptr<Texture>(new Texture(image_opt.value(), color_space));
+    return Texture(image_opt.value(), color_space);
 }
 
-std::optional<std::unique_ptr<Texture>> Texture::create_cubemap(const char* right,
+std::optional<Texture> Texture::create_cubemap(const char* right,
     const char* left, const char* top, const char* bottom, const char* front, const char* back)
 {
     std::array<const char*, 6> filenames({ right, left, top, bottom, front, back });
@@ -82,8 +76,24 @@ std::optional<std::unique_ptr<Texture>> Texture::create_cubemap(const char* righ
             return std::nullopt;
         }
     }
-    return std::unique_ptr<Texture>(new Texture(images[0], images[1],
-            images[2], images[3], images[4], images[5]));
+    return Texture(images[0], images[1], images[2], images[3], images[4], images[5]);
+}
+
+Texture Texture::create_cubemap(glm::ivec2 dimensions, TextureFormat format)
+{
+    uint32_t renderer_id;
+    glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &renderer_id);
+    glTextureParameteri(renderer_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTextureParameteri(renderer_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTextureStorage2D(renderer_id, 1, sized_internal_format(format), dimensions.x, dimensions.y);
+    for (int i = 0; i < 6; i++) {
+        glTextureSubImage3D(renderer_id, 0, 0, 0, i, dimensions.x, dimensions.y,
+            1, internal_format(format), GL_FLOAT, nullptr);
+    }
+    return Texture(renderer_id, ColorSpace::Unknown);
 }
 
 Texture::Texture(Texture&& other)
@@ -127,6 +137,11 @@ void Texture::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) co
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
+void Texture::attach_face_to_framebuffer(uint32_t frame_buffer, GLenum attachment, CubemapFace face) const
+{
+    glNamedFramebufferTextureLayer(frame_buffer, attachment, m_renderer_id, 0, (int)face);
+}
+
 Texture::Texture(uint32_t renderer_id, ColorSpace color_space) :
     m_renderer_id(renderer_id),
     m_color_space(color_space)
@@ -140,7 +155,7 @@ Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space) :
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, internal_format(4, color_space), ai_texture.mWidth, ai_texture.mHeight);
+    glTextureStorage2D(m_renderer_id, 1, sized_internal_format(4, color_space), ai_texture.mWidth, ai_texture.mHeight);
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, ai_texture.mWidth, ai_texture.mHeight,
         GL_RGBA, GL_UNSIGNED_BYTE, ai_texture.pcData);
 }
@@ -151,10 +166,10 @@ Texture::Texture(const StbImageWrapper& image, ColorSpace color_space) :
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, internal_format(image.channels_count(), color_space),
+    glTextureStorage2D(m_renderer_id, 1, sized_internal_format(image.channels_count(), color_space),
         image.width(), image.height());
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, image.width(), image.height(),
-        format(image.channels_count()), GL_UNSIGNED_BYTE, image.pixels());
+        internal_format(image.channels_count()), GL_UNSIGNED_BYTE, image.pixels());
 }
 
 Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
@@ -187,9 +202,11 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     }
 }
 
-GLenum Texture::internal_format(uint32_t channels_count, ColorSpace color_space)
+GLenum Texture::sized_internal_format(uint32_t channels_count, ColorSpace color_space)
 {
     switch (color_space) {
+        case ColorSpace::Unknown:
+            break;
         case ColorSpace::Srgb:
             switch (channels_count) {
                 case 3:
@@ -206,20 +223,45 @@ GLenum Texture::internal_format(uint32_t channels_count, ColorSpace color_space)
                     return GL_RGBA8;
             }
             break;
-        default:
-            break;
     }
     assert(false);
     return GL_NONE;
 }
 
-GLenum Texture::format(uint32_t channels_count)
+GLenum Texture::sized_internal_format(TextureFormat format)
+{
+    switch (format) {
+        case TextureFormat::Rgb:
+            return GL_RGB8;
+        case TextureFormat::F16Rgb:
+            return GL_RGB16F;
+        case TextureFormat::Depth:
+            return GL_DEPTH_COMPONENT32F;
+    }
+    assert(false);
+    return GL_NONE;
+}
+
+GLenum Texture::internal_format(uint32_t channels_count)
 {
     switch (channels_count) {
         case 3:
             return GL_RGB;
         case 4:
             return GL_RGBA;
+    }
+    assert(false);
+    return GL_NONE;
+}
+
+GLenum Texture::internal_format(TextureFormat format)
+{
+    switch (format) {
+        case TextureFormat::Rgb:
+        case TextureFormat::F16Rgb:
+            return GL_RGB;
+        case TextureFormat::Depth:
+            return GL_DEPTH_COMPONENT;
     }
     assert(false);
     return GL_NONE;
