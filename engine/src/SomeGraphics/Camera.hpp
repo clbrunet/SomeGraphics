@@ -14,7 +14,7 @@ public:
     Camera(const Camera& other) = default;
     Camera& operator=(Camera&& other) = default;
     Camera& operator=(const Camera& other) = default;
-    virtual ~Camera() = default;
+    ~Camera() = default;
 
     const glm::vec3& position() const;
     const glm::quat& rotation() const;

@@ -16,7 +16,7 @@ namespace sg {
 
 EditorCamera::EditorCamera(glm::vec3 position, const glm::vec2& euler_angles,
     glm::mat4 projection) :
-    Camera(std::move(position), glm::quat(glm::radians(glm::vec3(euler_angles, 0.0f))),
+    camera(std::move(position), glm::quat(glm::radians(glm::vec3(euler_angles, 0.0f))),
         std::move(projection)),
     m_pitch(euler_angles.x),
     m_yaw(euler_angles.y)
@@ -35,7 +35,7 @@ void EditorCamera::look(const Window& window)
     glm::vec2 change = -SENSITIVITY * window.cursor_delta();
     m_pitch = glm::clamp(m_pitch + change.y, -90.0f, 90.0f);
     m_yaw += change.x;
-    set_rotation(glm::quat(glm::radians(glm::vec3(m_pitch, m_yaw, 0.0f))));
+    camera.set_rotation(glm::quat(glm::radians(glm::vec3(m_pitch, m_yaw, 0.0f))));
 }
 
 void EditorCamera::move(const Window& window)
@@ -62,8 +62,8 @@ void EditorCamera::move(const Window& window)
     if (direction == glm::vec3(0.0f)) {
         return;
     }
-    set_position(m_position + window.delta_time()
-        * SPEED * (m_rotation * glm::normalize(direction)));
+    camera.set_position(camera.position() + window.delta_time()
+        * SPEED * (camera.rotation() * glm::normalize(direction)));
 }
 
 }

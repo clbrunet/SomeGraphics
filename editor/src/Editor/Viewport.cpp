@@ -58,23 +58,21 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImVec2 content_region_available = ImGui::GetContentRegionAvail();
     if (content_region_available.x != m_dimensions.x
         || content_region_available.y != m_dimensions.y) {
-        m_dimensions = content_region_available;
-        m_frame_buffer_a = std::make_unique<FrameBuffer>(
-            glm::ivec2(m_dimensions.x, m_dimensions.y), TextureFormat::F16Rgb);
-        m_frame_buffer_b = std::make_unique<FrameBuffer>(
-            glm::ivec2(m_dimensions.x, m_dimensions.y), TextureFormat::F16Rgb);
-        m_editor_camera->set_projection(glm::perspective(glm::radians(60.0f),
-                m_dimensions.x / m_dimensions.y, 0.01f, 1000.0f));
+        m_dimensions = glm::ivec2(content_region_available.x, content_region_available.y);
+        m_frame_buffer_a = std::make_unique<FrameBuffer>(m_dimensions, TextureFormat::F16Rgb);
+        m_frame_buffer_b = std::make_unique<FrameBuffer>(m_dimensions, TextureFormat::F16Rgb);
+        m_editor_camera->camera.set_projection(glm::perspective(m_fov_y,
+                (float)m_dimensions.x / (float)m_dimensions.y, m_z_near, m_z_far));
     }
     m_frame_buffer_a->bind();
     renderer.clear();
-    renderer.draw(scene, *m_editor_camera, glm::ivec2(m_dimensions.x, m_dimensions.y));
-    renderer.draw(*m_skybox, *m_editor_camera);
+    renderer.draw(scene, m_editor_camera->camera, m_dimensions);
+    renderer.draw(*m_skybox, m_editor_camera->camera);
     m_frame_buffer_b->bind();
     renderer.post_process(*m_post_process, m_frame_buffer_a->color_texture());
     FrameBuffer::bind_default();
     ImGui::Image(m_frame_buffer_b->color_texture().imgui_texture_id(),
-        m_dimensions, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        ImVec2(m_dimensions.x, m_dimensions.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
