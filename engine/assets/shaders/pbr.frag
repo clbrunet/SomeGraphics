@@ -35,8 +35,10 @@ in vec2 v_texture_coordinates;
 
 out vec4 color;
 
+float get_shadow_factor(samplerCube shadow_map, vec3 light_to_frag,
+    float light_to_frag_dist, float light_z_far, float bias, float camera_to_frag_dist);
 vec3 cook_torrance_brdf(vec3 albedo, float roughness, float metalness, vec3 normal,
-        vec3 fragment_position, vec3 camera_position, vec3 light_position);
+        vec3 frag_position, vec3 camera_position, vec3 light_position);
 
 void main()
 {
@@ -56,25 +58,41 @@ void main()
     vec3 irradiance = vec3(0.0);
     for(uint i = 0; i < u_lights_count; i++){
         Light light = u_lights[i];
-        vec3 fragment_to_light = light.position - v_position;
-        float fragment_to_light_distance = length(fragment_to_light);
-        float shadow_factor = 1.0;
-        if (i < u_shadow_maps_count) {
-            float far = 30.0;
-            float distance = texture(u_shadow_maps[i], -fragment_to_light).r * far;
-            float bias = 0.05;
-            shadow_factor = fragment_to_light_distance > distance + bias ? 0.0 : 1.0;
-        }
+        vec3 frag_to_light = light.position - v_position;
+        float frag_to_light_dist = length(frag_to_light);
+        float shadow_factor = i >= u_shadow_maps_count ? 1.0 : get_shadow_factor(u_shadow_maps[i],
+            -frag_to_light, frag_to_light_dist, 30.0, 0.05, length(u_camera_position - v_position));
         vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
                 v_normal, v_position, u_camera_position, light.position);
-        float attenuation = 1.0 / (fragment_to_light_distance * fragment_to_light_distance);
-        vec3 fragment_to_light_direction = fragment_to_light / fragment_to_light_distance;
-        float normal_dot_fragment_to_light = max(dot(v_normal, fragment_to_light_direction), 0.0);
-        vec3 radiance = light.hdr_color * attenuation * normal_dot_fragment_to_light;
+        float attenuation = 1.0 / (frag_to_light_dist * frag_to_light_dist);
+        vec3 frag_to_light_dir = frag_to_light / frag_to_light_dist;
+        float normal_dot_frag_to_light = max(dot(v_normal, frag_to_light_dir), 0.0);
+        vec3 radiance = light.hdr_color * attenuation * normal_dot_frag_to_light;
         irradiance += shadow_factor * brdf * radiance;
     }
     vec3 ambient = vec3(0.075) * albedo.rgb;
     color = vec4(irradiance + ambient, albedo.a);
+}
+
+float get_shadow_factor(samplerCube shadow_map, vec3 light_to_frag,
+    float light_to_frag_dist, float light_z_far, float bias, float camera_to_frag_dist)
+{
+    const uint SAMPLES_COUNT = 20;
+    const vec3 sample_offset_dirs[SAMPLES_COUNT] = vec3[] (
+        vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+        vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+        vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+        vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+        vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+    );
+    float disk_radius = 0.01;
+    float shadow = 0.0;
+    for (int i = 0; i < SAMPLES_COUNT; i++) {
+        float dist = texture(shadow_map, light_to_frag
+            + disk_radius * sample_offset_dirs[i]).r * light_z_far;
+        shadow += float(light_to_frag_dist > dist + bias);
+    }
+    return 1.0 - shadow / SAMPLES_COUNT;
 }
 
 vec3 lambertian_diffuse(vec3 albedo)
@@ -91,48 +109,48 @@ float trowbridge_reitz_ggx_normal_distribution_function(float roughness,
                     * (alpha - 1.0) + 1.0, 2.0));
 }
 
-float schlick_ggx_geometry_function(vec3 normal, vec3 from_fragment_vector,
+float schlick_ggx_geometry_function(vec3 normal, vec3 from_frag_vector,
         float reflection_coefficient)
 {
-    float normal_dot_from_fragment_vector = max(dot(normal, from_fragment_vector), 0.0);
-    return normal_dot_from_fragment_vector
-        / (normal_dot_from_fragment_vector * (1.0 - reflection_coefficient) + reflection_coefficient);
+    float normal_dot_from_frag_vector = max(dot(normal, from_frag_vector), 0.0);
+    return normal_dot_from_frag_vector
+        / (normal_dot_from_frag_vector * (1.0 - reflection_coefficient) + reflection_coefficient);
 }
 
 float smith_schlick_ggx_geometry_function(float roughness, vec3 normal,
-        vec3 fragment_to_camera, vec3 fragment_to_light)
+        vec3 frag_to_camera, vec3 frag_to_light)
 {
     float reflection_coefficient = pow(roughness + 1.0, 2.0) / 8.0;
-    return schlick_ggx_geometry_function(normal, fragment_to_camera, reflection_coefficient)
-        * schlick_ggx_geometry_function(normal, fragment_to_light, reflection_coefficient);
+    return schlick_ggx_geometry_function(normal, frag_to_camera, reflection_coefficient)
+        * schlick_ggx_geometry_function(normal, frag_to_light, reflection_coefficient);
 }
 
 vec3 fresnel_schlick_fresnel_equation(vec3 albedo, float metalness,
-        vec3 halfway_vector, vec3 fragment_to_camera)
+        vec3 halfway_vector, vec3 frag_to_camera)
 {
     vec3 base_reflection_coefficient = mix(vec3(0.04), albedo, metalness);
     return base_reflection_coefficient + (1.0 - base_reflection_coefficient)
-        * pow(1.0 - max(dot(halfway_vector, fragment_to_camera), 0.0), 5.0);
+        * pow(1.0 - max(dot(halfway_vector, frag_to_camera), 0.0), 5.0);
 }
 
 vec3 cook_torrance_brdf(vec3 albedo, float roughness, float metalness, vec3 normal,
-        vec3 fragment_position, vec3 camera_position, vec3 light_position)
+        vec3 frag_position, vec3 camera_position, vec3 light_position)
 {
-    vec3 fragment_to_camera = normalize(camera_position - fragment_position);
-    vec3 fragment_to_light = normalize(light_position - fragment_position);
-    vec3 halfway_vector = normalize(fragment_to_camera + fragment_to_light);
+    vec3 frag_to_camera = normalize(camera_position - frag_position);
+    vec3 frag_to_light = normalize(light_position - frag_position);
+    vec3 halfway_vector = normalize(frag_to_camera + frag_to_light);
 
     float normal_distribution = trowbridge_reitz_ggx_normal_distribution_function(roughness,
             normal, halfway_vector);
     float microfacet_shadowing =  smith_schlick_ggx_geometry_function(roughness, normal,
-            fragment_to_camera, fragment_to_light);
+            frag_to_camera, frag_to_light);
     vec3 reflection_ratio = fresnel_schlick_fresnel_equation(albedo, metalness,
-            halfway_vector, fragment_to_camera);
+            halfway_vector, frag_to_camera);
     vec3 refraction_ratio = (vec3(1.0) - reflection_ratio) * (1.0 - metalness);
 
     vec3 refraction = refraction_ratio * lambertian_diffuse(albedo);
     vec3 reflection = (normal_distribution * microfacet_shadowing * reflection_ratio)
-        / (4.0 * max(dot(fragment_to_camera, normal), 0.0)
-                * max(dot(fragment_to_light, normal), 0.0) + 0.0001);
+        / (4.0 * max(dot(frag_to_camera, normal), 0.0)
+                * max(dot(frag_to_light, normal), 0.0) + 0.0001);
     return refraction + reflection;
 }
