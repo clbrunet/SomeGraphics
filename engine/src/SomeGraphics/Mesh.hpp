@@ -62,12 +62,15 @@ private:
     struct Vertex {
         glm::vec3 position;
         glm::vec3 normal;
+        glm::vec3 tangent;
         glm::vec2 texture_coordinates;
 
         Vertex() = delete;
-        Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texture_coordinates) :
+        Vertex(glm::vec3 position, glm::vec3 normal, glm::vec3 tangent,
+            glm::vec2 texture_coordinates) :
             position(std::move(position)),
             normal(std::move(normal)),
+            tangent(std::move(tangent)),
             texture_coordinates(std::move(texture_coordinates))
         {
         }

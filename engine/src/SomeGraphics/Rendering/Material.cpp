@@ -30,12 +30,14 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::s
         aiTextureType type;
         ColorSpace color_space;
     };
-    std::array<TextureInfo, 3> textures_info = {
+    std::array<TextureInfo, 4> textures_info = {
         TextureInfo { "", "u_albedo_map", aiTextureType_BASE_COLOR, ColorSpace::Srgb },
         TextureInfo { "u_use_roughness_map", "u_roughness_map",
             aiTextureType_DIFFUSE_ROUGHNESS, ColorSpace::Linear },
         TextureInfo { "u_use_metalness_map", "u_metalness_map",
             aiTextureType_METALNESS, ColorSpace::Linear },
+        TextureInfo { "u_use_normal_map", "u_normal_map",
+            aiTextureType_NORMALS, ColorSpace::Linear },
     };
     for (const TextureInfo& texture_info : textures_info) {
         bool use_map;
@@ -126,7 +128,6 @@ void Material::set_program_data() const
     for (const auto& [location, texture] : m_textures) {
         m_program->set_int(location.c_str(), i);
         texture->bind_to_unit(i);
-
         i++;
     }
 }

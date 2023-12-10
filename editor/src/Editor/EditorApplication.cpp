@@ -28,6 +28,9 @@ EditorApplication::EditorApplication(std::string name) :
     m_selection = std::move(entity);
     Entity::load_model("editor/assets/models/axes.glb", m_scene->root());
     Entity::load_model("editor/assets/models/cube.glb", m_scene->root());
+    entity = Entity::load_model("editor/assets/models/cerberus.glb", m_scene->root()).value();
+    entity->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
+    entity->set_local_scale(glm::vec3(0.03f));
     m_scene->add_light("Light1", m_scene->root())->light()->intensity = 300.0f;
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",

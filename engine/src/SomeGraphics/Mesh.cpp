@@ -55,9 +55,9 @@ std::optional<std::unique_ptr<Mesh>> Mesh::from_ai_node(const std::string& filen
             return std::nullopt;
         }
         vertices_offset = vertices.size();
-        for(uint32_t j = 0; j < ai_mesh.mNumVertices; j++) {
+        for (uint32_t j = 0; j < ai_mesh.mNumVertices; j++) {
             vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh.mVertices[j]),
-                    AssimpToGlm::vec3(ai_mesh.mNormals[j]),
+                    AssimpToGlm::vec3(ai_mesh.mNormals[j]), AssimpToGlm::vec3(ai_mesh.mTangents[j]),
                     AssimpToGlm::vec3(ai_mesh.mTextureCoords[0][j])));
         }
         indices_offset = indices.size();
@@ -73,6 +73,7 @@ std::optional<std::unique_ptr<Mesh>> Mesh::from_ai_node(const std::string& filen
     }
     std::unique_ptr<VertexArray> vertex_array = std::make_unique<VertexArray>(vertices,
         std::initializer_list<VertexAttribute>({
+            VertexAttribute(VertexAttributeType::Vec3),
             VertexAttribute(VertexAttributeType::Vec3),
             VertexAttribute(VertexAttributeType::Vec3),
             VertexAttribute(VertexAttributeType::Vec2),

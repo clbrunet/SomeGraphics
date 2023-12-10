@@ -36,8 +36,8 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename,
     std::shared_ptr<Entity> parent)
 {
     Assimp::Importer importer;
-    const aiScene* ai_scene = importer.ReadFile(filename,
-        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+    const aiScene* ai_scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs
+        | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
     if (ai_scene == nullptr) {
         std::cerr << "Model loading error : " << importer.GetErrorString() << std::endl;
         return std::nullopt;

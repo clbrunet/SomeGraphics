@@ -25,12 +25,14 @@ uniform float u_roughness;
 uniform float u_metalness;
 uniform bool u_use_roughness_map;
 uniform bool u_use_metalness_map;
+uniform bool u_use_normal_map;
 uniform sampler2D u_albedo_map;
 uniform sampler2D u_roughness_map;
 uniform sampler2D u_metalness_map;
+uniform sampler2D u_normal_map;
 
 in vec3 v_position;
-in vec3 v_normal;
+in mat3 v_TBN;
 in vec2 v_texture_coordinates;
 
 out vec4 color;
@@ -55,18 +57,25 @@ void main()
     } else {
         metalness = u_metalness;
     }
+    vec3 normal;
+    if (u_use_normal_map) {
+        normal = texture(u_normal_map, v_texture_coordinates).xyz * 2.0 - 1.0;
+    } else {
+        normal = vec3(0, 0, 1);
+    }
+    normal = normalize(v_TBN * normal);
     vec3 irradiance = vec3(0.0);
-    for(uint i = 0; i < u_lights_count; i++){
+    for (uint i = 0; i < u_lights_count; i++) {
         Light light = u_lights[i];
         vec3 frag_to_light = light.position - v_position;
         float frag_to_light_dist = length(frag_to_light);
         float shadow_factor = i >= u_shadow_maps_count ? 1.0 : get_shadow_factor(u_shadow_maps[i],
             -frag_to_light, frag_to_light_dist, 30.0, 0.05, length(u_camera_position - v_position));
         vec3 brdf = cook_torrance_brdf(albedo.rgb, roughness, metalness,
-                v_normal, v_position, u_camera_position, light.position);
+                normal, v_position, u_camera_position, light.position);
         float attenuation = 1.0 / (frag_to_light_dist * frag_to_light_dist);
         vec3 frag_to_light_dir = frag_to_light / frag_to_light_dist;
-        float normal_dot_frag_to_light = max(dot(v_normal, frag_to_light_dir), 0.0);
+        float normal_dot_frag_to_light = max(dot(normal, frag_to_light_dir), 0.0);
         vec3 radiance = light.hdr_color * attenuation * normal_dot_frag_to_light;
         irradiance += shadow_factor * brdf * radiance;
     }
