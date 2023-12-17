@@ -2,8 +2,11 @@
 
 #include <optional>
 #include <memory>
+#include <array>
 
 #include <glm/ext/vector_float3.hpp>
+
+#include "SomeGraphics/Rendering/VertexAttribute.hpp"
 
 namespace sg {
 
@@ -47,6 +50,13 @@ private:
         Vertex& operator=(Vertex&& other) = default;
         Vertex& operator=(const Vertex& other) = default;
         ~Vertex() = default;
+
+        constexpr static std::array<VertexAttribute, 1> attributes()
+        {
+            return {
+                VertexAttribute(VertexAttributeType::Vec3),
+            };
+        }
     };
 };
 

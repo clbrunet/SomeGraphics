@@ -190,7 +190,8 @@ void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
                 m_shadow_mapping_program->set_mat4("u_view_projection", projection * views[face]);
                 m_shadow_mapping_program->set_mat4("u_model", model_matrix);
                 m_shadow_mapping_program->set_vec3("u_light_position", light_position);
-                glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+                glDrawElementsBaseVertex(GL_TRIANGLES,
+                    sub_mesh_info.indices_count(), index_buffer_format,
                     sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
             }
         } else {
@@ -198,10 +199,11 @@ void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
             program->use();
             program->set_mat4("u_model", model_matrix);
             for (uint8_t i = 0; i < m_shadow_pass_frame_buffers.size(); i++) {
-                program->set_int(("u_shadow_maps[" + std::to_string(i) + "]").c_str(), 15 - i);
+                program->set_int(SHADOW_MAP_LOCATIONS[i], 15 - i);
             }
             sub_mesh_info.material()->set_program_data();
-            glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+            glDrawElementsBaseVertex(GL_TRIANGLES,
+                sub_mesh_info.indices_count(), index_buffer_format,
                 sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
         }
     }
@@ -218,79 +220,79 @@ void GLAPIENTRY Renderer::gl_debug_message_callback(GLenum source, GLenum type,
     [[maybe_unused]] GLuint id, GLenum severity, [[maybe_unused]] GLsizei length,
     const GLchar* message, [[maybe_unused]] const void* user_param)
 {
-    std::cerr << std::hex;
-    std::cerr << "OpenGL debug message :\n";
-    std::cerr << "Source : ";
+    std::clog << std::hex;
+    std::clog << "OpenGL debug message :\n";
+    std::clog << "Source : ";
     switch (source) {
         case GL_DEBUG_SOURCE_API:
-            std::cerr << "API";
+            std::clog << "API";
             break;
         case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            std::cerr << "window system";
+            std::clog << "window system";
             break;
         case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            std::cerr << "shader compiler";
+            std::clog << "shader compiler";
             break;
         case GL_DEBUG_SOURCE_THIRD_PARTY:
-            std::cerr << "third party";
+            std::clog << "third party";
             break;
         case GL_DEBUG_SOURCE_APPLICATION:
-            std::cerr << "application";
+            std::clog << "application";
             break;
         default:
-            std::cerr << source;
+            std::clog << source;
     }
-    std::cerr << "\nType : ";
+    std::clog << "\nType : ";
     switch (type) {
         case GL_DEBUG_TYPE_ERROR:
-            std::cerr << "error";
+            std::clog << "error";
             break;
         case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            std::cerr << "deprecated behavior";
+            std::clog << "deprecated behavior";
             break;
         case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            std::cerr << "undefined behavior";
+            std::clog << "undefined behavior";
             break;
         case GL_DEBUG_TYPE_PORTABILITY:
-            std::cerr << "portability";
+            std::clog << "portability";
             break;
         case GL_DEBUG_TYPE_PERFORMANCE:
-            std::cerr << "performance";
+            std::clog << "performance";
             break;
         case GL_DEBUG_TYPE_MARKER:
-            std::cerr << "marker";
+            std::clog << "marker";
             break;
         case GL_DEBUG_TYPE_PUSH_GROUP:
-            std::cerr << "push group";
+            std::clog << "push group";
             break;
         case GL_DEBUG_TYPE_POP_GROUP:
-            std::cerr << "pop group";
+            std::clog << "pop group";
             break;
         case GL_DEBUG_TYPE_OTHER:
-            std::cerr << "other";
+            std::clog << "other";
             break;
         default:
-            std::cerr << type;
+            std::clog << type;
     }
-    std::cerr << "\nSeverity : ";
+    std::clog << "\nSeverity : ";
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
-            std::cerr << "high";
+            std::clog << "high";
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            std::cerr << "medium";
+            std::clog << "medium";
             break;
         case GL_DEBUG_SEVERITY_LOW:
-            std::cerr << "low";
+            std::clog << "low";
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            std::cerr << "notification";
+            std::clog << "notification";
             break;
         default:
-            std::cerr << severity;
+            std::clog << severity;
     }
-    std::cerr << "\nMessage :\n" << message << std::endl;
-    std::cerr << std::dec;
+    std::clog << "\nMessage :\n" << message << std::endl;
+    std::clog << std::dec;
 }
 
 }

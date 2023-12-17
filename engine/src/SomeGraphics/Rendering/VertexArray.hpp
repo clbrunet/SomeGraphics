@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <sys/types.h>
+#include <memory>
 #include <vector>
+#include <span>
 
 #include <glad/gl.h>
 
@@ -19,8 +20,8 @@ class VertexArray {
 public:
     VertexArray() = delete;
     template<typename T>
-    VertexArray(const std::vector<T>& vertices, std::initializer_list<VertexAttribute> attributes,
-        const std::vector<uint32_t> indices) :
+    VertexArray(std::span<const T> vertices, std::span<const VertexAttribute> attributes,
+        std::span<const uint32_t> indices) :
         m_vertex_buffer(std::make_unique<VertexBuffer>(vertices)),
         m_index_buffer(std::make_unique<IndexBuffer>(indices))
     {

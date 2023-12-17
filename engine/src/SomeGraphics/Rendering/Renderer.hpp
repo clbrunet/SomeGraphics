@@ -43,7 +43,8 @@ public:
 private:
     constexpr static uint32_t MAX_LIGHTS_COUNT = 32;
     constexpr static uint32_t MAX_SHADOW_MAPS_COUNT = 8;
-    std::array<std::unique_ptr<DepthFrameBuffer>, MAX_SHADOW_MAPS_COUNT> m_shadow_pass_frame_buffers;
+    std::array<std::unique_ptr<DepthFrameBuffer>, MAX_SHADOW_MAPS_COUNT>
+        m_shadow_pass_frame_buffers;
     std::unique_ptr<Program> m_shadow_mapping_program;
     mutable bool m_is_shadow_pass = false;
     mutable const Entity* m_shadow_pass_light = nullptr;
@@ -82,6 +83,11 @@ private:
     static_assert(offsetof(GlobalsUniformBlockData, lights[0]) == 80);
     static_assert(offsetof(GlobalsUniformBlockData, lights[1]) == 112);
     static_assert(offsetof(GlobalsUniformBlockData, shadow_maps_count) == 1104);
+
+    constexpr static const char* SHADOW_MAP_LOCATIONS[MAX_SHADOW_MAPS_COUNT] = {
+        "u_shadow_maps[0]", "u_shadow_maps[1]", "u_shadow_maps[2]", "u_shadow_maps[3]",
+        "u_shadow_maps[4]", "u_shadow_maps[5]", "u_shadow_maps[6]", "u_shadow_maps[7]",
+    };
 };
 
 }

@@ -41,7 +41,8 @@ public:
     Texture() = delete;
     Texture(glm::ivec2 dimensions, TextureFormat format);
     static Texture white_1px();
-    static std::optional<Texture> from_ai_texture(const aiTexture& ai_texture, ColorSpace color_space);
+    static std::optional<Texture> from_ai_texture(const aiTexture& ai_texture,
+        ColorSpace color_space);
     static std::optional<Texture> create_cubemap(const char* right,
         const char* left, const char* top, const char* bottom, const char* front, const char* back);
     static Texture create_cubemap(glm::ivec2 dimensions, TextureFormat format);
@@ -56,7 +57,8 @@ public:
     ImTextureID imgui_texture_id() const;
 #if SG_ENGINE
     void attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) const;
-    void attach_face_to_framebuffer(uint32_t frame_buffer, GLenum attachment, CubemapFace face) const;
+    void attach_face_to_framebuffer(uint32_t frame_buffer,
+        GLenum attachment, CubemapFace face) const;
 #endif
 private:
     uint32_t m_renderer_id = 0;

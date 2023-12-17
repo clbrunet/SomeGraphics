@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <iostream>
@@ -42,7 +43,7 @@ private:
 class Mesh {
 public:
     Mesh() = delete;
-    static std::optional<std::unique_ptr<Mesh>> from_ai_node(const std::string& filename,
+    static std::optional<Mesh> from_ai_node(std::string_view filename,
         const aiNode& ai_node, const aiScene& ai_scene);
     Mesh(std::unique_ptr<VertexArray> vertex_array, std::shared_ptr<Material> material);
     Mesh(std::unique_ptr<VertexArray> vertex_array, std::vector<SubMeshInfo> sub_meshes_info);
@@ -54,10 +55,6 @@ public:
 
     const std::unique_ptr<VertexArray>& vertex_array() const;
     const std::vector<SubMeshInfo>& sub_meshes_info() const;
-private:
-    std::unique_ptr<VertexArray> m_vertex_array;
-    std::vector<SubMeshInfo> m_sub_meshes_info;
-
 
     struct Vertex {
         glm::vec3 position;
@@ -79,7 +76,20 @@ private:
         Vertex& operator=(Vertex&& other) = default;
         Vertex& operator=(const Vertex& other) = default;
         ~Vertex() = default;
+
+        constexpr static std::array<VertexAttribute, 4> attributes()
+        {
+            return {
+                VertexAttribute(VertexAttributeType::Vec3),
+                VertexAttribute(VertexAttributeType::Vec3),
+                VertexAttribute(VertexAttributeType::Vec3),
+                VertexAttribute(VertexAttributeType::Vec2),
+            };
+        }
     };
+private:
+    std::unique_ptr<VertexArray> m_vertex_array;
+    std::vector<SubMeshInfo> m_sub_meshes_info;
 };
 
 }

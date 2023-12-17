@@ -13,7 +13,7 @@
 
 namespace sg {
 
-std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::string& filename,
+std::optional<std::unique_ptr<Material>> Material::from_ai_material(std::string_view filename,
     const aiMaterial& ai_material, const aiScene& ai_scene)
 {
     std::optional<std::shared_ptr<Program>> program_opt
@@ -49,7 +49,7 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(const std::s
             ai_material.GetTexture(texture_info.type, 0, &path);
             const aiTexture* ai_texture = ai_scene.GetEmbeddedTexture(path.C_Str());
             std::optional<std::shared_ptr<Texture>> texture_opt
-                = ResourcesCache::texture_from_ai_texture(filename, *ai_texture,
+                = ResourcesCache::texture_from_ai_texture(std::string(filename), *ai_texture,
                     texture_info.color_space);
             if (!texture_opt.has_value()) {
                 return std::nullopt;

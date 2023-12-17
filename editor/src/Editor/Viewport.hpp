@@ -40,9 +40,11 @@ private:
     bool m_is_free_flying = false;
     glm::ivec2 m_dimensions = glm::ivec2(800, 450);
     std::unique_ptr<FrameBuffer> m_frame_buffer_a
-        = std::make_unique<FrameBuffer>(glm::vec2(m_dimensions.x, m_dimensions.y), TextureFormat::F16Rgb);
+        = std::make_unique<FrameBuffer>(glm::vec2(m_dimensions.x, m_dimensions.y),
+            TextureFormat::F16Rgb);
     std::unique_ptr<FrameBuffer> m_frame_buffer_b
-        = std::make_unique<FrameBuffer>(glm::vec2(m_dimensions.x, m_dimensions.y), TextureFormat::F16Rgb);
+        = std::make_unique<FrameBuffer>(glm::vec2(m_dimensions.x, m_dimensions.y),
+            TextureFormat::F16Rgb);
     float m_fov_y = glm::radians(60.0f);
     float m_z_near = 0.01f;
     float m_z_far = 1000.0f;

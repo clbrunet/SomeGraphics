@@ -72,7 +72,7 @@ std::optional<Texture> Texture::create_cubemap(const char* right,
     for (uint32_t i = 1; i < 6; i++) {
         const StbImageWrapper& image = images[i];
         if (image.width() != images[0].width() || image.height() != images[0].height()) {
-            std::cerr << "Cubemap creation error : not all textures have the same dimensions" << std::endl;
+            std::cerr << "Cubemap creation error : not all textures have the same dimensions\n";
             return std::nullopt;
         }
     }
@@ -137,7 +137,8 @@ void Texture::attach_to_framebuffer(uint32_t frame_buffer, GLenum attachment) co
     glNamedFramebufferTexture(frame_buffer, attachment, m_renderer_id, 0);
 }
 
-void Texture::attach_face_to_framebuffer(uint32_t frame_buffer, GLenum attachment, CubemapFace face) const
+void Texture::attach_face_to_framebuffer(uint32_t frame_buffer,
+    GLenum attachment, CubemapFace face) const
 {
     glNamedFramebufferTextureLayer(frame_buffer, attachment, m_renderer_id, 0, (int)face);
 }
@@ -155,7 +156,8 @@ Texture::Texture(const aiTexture& ai_texture, ColorSpace color_space) :
     glCreateTextures(GL_TEXTURE_2D, 1, &m_renderer_id);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureStorage2D(m_renderer_id, 1, sized_internal_format(4, color_space), ai_texture.mWidth, ai_texture.mHeight);
+    glTextureStorage2D(m_renderer_id, 1, sized_internal_format(4, color_space),
+        ai_texture.mWidth, ai_texture.mHeight);
     glTextureSubImage2D(m_renderer_id, 0, 0, 0, ai_texture.mWidth, ai_texture.mHeight,
         GL_RGBA, GL_UNSIGNED_BYTE, ai_texture.pcData);
 }

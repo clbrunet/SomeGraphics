@@ -24,58 +24,25 @@ std::optional<std::unique_ptr<Skybox>> Skybox::create(const char* right, const c
     if (!cubemap_opt.has_value()) {
         return std::nullopt;
     }
-    std::unique_ptr<VertexArray> vertex_array = std::make_unique<VertexArray>(std::vector<Vertex>({
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f,  1.0f)),
-        Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
-
-        Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
-        Vertex(glm::vec3(-1.0f, -1.0f,  1.0f)),
-        Vertex(glm::vec3(1.0f, -1.0f,  1.0f)),
-    }), std::initializer_list<VertexAttribute>({
-        VertexAttributeType::Vec3,
-    }), std::vector<uint32_t>({
-        0, 1, 2, 3, 4, 5,
-        6, 7, 8, 9, 10, 11,
-        12, 13, 14, 15, 16, 17,
-        18, 19, 20, 21, 22, 23,
-        24, 25, 26, 27, 28, 29,
-        30, 31, 32, 33, 34, 35,
-    }));
+    std::unique_ptr<VertexArray> vertex_array = std::make_unique<VertexArray>(
+        std::span<const Vertex>(std::initializer_list<Vertex>({
+            Vertex(glm::vec3(-1.0f,  1.0f, -1.0f)),
+            Vertex(glm::vec3(-1.0f, -1.0f, -1.0f)),
+            Vertex(glm::vec3(1.0f, -1.0f, -1.0f)),
+            Vertex(glm::vec3(1.0f,  1.0f, -1.0f)),
+            Vertex(glm::vec3(-1.0f,  1.0f, 1.0f)),
+            Vertex(glm::vec3(-1.0f, -1.0f, 1.0f)),
+            Vertex(glm::vec3(1.0f, -1.0f, 1.0f)),
+            Vertex(glm::vec3(1.0f,  1.0f, 1.0f)),
+        })), Vertex::attributes(),
+        std::initializer_list<uint32_t>({
+            0, 1, 2, 0, 2, 3,
+            4, 0, 3, 4, 3, 7,
+            7, 6, 5, 7, 5, 4,
+            6, 2, 1, 6, 1, 5,
+            3, 2, 6, 3, 6, 7,
+            4, 5, 1, 4, 1, 0,
+        }));
     return std::unique_ptr<Skybox>(new Skybox(std::move(program_opt.value()),
             std::move(vertex_array), std::move(cubemap_opt.value())));
 }

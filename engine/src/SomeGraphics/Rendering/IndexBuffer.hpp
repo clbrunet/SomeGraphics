@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sys/types.h>
-#include <vector>
+#include <span>
 
 #include <glad/gl.h>
 
@@ -10,7 +10,7 @@ namespace sg {
 class IndexBuffer {
 public:
     IndexBuffer() = delete;
-    IndexBuffer(const std::vector<uint32_t>& indices);
+    IndexBuffer(std::span<const uint32_t> indices);
     IndexBuffer(IndexBuffer&& other);
     IndexBuffer(const IndexBuffer& other) = delete;
     IndexBuffer& operator=(IndexBuffer&& other);

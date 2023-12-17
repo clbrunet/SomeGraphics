@@ -16,7 +16,7 @@ class Texture;
 class Material {
 public:
     Material() = delete;
-    static std::optional<std::unique_ptr<Material>> from_ai_material(const std::string& filename,
+    static std::optional<std::unique_ptr<Material>> from_ai_material(std::string_view filename,
         const aiMaterial& ai_material, const aiScene& ai_scene);
     Material(Material&& other) = default;
     Material(const Material& other) = delete;

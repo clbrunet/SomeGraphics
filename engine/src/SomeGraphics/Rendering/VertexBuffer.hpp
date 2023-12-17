@@ -4,8 +4,7 @@
 #include <iostream>
 #include <sys/types.h>
 #include <type_traits>
-#include <vector>
-#include <concepts>
+#include <span>
 
 #include <glad/gl.h>
 #include <glm/gtx/string_cast.hpp>
@@ -16,7 +15,7 @@ class VertexBuffer {
 public:
     VertexBuffer() = delete;
     template<typename T>
-    VertexBuffer(const std::vector<T>& vertices)
+    VertexBuffer(std::span<const T> vertices)
     {
         glCreateBuffers(1, &m_renderer_id);
         glNamedBufferStorage(m_renderer_id, vertices.size() * sizeof(T), vertices.data(), 0);

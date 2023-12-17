@@ -20,7 +20,7 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
     is_instantiated = true;
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit()) {
-        std::cerr << "Window creation failed" << std::endl;
+        std::cerr << "Window creation failed\n";
         std::abort();
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -31,7 +31,7 @@ Window::Window(const char* title, uint16_t width, uint16_t height)
 #endif
     m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (m_window == nullptr) {
-        std::cerr << "Window creation failed" << std::endl;
+        std::cerr << "Window creation failed\n";
         std::abort();
     }
     glfwMakeContextCurrent(m_window);
@@ -179,7 +179,7 @@ bool Window::is_instantiated = false;
 
 void Window::glfw_error_callback(int error, const char* description)
 {
-    std::cerr << "GLFW error " << error << ": " << description << std::endl;
+    std::cerr << "GLFW error " << error << ": " << description << '\n';
 }
 
 }

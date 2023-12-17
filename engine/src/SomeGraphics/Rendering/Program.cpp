@@ -161,11 +161,11 @@ std::optional<uint32_t> Program::create_program(const Shader& vert, const Shader
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
     std::vector<char> info_log(info_log_length);
     glGetProgramInfoLog(program, info_log_length, nullptr, info_log.data());
-    std::cerr << "Program link error :\n";
+    std::clog << "Program link error :\n";
     for (char c : info_log) {
-        std::cerr << c;
+        std::clog << c;
     }
-    std::cerr << std::flush;
+    std::clog << std::flush;
     return std::nullopt;
 }
 

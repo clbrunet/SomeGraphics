@@ -6,7 +6,7 @@
 
 namespace sg {
 
-IndexBuffer::IndexBuffer(const std::vector<uint32_t>& indices) :
+IndexBuffer::IndexBuffer(std::span<const uint32_t> indices) :
     m_count((uint32_t)indices.size())
 {
     glCreateBuffers(1, &m_renderer_id);

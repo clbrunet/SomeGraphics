@@ -59,7 +59,7 @@ private:
 
     // Scene root constructor
     Entity();
-    static std::optional<std::shared_ptr<Entity>> from_ai_node(const std::string& filename,
+    static std::optional<std::shared_ptr<Entity>> from_ai_node(std::string_view filename,
         const aiNode& ai_node, const aiScene& ai_scene, std::shared_ptr<Entity> parent);
     Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
         std::shared_ptr<Mesh> mesh);

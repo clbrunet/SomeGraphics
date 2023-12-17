@@ -39,7 +39,7 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename,
     const aiScene* ai_scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_FlipUVs
         | aiProcess_GenNormals | aiProcess_CalcTangentSpace);
     if (ai_scene == nullptr) {
-        std::cerr << "Model loading error : " << importer.GetErrorString() << std::endl;
+        std::cerr << "Model loading error : " << importer.GetErrorString() << '\n';
         return std::nullopt;
     }
     return from_ai_node(filename, *ai_scene->mRootNode, *ai_scene, std::move(parent));
@@ -137,13 +137,13 @@ Entity::Entity() :
 {
 }
 
-std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(const std::string& filename,
+std::optional<std::shared_ptr<Entity>> Entity::from_ai_node(std::string_view filename,
     const aiNode& ai_node, const aiScene& ai_scene, std::shared_ptr<Entity> parent)
 {
     std::shared_ptr<Mesh> mesh;
     if (ai_node.mNumMeshes > 0) {
         std::optional<std::shared_ptr<Mesh>> mesh_opt
-            = ResourcesCache::mesh_from_ai_node(filename, ai_node, ai_scene);
+            = ResourcesCache::mesh_from_ai_node(std::string(filename), ai_node, ai_scene);
         if (!mesh_opt.has_value()) {
             return std::nullopt;
         }

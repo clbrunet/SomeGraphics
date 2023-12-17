@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "SomeGraphics/ResourcesCache.hpp"
 
@@ -17,9 +19,9 @@ std::shared_ptr<Texture> ResourcesCache::white_1px_texture()
 }
 
 std::optional<std::shared_ptr<Texture>> ResourcesCache::texture_from_ai_texture(
-    const std::string& filename, const aiTexture& ai_texture, ColorSpace color_space)
+    std::string filename, const aiTexture& ai_texture, ColorSpace color_space)
 {
-    std::string key = filename + "/" + ai_texture.mFilename.C_Str();
+    std::string key = std::move(filename.append(1, '/').append(ai_texture.mFilename.C_Str()));
     std::map<std::string, std::weak_ptr<Texture>>::iterator it = textures_cache.find(key);
     if (it != textures_cache.end() && !it->second.expired()) {
         return it->second.lock();
@@ -71,9 +73,9 @@ std::optional<std::shared_ptr<Program>> ResourcesCache::program(const char* vert
 }
 
 std::optional<std::shared_ptr<Material>> ResourcesCache::material_from_ai_material(
-    const std::string& filename, const aiMaterial& ai_material, const aiScene& ai_scene)
+    std::string filename, const aiMaterial& ai_material, const aiScene& ai_scene)
 {
-    std::string key = filename + "/" + ai_material.GetName().C_Str();
+    std::string key = std::move(filename.append(1, '/').append(ai_material.GetName().C_Str()));
     std::map<std::string, std::weak_ptr<Material>>::iterator it = materials_cache.find(key);
     if (it != materials_cache.end() && !it->second.expired()) {
         return it->second.lock();
@@ -88,20 +90,19 @@ std::optional<std::shared_ptr<Material>> ResourcesCache::material_from_ai_materi
     return material;
 }
 
-std::optional<std::shared_ptr<Mesh>> ResourcesCache::mesh_from_ai_node(const std::string& filename,
+std::optional<std::shared_ptr<Mesh>> ResourcesCache::mesh_from_ai_node(std::string filename,
     const aiNode& ai_node, const aiScene& ai_scene)
 {
-    std::string key = filename + "/" + ai_node.mName.C_Str();
+    std::string key = std::move(filename.append(1, '/').append(ai_node.mName.C_Str()));
     std::map<std::string, std::weak_ptr<Mesh>>::iterator it = meshes_cache.find(key);
     if (it != meshes_cache.end() && !it->second.expired()) {
         return it->second.lock();
     }
-    std::optional<std::shared_ptr<Mesh>> mesh_opt
-        = Mesh::from_ai_node(filename, ai_node, ai_scene);
+    std::optional<Mesh> mesh_opt = Mesh::from_ai_node(filename, ai_node, ai_scene);
     if (!mesh_opt.has_value()) {
         return std::nullopt;
     }
-    std::shared_ptr<Mesh> mesh = std::move(mesh_opt.value());
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(std::move(mesh_opt.value()));
     meshes_cache[key] = mesh;
     return mesh;
 }

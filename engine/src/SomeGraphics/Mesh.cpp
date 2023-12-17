@@ -6,6 +6,7 @@
 #include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/AssimpToGlm.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
+#include "SomeGraphics/Rendering/VertexAttribute.hpp"
 
 namespace sg {
 
@@ -38,7 +39,7 @@ const std::shared_ptr<Material> SubMeshInfo::material() const
     return m_material;
 }
 
-std::optional<std::unique_ptr<Mesh>> Mesh::from_ai_node(const std::string& filename,
+std::optional<Mesh> Mesh::from_ai_node(std::string_view filename,
     const aiNode& ai_node, const aiScene& ai_scene)
 {
     std::vector<Vertex> vertices;
@@ -50,7 +51,8 @@ std::optional<std::unique_ptr<Mesh>> Mesh::from_ai_node(const std::string& filen
         const aiMesh& ai_mesh = *ai_scene.mMeshes[ai_node.mMeshes[i]];
         const aiMaterial& ai_material = *ai_scene.mMaterials[ai_mesh.mMaterialIndex];
         std::optional<std::shared_ptr<Material>> material_opt
-            = ResourcesCache::material_from_ai_material(filename, ai_material, ai_scene);
+            = ResourcesCache::material_from_ai_material(std::string(filename),
+                ai_material, ai_scene);
         if (!material_opt.has_value()) {
             return std::nullopt;
         }
@@ -71,14 +73,10 @@ std::optional<std::unique_ptr<Mesh>> Mesh::from_ai_node(const std::string& filen
             (uint8_t*)(indices_offset * sizeof(GLuint)), vertices_offset,
             std::move(material_opt.value()));
     }
-    std::unique_ptr<VertexArray> vertex_array = std::make_unique<VertexArray>(vertices,
-        std::initializer_list<VertexAttribute>({
-            VertexAttribute(VertexAttributeType::Vec3),
-            VertexAttribute(VertexAttributeType::Vec3),
-            VertexAttribute(VertexAttributeType::Vec3),
-            VertexAttribute(VertexAttributeType::Vec2),
-        }), indices);
-    return std::make_unique<Mesh>(std::move(vertex_array), std::move(sub_meshes_info));
+    std::unique_ptr<VertexArray> vertex_array
+        = std::make_unique<VertexArray>(std::span<const Vertex>(vertices),
+            Vertex::attributes(), indices);
+    return Mesh(std::move(vertex_array), std::move(sub_meshes_info));
 }
 
 Mesh::Mesh(std::unique_ptr<VertexArray> vertex_array, std::shared_ptr<Material> material) :

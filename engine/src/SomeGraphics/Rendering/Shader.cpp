@@ -30,11 +30,11 @@ std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* f
     std::vector<char> info_log(info_log_length);
     glGetShaderInfoLog(shader, info_log_length, nullptr, info_log.data());
     glDeleteShader(shader);
-    std::cerr << "Shader '" << filename << "' compilation error :\n";
+    std::clog << "Shader '" << filename << "' compilation error :\n";
     for (char c : info_log) {
-        std::cerr << c;
+        std::clog << c;
     }
-    std::cerr << std::flush;
+    std::clog << std::flush;
     return std::nullopt;
 }
 
@@ -78,7 +78,7 @@ std::optional<std::string> Shader::read_file(const char* filename)
 {
     std::ifstream ifstream(filename);
     if (ifstream.fail()) {
-        std::cerr << "Couldn't read shader '" << filename << "'." << std::endl;
+        std::cerr << "Couldn't read shader '" << filename << "'.\n";
         return std::nullopt;
     }
     std::stringstream buffer;

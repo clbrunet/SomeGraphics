@@ -23,7 +23,8 @@ EditorApplication::EditorApplication(std::string name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     std::shared_ptr<Entity> entity
-        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb", m_scene->root()).value();
+        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb",
+            m_scene->root()).value();
     entity->set_local_position(glm::vec3(5.0f, 5.0f, -5.0f));
     m_selection = std::move(entity);
     Entity::load_model("editor/assets/models/axes.glb", m_scene->root());
