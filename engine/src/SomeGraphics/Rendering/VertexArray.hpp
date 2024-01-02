@@ -19,8 +19,8 @@ class VertexBuffer;
 class VertexArray {
 public:
     VertexArray() = delete;
-    template<typename T>
-    VertexArray(std::span<const T> vertices, std::span<const VertexAttribute> attributes,
+    template<typename Vertex>
+    VertexArray(std::span<const Vertex> vertices, std::span<const VertexAttribute> attributes,
         std::span<const uint32_t> indices) :
         m_vertex_buffer(std::make_unique<VertexBuffer>(vertices)),
         m_index_buffer(std::make_unique<IndexBuffer>(indices))
@@ -36,8 +36,14 @@ public:
         uint32_t offset = 0;
         for (const VertexAttribute& attribute : attributes) {
             glEnableVertexArrayAttrib(m_renderer_id, index);
-            glVertexArrayAttribFormat(m_renderer_id, index, attribute.count(),
-                attribute.type(), GL_FALSE, offset);
+            if (attribute.is_integer()) {
+                glVertexArrayAttribIFormat(m_renderer_id, index, attribute.count(),
+                    attribute.type(), offset);
+            }
+            else {
+                glVertexArrayAttribFormat(m_renderer_id, index, attribute.count(),
+                    attribute.type(), GL_FALSE, offset);
+            }
             glVertexArrayAttribBinding(m_renderer_id, index, 0);
             index++;
             offset += attribute.size();

@@ -53,6 +53,7 @@ public:
     int count() const;
     int size() const;
     int type() const;
+    bool is_integer() const;
 private:
     int m_count;
     GLenum m_type;

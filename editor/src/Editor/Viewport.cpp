@@ -66,8 +66,8 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     }
     m_frame_buffer_a->bind();
     renderer.clear();
-    renderer.draw(scene, m_editor_camera->camera, m_dimensions);
-    renderer.draw(*m_skybox, m_editor_camera->camera);
+    renderer.render(scene, m_editor_camera->camera, m_dimensions);
+    renderer.render(*m_skybox, m_editor_camera->camera);
     m_frame_buffer_b->bind();
     renderer.post_process(*m_post_process, m_frame_buffer_a->color_texture());
     FrameBuffer::bind_default();

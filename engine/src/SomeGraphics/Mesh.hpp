@@ -25,14 +25,14 @@ public:
         uint32_t vergices_offset, std::shared_ptr<Material> material);
     SubMeshInfo(SubMeshInfo&& other) = default;
     SubMeshInfo(const SubMeshInfo& other) = delete;
-    SubMeshInfo &operator=(SubMeshInfo&& other) = default;
-    SubMeshInfo &operator=(const SubMeshInfo& other) = delete;
+    SubMeshInfo& operator=(SubMeshInfo&& other) = default;
+    SubMeshInfo& operator=(const SubMeshInfo& other) = delete;
     ~SubMeshInfo() = default;
 
     uint32_t indices_count() const;
     uint8_t* index_buffer_offset() const;
     uint32_t vertices_offset() const;
-    const std::shared_ptr<Material> material() const;
+    const std::shared_ptr<Material>& material() const;
 private:
     uint32_t m_indices_count = 0;
     uint8_t* m_index_buffer_offset = 0;

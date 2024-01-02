@@ -28,7 +28,8 @@
 namespace sg {
 
 Renderer::Renderer() :
-    m_globals_uniform_buffer(0, sizeof(GlobalsUniformBlockData))
+    m_globals_uniform_buffer(0, sizeof(GlobalsUniformBlockData)),
+    m_mesh_info_uniform_buffer(1, sizeof(MeshInfoUniformBlockData))
 {
 #if SG_DEBUG
     GLint flags;
@@ -72,27 +73,42 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
     glClearColor(red, green, blue, opacity);
 }
 
-void Renderer::draw(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const
+void Renderer::render(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const
 {
-    m_is_shadow_pass = true;
-    set_viewport(glm::ivec2(1024, 1024));
-    m_shadow_mapping_program->use();
     int frame_buffer_renderer_id;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frame_buffer_renderer_id);
     const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
-    uint8_t shadow_maps_count = glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
-    for (uint8_t i = 0; i < shadow_maps_count; i++) {
-        m_shadow_pass_light = lights[i].get();
-        m_shadow_pass_frame_buffer = m_shadow_pass_frame_buffers[i].get();
-        m_shadow_pass_frame_buffer->bind();
+    m_shadow_maps_count = glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
+    for (uint8_t i = 0; i < m_shadow_maps_count; i++) {
+        const DepthFrameBuffer& frame_buffer = *m_shadow_pass_frame_buffers[i];
+        frame_buffer.bind();
         for (CubemapFace face = CubemapFace::Begin;
             face < CubemapFace::End; face = CubemapFace(face + 1)) {
-            m_shadow_pass_frame_buffer->attach_face(face);
+            frame_buffer.attach_face(face);
             glClear(GL_DEPTH_BUFFER_BIT);
         }
-        draw(*scene.root(), scene, camera);
+        glm::vec3 light_position = lights[i]->model_matrix()[3];
+        m_shadow_map_infos[i].light_position = light_position;
+        static const glm::mat4 projection
+            = glm::perspective(glm::radians(90.0f), 1.0f, 0.01f, 30.0f);
+        m_shadow_map_infos[i].view_projections = {
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+            projection * glm::lookAt(light_position, light_position
+                + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+        };
     }
-    m_is_shadow_pass = false;
+    set_viewport(glm::ivec2(1024, 1024));
+    m_shadow_mapping_program->use();
+    render<RenderPass::Shadow>(*scene.root(), scene, camera);
     set_viewport(viewport_dimensions);
     uint8_t lights_count = glm::min(lights.size(), (size_t)MAX_LIGHTS_COUNT);
     GlobalsUniformBlockData globals = {
@@ -100,7 +116,7 @@ void Renderer::draw(const Scene& scene, const Camera& camera, glm::ivec2 viewpor
         .camera_position = camera.position(),
         .lights_count = lights_count,
         .lights = {},
-        .shadow_maps_count = shadow_maps_count,
+        .shadow_maps_count = m_shadow_maps_count,
     };
     for (uint8_t i = 0; i < lights_count; i++) {
         const std::shared_ptr<Entity>& light = lights[i];
@@ -109,15 +125,15 @@ void Renderer::draw(const Scene& scene, const Camera& camera, glm::ivec2 viewpor
             .hdr_color = light->light()->color * light->light()->intensity,
         };
     }
-    m_globals_uniform_buffer.update_data<GlobalsUniformBlockData>(globals);
+    m_globals_uniform_buffer.update_data(globals);
     for (uint8_t i = 0; i < m_shadow_pass_frame_buffers.size(); i++) {
         m_shadow_pass_frame_buffers[i]->depth_texture().bind_to_unit(15 - i);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_renderer_id);
-    draw(*scene.root(), scene, camera);
+    render<RenderPass::Shading>(*scene.root(), scene, camera);
 }
 
-void Renderer::draw(const Skybox& skybox, const Camera& camera) const
+void Renderer::render(const Skybox& skybox, const Camera& camera) const
 {
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
@@ -126,8 +142,7 @@ void Renderer::draw(const Skybox& skybox, const Camera& camera) const
     skybox.program()->set_mat4("u_projection", camera.projection());
     skybox.program()->set_int("u_skybox", 0);
     skybox.cubemap()->bind_to_unit(0);
-
-    draw(*skybox.vertex_array());
+    render(*skybox.vertex_array());
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
 }
@@ -138,7 +153,7 @@ void Renderer::post_process(const PostProcess& post_process, const Texture& text
     post_process.program()->use();
     post_process.program()->set_int("u_texture", 0);
     texture.bind_to_unit(0);
-    draw(*post_process.vertex_array());
+    render(*post_process.vertex_array());
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -151,65 +166,7 @@ void Renderer::set_framebuffer_srbg(bool state) const
     }
 }
 
-void Renderer::draw(const Entity& entity, const Scene& scene, const Camera& camera) const
-{
-    if (entity.mesh()) {
-        draw(*entity.mesh(), entity.model_matrix());
-    }
-    for (const std::shared_ptr<Entity>& child : entity.children()) {
-        draw(*child, scene, camera);
-    }
-}
-
-void Renderer::draw(const Mesh& mesh, const glm::mat4& model_matrix) const
-{
-    const VertexArray& vertex_array = *mesh.vertex_array();
-    vertex_array.bind();
-    GLenum index_buffer_format = vertex_array.index_buffer()->format();
-    for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {
-        if (m_is_shadow_pass) {
-            glm::vec3 light_position = m_shadow_pass_light->model_matrix()[3];
-            std::array<glm::mat4, 6> views = {
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-                glm::lookAt(light_position, light_position
-                    + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
-            };
-            for (CubemapFace face = CubemapFace::Begin;
-                face < CubemapFace::End; face = CubemapFace(face + 1)) {
-                m_shadow_pass_frame_buffer->attach_face(face);
-                glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.01f, 30.0f);
-                m_shadow_mapping_program->set_mat4("u_view_projection", projection * views[face]);
-                m_shadow_mapping_program->set_mat4("u_model", model_matrix);
-                m_shadow_mapping_program->set_vec3("u_light_position", light_position);
-                glDrawElementsBaseVertex(GL_TRIANGLES,
-                    sub_mesh_info.indices_count(), index_buffer_format,
-                    sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
-            }
-        } else {
-            const std::shared_ptr<Program>& program = sub_mesh_info.material()->program();
-            program->use();
-            program->set_mat4("u_model", model_matrix);
-            for (uint8_t i = 0; i < m_shadow_pass_frame_buffers.size(); i++) {
-                program->set_int(SHADOW_MAP_LOCATIONS[i], 15 - i);
-            }
-            sub_mesh_info.material()->set_program_data();
-            glDrawElementsBaseVertex(GL_TRIANGLES,
-                sub_mesh_info.indices_count(), index_buffer_format,
-                sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
-        }
-    }
-}
-
-void Renderer::draw(const VertexArray& vertex_array) const
+void Renderer::render(const VertexArray& vertex_array) const
 {
     vertex_array.bind();
     glDrawElements(GL_TRIANGLES, vertex_array.index_buffer()->count(),

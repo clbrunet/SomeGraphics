@@ -68,6 +68,11 @@ void Program::set_int(const char* name, int i) const
     glUniform1i(glGetUniformLocation(m_renderer_id, name), i);
 }
 
+void Program::set_ints(const char* name, std::span<const int> ints) const
+{
+    glUniform1iv(glGetUniformLocation(m_renderer_id, name), ints.size(), ints.data());
+}
+
 void Program::set_uint(const char* name, unsigned u) const
 {
     glUniform1ui(glGetUniformLocation(m_renderer_id, name), u);

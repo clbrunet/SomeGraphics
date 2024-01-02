@@ -8,7 +8,7 @@
 #include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Texture.hpp"
-#include "SomeGraphics/AssimpToGlm.hpp"
+#include "SomeGraphics/AssimpHelper.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 
 namespace sg {
@@ -67,7 +67,7 @@ std::optional<std::unique_ptr<Material>> Material::from_ai_material(std::string_
     material->m_bools = std::move(bools);
     aiColor3D ai_color3;
     ai_material.Get(AI_MATKEY_BASE_COLOR, ai_color3);
-    material->m_vec4s["u_color"] = glm::vec4(AssimpToGlm::vec3(ai_color3), 1.0f);
+    material->m_vec4s["u_color"] = glm::vec4(assimp_helper::vec3(ai_color3), 1.0f);
     ai_material.Get(AI_MATKEY_ROUGHNESS_FACTOR, material->m_floats["u_roughness"]);
     ai_material.Get(AI_MATKEY_METALLIC_FACTOR, material->m_floats["u_metalness"]);
     return material;

@@ -45,6 +45,12 @@ void Properties::render(Entity& entity, const Renderer& renderer, Selection& sel
         render_mesh(*entity.mesh(), renderer, selection);
         ImGui::TreePop();
     }
+    if (entity.skin()) {
+        if (ImGui::TreeNodeEx("Skinned mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+            render_mesh(entity.skin()->mesh(), renderer, selection);
+            ImGui::TreePop();
+        }
+    }
     if (entity.light() && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
         render_light(*entity.light());
         ImGui::TreePop();
@@ -101,7 +107,7 @@ void Properties::render(Material& material, const Renderer& renderer,
     }
 }
 
-void Properties::render_mesh(Mesh& mesh, const Renderer& renderer, Selection& selection) const
+void Properties::render_mesh(const Mesh& mesh, const Renderer& renderer, Selection& selection) const
 {
     uint8_t i = 0;
     for (const SubMeshInfo& sub_mesh_info : mesh.sub_meshes_info()) {

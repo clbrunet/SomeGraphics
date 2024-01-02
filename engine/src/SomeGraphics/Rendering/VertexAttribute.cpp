@@ -17,4 +17,9 @@ int VertexAttribute::size() const
     return m_size;
 }
 
+bool VertexAttribute::is_integer() const
+{
+    return m_type == GL_UNSIGNED_INT;
+}
+
 }

@@ -32,7 +32,11 @@ EditorApplication::EditorApplication(std::string name) :
     entity = Entity::load_model("editor/assets/models/cerberus.glb", m_scene->root()).value();
     entity->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
     entity->set_local_scale(glm::vec3(0.03f));
-    m_scene->add_light("Light1", m_scene->root())->light()->intensity = 300.0f;
+    entity = Entity::load_model("editor/assets/models/animated.glb", m_scene->root()).value();
+    entity->set_local_position(glm::vec3(-4.0f, -7.0f, -4.0f));
+    entity->set_local_rotation(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+    entity->set_local_scale(glm::vec3(3.0f));
+    m_scene->add_light("Light1", m_scene->root())->light()->intensity = 200.0f;
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);

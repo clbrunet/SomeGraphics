@@ -13,6 +13,7 @@
 #include "SomeGraphics/Rendering/Program.hpp"
 #include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/Skin.hpp"
 
 namespace sg {
 
@@ -29,12 +30,15 @@ public:
         std::string filename, const aiMaterial& ai_material, const aiScene& ai_scene);
     static std::optional<std::shared_ptr<Mesh>> mesh_from_ai_node(std::string filename,
         const aiNode& ai_node, const aiScene& ai_scene);
+    static std::optional<std::shared_ptr<Skin>> skin_from_ai_node(std::string filename,
+        const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root);
 
     static void clear_unused();
     static void clear_unused_textures();
     static void clear_unused_programs();
     static void clear_unused_materials();
     static void clear_unused_meshes();
+    static void clear_unused_skins();
 
     ResourcesCache() = delete;
     ResourcesCache(ResourcesCache&& other) = delete;
@@ -48,11 +52,12 @@ private:
     static std::map<std::string, std::weak_ptr<Program>> programs_cache;
     static std::map<std::string, std::weak_ptr<Material>> materials_cache;
     static std::map<std::string, std::weak_ptr<Mesh>> meshes_cache;
+    static std::map<std::string, std::weak_ptr<Skin>> skins_cache;
 
-    template<typename T>
-    static void clear_unused(std::map<std::string, std::weak_ptr<T>> cache)
+    template<typename CachedType>
+    static void clear_unused(std::map<std::string, std::weak_ptr<CachedType>> cache)
     {
-        typename std::map<std::string, std::weak_ptr<T>>::const_iterator cit = cache.cbegin();
+        auto cit = cache.cbegin();
         for (; cit != cache.cend(); ) {
             if (cit->second.expired()) {
                 cit = cache.erase(cit);

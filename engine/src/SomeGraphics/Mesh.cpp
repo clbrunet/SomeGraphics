@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "SomeGraphics/Mesh.hpp"
-#include "SomeGraphics/AssimpToGlm.hpp"
+#include "SomeGraphics/AssimpHelper.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/Rendering/VertexAttribute.hpp"
 
@@ -34,7 +34,7 @@ uint32_t SubMeshInfo::vertices_offset() const
     return m_vertices_offset;
 }
 
-const std::shared_ptr<Material> SubMeshInfo::material() const
+const std::shared_ptr<Material>& SubMeshInfo::material() const
 {
     return m_material;
 }
@@ -58,15 +58,15 @@ std::optional<Mesh> Mesh::from_ai_node(std::string_view filename,
         }
         vertices_offset = vertices.size();
         for (uint32_t j = 0; j < ai_mesh.mNumVertices; j++) {
-            vertices.push_back(Vertex(AssimpToGlm::vec3(ai_mesh.mVertices[j]),
-                    AssimpToGlm::vec3(ai_mesh.mNormals[j]), AssimpToGlm::vec3(ai_mesh.mTangents[j]),
-                    AssimpToGlm::vec3(ai_mesh.mTextureCoords[0][j])));
+            vertices.emplace_back(assimp_helper::vec3(ai_mesh.mVertices[j]),
+                    assimp_helper::vec3(ai_mesh.mNormals[j]), assimp_helper::vec3(ai_mesh.mTangents[j]),
+                    assimp_helper::vec3(ai_mesh.mTextureCoords[0][j]));
         }
         indices_offset = indices.size();
         for (uint32_t j = 0; j < ai_mesh.mNumFaces; j++) {
             const aiFace& ai_face = ai_mesh.mFaces[j];
             for (uint32_t k = 0; k < ai_face.mNumIndices; k++) {
-                indices.push_back(ai_face.mIndices[k]);
+                indices.emplace_back(ai_face.mIndices[k]);
             }
         }
         sub_meshes_info.emplace_back(indices.size() - indices_offset,

@@ -16,10 +16,10 @@ public:
     UniformBuffer& operator=(const UniformBuffer& other) = delete;
     ~UniformBuffer();
 
-    template<typename T>
-    void update_data(T& data) const
+    template<typename Data>
+    void update_data(const Data& data) const
     {
-        glNamedBufferSubData(m_renderer_id, 0, sizeof(T), &data);
+        glNamedBufferSubData(m_renderer_id, 0, sizeof(Data), &data);
     }
 
     void update_data(uint32_t offset, uint32_t size, const uint8_t* data) const;

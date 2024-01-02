@@ -3,26 +3,34 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
+#include <memory>
+#include <type_traits>
 
 #include <glm/ext/vector_int2.hpp>
 #include <glad/gl.h>
 #include <glm/ext/matrix_float4x4.hpp>
-#include <memory>
+#include <glm/gtx/string_cast.hpp>
 
 #include "SomeGraphics/Rendering/DepthFrameBuffer.hpp"
 #include "SomeGraphics/Rendering/UniformBuffer.hpp"
 #include "SomeGraphics/Rendering/Program.hpp"
+#include "SomeGraphics/Rendering/Material.hpp"
+#include "SomeGraphics/Entity.hpp"
+#include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/Skin.hpp"
 
 namespace sg {
 
 class Camera;
 class Scene;
 class Skybox;
-class Mesh;
 class VertexArray;
 class PostProcess;
 class Texture;
-class Entity;
+
+template<typename T>
+concept AnyMesh = std::is_same_v<T, Mesh> || std::is_same_v<T, Skin>;
 
 class Renderer {
 public:
@@ -36,46 +44,158 @@ public:
     void set_viewport(glm::ivec2 dimensions) const;
     void clear() const;
     void set_clear_color(float red, float green, float blue, float opacity) const;
-    void draw(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const;
-    void draw(const Skybox& skybox, const Camera& camera) const;
+    void render(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const;
+    void render(const Skybox& skybox, const Camera& camera) const;
     void post_process(const PostProcess& post_process, const Texture& texture) const;
     void set_framebuffer_srbg(bool state) const;
 private:
     constexpr static uint32_t MAX_LIGHTS_COUNT = 32;
     constexpr static uint32_t MAX_SHADOW_MAPS_COUNT = 8;
+    enum class RenderPass {
+        Shadow,
+        Shading,
+    };
+    struct ShadowPassMapInfo {
+        glm::vec3 light_position;
+        std::array<glm::mat4, 6> view_projections;
+    };
     std::array<std::unique_ptr<DepthFrameBuffer>, MAX_SHADOW_MAPS_COUNT>
         m_shadow_pass_frame_buffers;
     std::unique_ptr<Program> m_shadow_mapping_program;
-    mutable bool m_is_shadow_pass = false;
-    mutable const Entity* m_shadow_pass_light = nullptr;
-    mutable const DepthFrameBuffer* m_shadow_pass_frame_buffer = nullptr;
+    mutable uint8_t m_shadow_maps_count;
+    mutable std::array<ShadowPassMapInfo, MAX_SHADOW_MAPS_COUNT> m_shadow_map_infos;
     UniformBuffer m_globals_uniform_buffer;
+    UniformBuffer m_mesh_info_uniform_buffer;
 
-    void draw(const Entity& entity, const Scene& scene, const Camera& camera) const;
-    void draw(const Mesh& mesh, const glm::mat4& model_matrix) const;
-    void draw(const VertexArray& vertex_array) const;
+    template<RenderPass render_pass>
+    void render(const Entity& entity, const Scene& scene, const Camera& camera) const
+    {
+        if constexpr (render_pass == RenderPass::Shadow) {
+            if (entity.mesh()) {
+                render_shadow(*entity.mesh(), entity.model_matrix());
+            }
+            if (entity.skin()) {
+                render_shadow(*entity.skin(), entity.model_matrix());
+            }
+        }
+        else {
+            if (entity.mesh()) {
+                render(*entity.mesh(), entity.model_matrix());
+            }
+            if (entity.skin()) {
+                render(*entity.skin(), entity.model_matrix());
+            }
+        }
+        for (const std::shared_ptr<Entity>& child : entity.children()) {
+            render<render_pass>(*child, scene, camera);
+        }
+    }
+
+    template<AnyMesh AnyMesh>
+    void render_shadow(const AnyMesh& any_mesh, const glm::mat4& model_matrix) const
+    {
+        send_mesh_info(any_mesh, model_matrix);
+        const VertexArray& vertex_array = *any_mesh.vertex_array();
+        vertex_array.bind();
+        GLenum index_buffer_format = vertex_array.index_buffer()->format();
+        for (uint8_t i = 0; i < m_shadow_maps_count; i++) {
+            const ShadowPassMapInfo& shadow_map_info = m_shadow_map_infos[i];
+            glm::vec3 light_position = shadow_map_info.light_position;
+            m_shadow_mapping_program->set_vec3("u_light_position", light_position);
+            const DepthFrameBuffer& frame_buffer = *m_shadow_pass_frame_buffers[i];
+            frame_buffer.bind();
+            for (CubemapFace face = CubemapFace::Begin; face < CubemapFace::End;
+                face = CubemapFace(face + 1)) {
+                frame_buffer.attach_face(face);
+                m_shadow_mapping_program->set_mat4("u_view_projection",
+                    shadow_map_info.view_projections[face]);
+                for (const SubMeshInfo& sub_mesh_info : any_mesh.sub_meshes_info()) {
+                    render<RenderPass::Shadow>(sub_mesh_info, index_buffer_format);
+                }
+            }
+        }
+    }
+
+    template<AnyMesh AnyMesh>
+    void render(const AnyMesh& any_mesh, const glm::mat4& model_matrix) const
+    {
+        send_mesh_info(any_mesh, model_matrix);
+        const VertexArray& vertex_array = *any_mesh.vertex_array();
+        vertex_array.bind();
+        GLenum index_buffer_format = vertex_array.index_buffer()->format();
+        for (const SubMeshInfo& sub_mesh_info : any_mesh.sub_meshes_info()) {
+            render<RenderPass::Shading>(sub_mesh_info, index_buffer_format);
+        }
+    }
+
+    template<AnyMesh AnyMesh>
+    void send_mesh_info(const AnyMesh& any_mesh, const glm::mat4& model_matrix) const
+    {
+        MeshInfoUniformBlockData mesh_info;
+        mesh_info.model = model_matrix;
+        if constexpr (std::is_same_v<AnyMesh, Skin>) {
+            mesh_info.is_rigged = true;
+            glm::mat4 model_matrix_inverse = glm::inverse(model_matrix);
+            uint32_t i = 0;
+            for (const Bone& bone : any_mesh.bones()) {
+                std::shared_ptr<Entity> bone_entity = bone.entity.lock();
+                if (!bone_entity) {
+                    continue;
+                }
+                glm::mat4 bone_entity_to_skin = model_matrix_inverse * bone_entity->model_matrix();
+                mesh_info.bone_transforms[i] = bone_entity_to_skin * bone.skin_to_bone;
+                i++;
+            }
+        }
+        else {
+            mesh_info.is_rigged = false;
+        }
+        m_mesh_info_uniform_buffer.update_data(mesh_info);
+    }
+
+    template<RenderPass render_pass>
+    void render(const SubMeshInfo& sub_mesh_info, GLenum index_buffer_format) const
+    {
+        if constexpr (render_pass == RenderPass::Shading) {
+            const std::shared_ptr<Program>& program = sub_mesh_info.material()->program();
+            program->use();
+            constexpr static std::array<int, MAX_SHADOW_MAPS_COUNT> SHADOW_MAP_UNITS
+                = { 15, 14, 13, 12, 11, 10, 9, 8 };
+            program->set_ints("u_shadow_maps", std::span(SHADOW_MAP_UNITS)
+                .subspan(0, m_shadow_pass_frame_buffers.size()));
+            sub_mesh_info.material()->set_program_data();
+        }
+        glDrawElementsBaseVertex(GL_TRIANGLES, sub_mesh_info.indices_count(), index_buffer_format,
+            sub_mesh_info.index_buffer_offset(), sub_mesh_info.vertices_offset());
+    }
+
+    void render(const VertexArray& vertex_array) const;
 
     static void GLAPIENTRY gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* user_param);
 
+    #pragma pack(push, 1)
     struct LightUniformData {
         glm::vec3 position;
-        int : 32;
+        uint64_t : 32;
         glm::vec3 hdr_color;
-        int : 32;
+        uint64_t : 32;
     };
+    #pragma pack(pop)
     static_assert(sizeof(LightUniformData) == 32);
     static_assert(offsetof(LightUniformData, position) == 0);
     static_assert(offsetof(LightUniformData, hdr_color) == 16);
+    #pragma pack(push, 1)
     struct GlobalsUniformBlockData {
         glm::mat4 view_projection;
         glm::vec3 camera_position;
         unsigned lights_count;
         LightUniformData lights[MAX_LIGHTS_COUNT];
         unsigned shadow_maps_count;
-        int : 32;
-        long : 64;
+        uint64_t : 32;
+        uint64_t : 64;
     };
+    #pragma pack(pop)
     static_assert(sizeof(GlobalsUniformBlockData) == 1120);
     static_assert(offsetof(GlobalsUniformBlockData, view_projection) == 0);
     static_assert(offsetof(GlobalsUniformBlockData, camera_position) == 64);
@@ -84,10 +204,19 @@ private:
     static_assert(offsetof(GlobalsUniformBlockData, lights[1]) == 112);
     static_assert(offsetof(GlobalsUniformBlockData, shadow_maps_count) == 1104);
 
-    constexpr static const char* SHADOW_MAP_LOCATIONS[MAX_SHADOW_MAPS_COUNT] = {
-        "u_shadow_maps[0]", "u_shadow_maps[1]", "u_shadow_maps[2]", "u_shadow_maps[3]",
-        "u_shadow_maps[4]", "u_shadow_maps[5]", "u_shadow_maps[6]", "u_shadow_maps[7]",
+    #pragma pack(push, 1)
+    struct MeshInfoUniformBlockData {
+        glm::mat4 model;
+        unsigned is_rigged;
+        uint64_t : 32;
+        uint64_t : 64;
+        glm::mat4 bone_transforms[Skin::MAX_BONES_COUNT];
     };
+    #pragma pack(pop)
+    static_assert(sizeof(MeshInfoUniformBlockData) == 16464);
+    static_assert(offsetof(MeshInfoUniformBlockData, model) == 0);
+    static_assert(offsetof(MeshInfoUniformBlockData, is_rigged) == 64);
+    static_assert(offsetof(MeshInfoUniformBlockData, bone_transforms) == 80);
 };
 
 }

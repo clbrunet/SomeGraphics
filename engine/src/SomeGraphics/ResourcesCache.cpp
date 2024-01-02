@@ -107,12 +107,30 @@ std::optional<std::shared_ptr<Mesh>> ResourcesCache::mesh_from_ai_node(std::stri
     return mesh;
 }
 
+std::optional<std::shared_ptr<Skin>> ResourcesCache::skin_from_ai_node(std::string filename,
+        const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root)
+{
+    std::string key = std::move(filename.append(1, '/').append(ai_node.mName.C_Str()));
+    std::map<std::string, std::weak_ptr<Skin>>::iterator it = skins_cache.find(key);
+    if (it != skins_cache.end() && !it->second.expired()) {
+        return it->second.lock();
+    }
+    std::optional<Skin> skin_opt = Skin::from_ai_node(filename, ai_node, ai_scene, asset_root);
+    if (!skin_opt.has_value()) {
+        return std::nullopt;
+    }
+    std::shared_ptr<Skin> skin = std::make_shared<Skin>(std::move(skin_opt.value()));
+    skins_cache[key] = skin;
+    return skin;
+}
+
 void ResourcesCache::clear_unused()
 {
     clear_unused_textures();
     clear_unused_programs();
     clear_unused_materials();
     clear_unused_meshes();
+    clear_unused_skins();
 }
 
 void ResourcesCache::clear_unused_textures()
@@ -135,10 +153,16 @@ void ResourcesCache::clear_unused_meshes()
     clear_unused(meshes_cache);
 }
 
+void ResourcesCache::clear_unused_skins()
+{
+    clear_unused(skins_cache);
+}
+
 std::weak_ptr<Texture> ResourcesCache::white_1px_texture_cache;
 std::map<std::string, std::weak_ptr<Texture>> ResourcesCache::textures_cache;
 std::map<std::string, std::weak_ptr<Program>> ResourcesCache::programs_cache;
 std::map<std::string, std::weak_ptr<Material>> ResourcesCache::materials_cache;
 std::map<std::string, std::weak_ptr<Mesh>> ResourcesCache::meshes_cache;
+std::map<std::string, std::weak_ptr<Skin>> ResourcesCache::skins_cache;
 
 }

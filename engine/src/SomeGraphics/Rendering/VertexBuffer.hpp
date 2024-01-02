@@ -14,11 +14,11 @@ namespace sg {
 class VertexBuffer {
 public:
     VertexBuffer() = delete;
-    template<typename T>
-    VertexBuffer(std::span<const T> vertices)
+    template<typename Vertex>
+    VertexBuffer(std::span<const Vertex> vertices)
     {
         glCreateBuffers(1, &m_renderer_id);
-        glNamedBufferStorage(m_renderer_id, vertices.size() * sizeof(T), vertices.data(), 0);
+        glNamedBufferStorage(m_renderer_id, vertices.size() * sizeof(Vertex), vertices.data(), 0);
     }
     VertexBuffer(VertexBuffer&& other);
     VertexBuffer(const VertexBuffer& other) = delete;
