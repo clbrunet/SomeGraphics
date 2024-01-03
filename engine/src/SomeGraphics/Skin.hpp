@@ -54,10 +54,10 @@ private:
         glm::vec3 weights;
 
         Vertex() = delete;
-        Vertex(Mesh::Vertex mesh_vertex, uint32_t bone_indices, glm::vec3 weights) :
-            mesh_vertex(std::move(mesh_vertex)),
-            bone_indices(std::move(bone_indices)),
-            weights(std::move(weights))
+        Vertex(Mesh::Vertex p_mesh_vertex, uint32_t p_bone_indices, glm::vec3 p_weights) :
+            mesh_vertex(std::move(p_mesh_vertex)),
+            bone_indices(std::move(p_bone_indices)),
+            weights(std::move(p_weights))
         {
         }
         Vertex(Vertex&& other) = default;

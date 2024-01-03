@@ -56,13 +56,13 @@ std::optional<Mesh> Mesh::from_ai_node(std::string_view filename,
         if (!material_opt.has_value()) {
             return std::nullopt;
         }
-        vertices_offset = vertices.size();
+        vertices_offset = (uint32_t)vertices.size();
         for (uint32_t j = 0; j < ai_mesh.mNumVertices; j++) {
             vertices.emplace_back(assimp_helper::vec3(ai_mesh.mVertices[j]),
                     assimp_helper::vec3(ai_mesh.mNormals[j]), assimp_helper::vec3(ai_mesh.mTangents[j]),
                     assimp_helper::vec3(ai_mesh.mTextureCoords[0][j]));
         }
-        indices_offset = indices.size();
+        indices_offset = (uint32_t)indices.size();
         for (uint32_t j = 0; j < ai_mesh.mNumFaces; j++) {
             const aiFace& ai_face = ai_mesh.mFaces[j];
             for (uint32_t k = 0; k < ai_face.mNumIndices; k++) {

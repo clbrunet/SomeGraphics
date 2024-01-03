@@ -124,7 +124,7 @@ void Material::set_program_data() const
     for (const auto& [location, vec4] : m_vec4s) {
         m_program->set_vec4(location.c_str(), vec4);
     }
-    int i = 0;
+    uint8_t i = 0;
     for (const auto& [location, texture] : m_textures) {
         m_program->set_int(location.c_str(), i);
         texture->bind_to_unit(i);

@@ -41,8 +41,8 @@ private:
         glm::vec3 position;
 
         Vertex() = delete;
-        Vertex(glm::vec3 position) :
-            position(std::move(position))
+        Vertex(glm::vec3 p_position) :
+            position(std::move(p_position))
         {
         }
         Vertex(Vertex&& other) = default;

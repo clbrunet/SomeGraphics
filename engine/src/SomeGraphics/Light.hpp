@@ -6,8 +6,8 @@ namespace sg {
 
 struct Light {
     Light() = default;
-    Light(glm::vec3 color);
-    Light(glm::vec3 color, float intensity);
+    Light(glm::vec3 p_color);
+    Light(glm::vec3 p_color, float p_intensity);
     Light(Light&& other) = default;
     Light(const Light& other) = default;
     Light& operator=(Light&& other) = default;

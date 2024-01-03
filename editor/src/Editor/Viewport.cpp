@@ -56,8 +56,8 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     ImGui::Begin("Viewport");
     m_is_hovered = ImGui::IsWindowHovered();
     ImVec2 content_region_available = ImGui::GetContentRegionAvail();
-    if (content_region_available.x != m_dimensions.x
-        || content_region_available.y != m_dimensions.y) {
+    if ((uint32_t)content_region_available.x != m_dimensions.x
+        || (uint32_t)content_region_available.y != m_dimensions.y) {
         m_dimensions = glm::ivec2(content_region_available.x, content_region_available.y);
         m_frame_buffer_a = std::make_unique<FrameBuffer>(m_dimensions, TextureFormat::F16Rgb);
         m_frame_buffer_b = std::make_unique<FrameBuffer>(m_dimensions, TextureFormat::F16Rgb);
@@ -72,7 +72,8 @@ void Viewport::on_render(const Renderer& renderer, const Scene& scene)
     renderer.post_process(*m_post_process, m_frame_buffer_a->color_texture());
     FrameBuffer::bind_default();
     ImGui::Image(m_frame_buffer_b->color_texture().imgui_texture_id(),
-        ImVec2(m_dimensions.x, m_dimensions.y), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        ImVec2((float)m_dimensions.x, (float)m_dimensions.y),
+        ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();

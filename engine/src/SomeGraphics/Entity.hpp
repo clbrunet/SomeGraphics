@@ -68,8 +68,8 @@ private:
         const aiNode& ai_node;
         std::shared_ptr<Entity> entity;
 
-        TwoPassSkinRefs(const aiNode& ai_node, std::shared_ptr<Entity> entity) :
-            ai_node(ai_node), entity(entity)
+        TwoPassSkinRefs(const aiNode& p_ai_node, std::shared_ptr<Entity> p_entity) :
+            ai_node(p_ai_node), entity(p_entity)
         {
         }
     };

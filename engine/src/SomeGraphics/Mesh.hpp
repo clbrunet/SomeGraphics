@@ -63,12 +63,12 @@ public:
         glm::vec2 texture_coordinates;
 
         Vertex() = delete;
-        Vertex(glm::vec3 position, glm::vec3 normal, glm::vec3 tangent,
-            glm::vec2 texture_coordinates) :
-            position(std::move(position)),
-            normal(std::move(normal)),
-            tangent(std::move(tangent)),
-            texture_coordinates(std::move(texture_coordinates))
+        Vertex(glm::vec3 p_position, glm::vec3 p_normal, glm::vec3 p_tangent,
+            glm::vec2 p_texture_coordinates) :
+            position(std::move(p_position)),
+            normal(std::move(p_normal)),
+            tangent(std::move(p_tangent)),
+            texture_coordinates(std::move(p_texture_coordinates))
         {
         }
         Vertex(Vertex&& other) = default;

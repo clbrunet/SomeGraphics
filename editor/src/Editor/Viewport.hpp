@@ -38,7 +38,7 @@ public:
 private:
     bool m_is_hovered = false;
     bool m_is_free_flying = false;
-    glm::ivec2 m_dimensions = glm::ivec2(800, 450);
+    glm::uvec2 m_dimensions = glm::ivec2(800, 450);
     std::unique_ptr<FrameBuffer> m_frame_buffer_a
         = std::make_unique<FrameBuffer>(glm::vec2(m_dimensions.x, m_dimensions.y),
             TextureFormat::F16Rgb);

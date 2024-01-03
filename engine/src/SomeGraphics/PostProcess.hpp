@@ -34,9 +34,9 @@ private:
         glm::vec2 texture_coordinates;
 
         Vertex() = delete;
-        Vertex(glm::vec2 position, glm::vec2 texture_coordinates) :
-            position(std::move(position)),
-            texture_coordinates(std::move(texture_coordinates))
+        Vertex(glm::vec2 p_position, glm::vec2 p_texture_coordinates) :
+            position(std::move(p_position)),
+            texture_coordinates(std::move(p_texture_coordinates))
         {
         }
         Vertex(Vertex&& other) = default;

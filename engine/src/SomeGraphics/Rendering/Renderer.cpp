@@ -73,12 +73,13 @@ void Renderer::set_clear_color(float red, float green, float blue, float opacity
     glClearColor(red, green, blue, opacity);
 }
 
-void Renderer::render(const Scene& scene, const Camera& camera, glm::ivec2 viewport_dimensions) const
+void Renderer::render(const Scene& scene, const Camera& camera,
+    glm::ivec2 viewport_dimensions) const
 {
     int frame_buffer_renderer_id;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frame_buffer_renderer_id);
     const std::vector<std::shared_ptr<Entity>>& lights = scene.lights();
-    m_shadow_maps_count = glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
+    m_shadow_maps_count = (uint8_t)glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
     for (uint8_t i = 0; i < m_shadow_maps_count; i++) {
         const DepthFrameBuffer& frame_buffer = *m_shadow_pass_frame_buffers[i];
         frame_buffer.bind();
@@ -110,7 +111,7 @@ void Renderer::render(const Scene& scene, const Camera& camera, glm::ivec2 viewp
     m_shadow_mapping_program->use();
     render<RenderPass::Shadow>(*scene.root(), scene, camera);
     set_viewport(viewport_dimensions);
-    uint8_t lights_count = glm::min(lights.size(), (size_t)MAX_LIGHTS_COUNT);
+    uint8_t lights_count = (uint8_t)glm::min(lights.size(), (size_t)MAX_LIGHTS_COUNT);
     GlobalsUniformBlockData globals = {
         .view_projection = camera.view_projection(),
         .camera_position = camera.position(),

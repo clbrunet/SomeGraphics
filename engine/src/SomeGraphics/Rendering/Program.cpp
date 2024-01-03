@@ -70,7 +70,7 @@ void Program::set_int(const char* name, int i) const
 
 void Program::set_ints(const char* name, std::span<const int> ints) const
 {
-    glUniform1iv(glGetUniformLocation(m_renderer_id, name), ints.size(), ints.data());
+    glUniform1iv(glGetUniformLocation(m_renderer_id, name), (int)ints.size(), ints.data());
 }
 
 void Program::set_uint(const char* name, unsigned u) const
@@ -117,12 +117,12 @@ void Program::print_uniform_block_layout(const char* name) const
         std::cout << std::flush;
         return;
     }
-    std::vector<uint32_t> indices(members_count);
+    std::vector<uint32_t> indices((size_t)members_count);
     glGetActiveUniformBlockiv(m_renderer_id, index,
         GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, (int*)indices.data());
-    std::vector<int> offsets(members_count);
-    std::vector<int> sizes(members_count);
-    std::vector<int> names_lengths(members_count);
+    std::vector<int> offsets((size_t)members_count);
+    std::vector<int> sizes((size_t)members_count);
+    std::vector<int> names_lengths((size_t)members_count);
     glGetActiveUniformsiv(m_renderer_id, members_count,
         indices.data(), GL_UNIFORM_OFFSET, offsets.data());
     glGetActiveUniformsiv(m_renderer_id, members_count,
@@ -130,9 +130,9 @@ void Program::print_uniform_block_layout(const char* name) const
     glGetActiveUniformsiv(m_renderer_id, members_count,
         indices.data(), GL_UNIFORM_NAME_LENGTH, names_lengths.data());
     int maximum_name_length = *std::max_element(names_lengths.begin(), names_lengths.end());
-    std::unique_ptr<char[]> member_name = std::make_unique<char[]>(maximum_name_length);
+    std::unique_ptr<char[]> member_name = std::make_unique<char[]>((size_t)maximum_name_length);
     std::cout << "  members :\n";
-    for (int i = 0; i < members_count; i++) {
+    for (uint32_t i = 0; i < (uint32_t)members_count; i++) {
         glGetActiveUniformName(m_renderer_id, indices[i],
             maximum_name_length, NULL, member_name.get());
         std::cout << "    " << member_name.get() << " :\n";
@@ -164,7 +164,7 @@ std::optional<uint32_t> Program::create_program(const Shader& vert, const Shader
     }
     int info_log_length;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::vector<char> info_log(info_log_length);
+    std::vector<char> info_log((size_t)info_log_length);
     glGetProgramInfoLog(program, info_log_length, nullptr, info_log.data());
     std::clog << "Program link error :\n";
     for (char c : info_log) {

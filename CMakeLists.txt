@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS On)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Debug")
+  set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 if(MSVC)
@@ -20,6 +20,8 @@ else()
     "-Wall"
     "-Wextra"
     "-Wpedantic"
+    "-Wshadow"
+    "-Wconversion"
     $<$<CONFIG:Debug>:-g3>
   )
 endif()
