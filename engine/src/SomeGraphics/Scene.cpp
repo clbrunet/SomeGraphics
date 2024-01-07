@@ -2,6 +2,8 @@
 
 #include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/Entity.hpp"
+#include "SomeGraphics/Window.hpp"
+#include "SomeGraphics/Animation.hpp"
 
 namespace sg {
 
@@ -22,6 +24,13 @@ std::shared_ptr<Entity> Scene::add_light(std::string name, std::shared_ptr<Entit
     parent->add_child(light);
     m_lights.push_back(light);
     return light;
+}
+
+void Scene::on_update(float delta_time)
+{
+    for (Animation& animation : animations) {
+        animation.on_update(delta_time);
+    }
 }
 
 const std::vector<std::shared_ptr<Entity>>& Scene::lights() const

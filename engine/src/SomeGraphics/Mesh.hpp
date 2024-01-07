@@ -42,9 +42,9 @@ private:
 
 class Mesh {
 public:
-    Mesh() = delete;
     static std::optional<Mesh> from_ai_node(std::string_view filename,
         const aiNode& ai_node, const aiScene& ai_scene);
+    Mesh() = delete;
     Mesh(std::unique_ptr<VertexArray> vertex_array, std::shared_ptr<Material> material);
     Mesh(std::unique_ptr<VertexArray> vertex_array, std::vector<SubMeshInfo> sub_meshes_info);
     Mesh(Mesh&& other) = default;

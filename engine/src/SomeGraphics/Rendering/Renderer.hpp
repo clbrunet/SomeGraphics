@@ -77,8 +77,7 @@ private:
             if (entity.skin()) {
                 render_shadow(*entity.skin(), entity.model_matrix());
             }
-        }
-        else {
+        } else {
             if (entity.mesh()) {
                 render(*entity.mesh(), entity.model_matrix());
             }
@@ -146,8 +145,7 @@ private:
                 mesh_info.bone_transforms[i] = bone_entity_to_skin * bone.skin_to_bone;
                 i++;
             }
-        }
-        else {
+        } else {
             mesh_info.is_rigged = false;
         }
         m_mesh_info_uniform_buffer.update_data(mesh_info);

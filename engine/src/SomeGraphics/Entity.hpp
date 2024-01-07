@@ -16,13 +16,16 @@
 
 namespace sg {
 
+class Scene;
+
 class Entity {
 public:
-    static std::unique_ptr<Entity> create_scene_root();
+    static std::unique_ptr<Entity> create_scene_root(Scene& scene);
     static std::optional<std::shared_ptr<Entity>> load_model(const char* filename,
         std::shared_ptr<Entity> parent);
-    Entity(std::string name, std::weak_ptr<Entity> parent);
-    Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent);
+    Entity() = delete;
+    Entity(std::string name, const std::shared_ptr<Entity>& parent);
+    Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent);
     Entity(Entity&& other) = default;
     Entity(const Entity& other) = delete;
     Entity& operator=(Entity&& other) = default;
@@ -51,13 +54,14 @@ public:
 
     void add_child(std::shared_ptr<Entity> child);
 
-    static std::optional<std::shared_ptr<Entity>> search(std::string_view name,
+    [[nodiscard]] static std::optional<std::shared_ptr<Entity>> search(std::string_view name,
         const std::shared_ptr<Entity>& entity);
 private:
     std::string m_name;
     Transform m_local_transform;
     mutable glm::mat4 m_model_matrix = glm::mat4(1.0f);
     mutable bool m_is_model_matrix_dirty = true;
+    Scene& m_scene;
     std::weak_ptr<Entity> m_parent;
     std::vector<std::shared_ptr<Entity>> m_children;
     std::shared_ptr<Mesh> m_mesh;
@@ -75,13 +79,13 @@ private:
     };
 
     // Scene root constructor
-    Entity();
+    Entity(Scene& scene);
     static std::optional<std::shared_ptr<Entity>> load_model_first_pass(std::string_view filename,
         const aiNode& ai_node, const aiScene& ai_scene, std::shared_ptr<Entity> parent,
         std::vector<TwoPassSkinRefs>& two_pass_skin_refs_vec);
-    Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
+    Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent,
         std::shared_ptr<Mesh> mesh);
-    Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
+    Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent,
         std::shared_ptr<Skin> skin);
 
     void set_model_matrix_dirty();

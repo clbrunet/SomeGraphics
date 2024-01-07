@@ -25,7 +25,7 @@ EditorApplication::EditorApplication(std::string name) :
     std::shared_ptr<Entity> entity
         = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb",
             m_scene->root()).value();
-    entity->set_local_position(glm::vec3(5.0f, 5.0f, -5.0f));
+    entity->set_local_position(glm::vec3(-5.0f, 3.0f, -5.0f));
     m_selection = std::move(entity);
     Entity::load_model("editor/assets/models/axes.glb", m_scene->root());
     Entity::load_model("editor/assets/models/cube.glb", m_scene->root());
@@ -33,8 +33,7 @@ EditorApplication::EditorApplication(std::string name) :
     entity->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
     entity->set_local_scale(glm::vec3(0.03f));
     entity = Entity::load_model("editor/assets/models/animated.glb", m_scene->root()).value();
-    entity->set_local_position(glm::vec3(-4.0f, -7.0f, -4.0f));
-    entity->set_local_rotation(glm::radians(glm::vec3(0.0f, 45.0f, 0.0f)));
+    entity->set_local_position(glm::vec3(5.0f, -7.0f, -4.0f));
     entity->set_local_scale(glm::vec3(3.0f));
     m_scene->add_light("Light1", m_scene->root())->light()->intensity = 200.0f;
     std::error_code ec;
@@ -47,6 +46,7 @@ EditorApplication::EditorApplication(std::string name) :
 
 void EditorApplication::on_update()
 {
+    m_scene->on_update(m_window->delta_time());
     m_viewport->on_update(*m_window);
 }
 

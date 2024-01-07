@@ -48,8 +48,7 @@ void main()
         local_position = weights_transform * a_position;
         local_normal = mat3(weights_transform) * a_normal;
         local_tangent = mat3(weights_transform) * a_tangent;
-    }
-    else {
+    } else {
         local_position = a_position;
         local_normal = a_normal;
         local_tangent = a_tangent;

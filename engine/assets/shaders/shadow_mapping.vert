@@ -27,8 +27,7 @@ void main()
             + u_bone_transforms[a_bone_indices & bone_index_mask]
             * (1.0 - (a_weights[0] + a_weights[1] + a_weights[2]));
         local_position = weights_transform * a_position;
-    }
-    else {
+    } else {
         local_position = a_position;
     }
     vec4 position = u_model * local_position;

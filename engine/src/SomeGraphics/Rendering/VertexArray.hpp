@@ -39,8 +39,7 @@ public:
             if (attribute.is_integer()) {
                 glVertexArrayAttribIFormat(m_renderer_id, index, attribute.count(),
                     attribute.type(), offset);
-            }
-            else {
+            } else {
                 glVertexArrayAttribFormat(m_renderer_id, index, attribute.count(),
                     attribute.type(), GL_FALSE, offset);
             }

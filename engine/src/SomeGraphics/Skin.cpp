@@ -60,7 +60,11 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
                 vertex_weight_count++;
             }
             if (bones[j].entity.expired()) {
-                bones[j].entity = Entity::search(ai_bone.mName.C_Str(), asset_root).value();
+                auto entity_opt = Entity::search(ai_bone.mName.C_Str(), asset_root);
+                if (!entity_opt.has_value()) {
+                    return std::nullopt;
+                }
+                bones[j].entity = entity_opt.value();
                 bones[j].skin_to_bone = assimp_helper::mat4(ai_bone.mOffsetMatrix);
             }
         }

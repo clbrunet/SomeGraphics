@@ -20,16 +20,18 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "SomeGraphics/Entity.hpp"
+#include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/Animation.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/AssimpHelper.hpp"
 #include "SomeGraphics/Rendering/Material.hpp"
 
 namespace sg {
 
-std::unique_ptr<Entity> Entity::create_scene_root()
+std::unique_ptr<Entity> Entity::create_scene_root(Scene& scene)
 {
-    return std::unique_ptr<Entity>(new Entity());
+    return std::unique_ptr<Entity>(new Entity(scene));
 }
 
 std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename,
@@ -48,28 +50,34 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model(const char* filename,
     if (!entity_opt.has_value()) {
         return std::nullopt;
     }
+    const std::shared_ptr<Entity>& entity = entity_opt.value();
     for (const TwoPassSkinRefs& two_pass_skin_refs : two_pass_skin_refs_vec) {
         std::optional<std::shared_ptr<Skin>> skin_opt
-            = ResourcesCache::skin_from_ai_node(filename, two_pass_skin_refs.ai_node,
-                *ai_scene, entity_opt.value());
+            = ResourcesCache::skin_from_ai_node(filename,
+                two_pass_skin_refs.ai_node, *ai_scene, entity);
         if (!skin_opt.has_value()) {
             return std::nullopt;
         }
         two_pass_skin_refs.entity->m_skin = std::move(skin_opt.value());
     }
+    for (const aiAnimation* ai_anim : std::span(ai_scene->mAnimations, ai_scene->mNumAnimations)) {
+        entity->m_scene.animations.emplace_back(Animation::from_ai_animation(ai_anim, entity));
+    }
     return entity_opt;
 }
 
-Entity::Entity(std::string name, std::weak_ptr<Entity> parent) :
+Entity::Entity(std::string name, const std::shared_ptr<Entity>& parent) :
     m_name(std::move(name)),
-    m_parent(std::move(parent))
+    m_scene(parent->m_scene),
+    m_parent(parent)
 {
 }
 
-Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent) :
+Entity::Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent) :
     m_name(std::move(name)),
     m_local_transform(std::move(local_transform)),
-    m_parent(std::move(parent))
+    m_scene(parent->m_scene),
+    m_parent(parent)
 {
 }
 
@@ -166,9 +174,10 @@ std::optional<std::shared_ptr<Entity>> Entity::search(std::string_view name,
     return std::nullopt;
 }
 
-Entity::Entity() :
+Entity::Entity(Scene& scene) :
     m_name("SceneRoot"),
-    m_is_model_matrix_dirty(false)
+    m_is_model_matrix_dirty(false),
+    m_scene(scene)
 {
 }
 
@@ -181,8 +190,7 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model_first_pass(std::string
     if (ai_node.mNumMeshes > 0) {
         if (is_ai_node_skin(ai_node, ai_scene)) {
             is_skin = true;
-        }
-        else {
+        } else {
             std::optional<std::shared_ptr<Mesh>> mesh_opt
                 = ResourcesCache::mesh_from_ai_node(std::string(filename), ai_node, ai_scene);
             if (!mesh_opt.has_value()) {
@@ -208,20 +216,22 @@ std::optional<std::shared_ptr<Entity>> Entity::load_model_first_pass(std::string
     return entity;
 }
 
-Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
+Entity::Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent,
     std::shared_ptr<Mesh> mesh) :
     m_name(std::move(name)),
     m_local_transform(std::move(local_transform)),
-    m_parent(std::move(parent)),
+    m_scene(parent->m_scene),
+    m_parent(parent),
     m_mesh(std::move(mesh))
 {
 }
 
-Entity::Entity(std::string name, Transform local_transform, std::weak_ptr<Entity> parent,
+Entity::Entity(std::string name, Transform local_transform, const std::shared_ptr<Entity>& parent,
     std::shared_ptr<Skin> skin) :
     m_name(std::move(name)),
     m_local_transform(std::move(local_transform)),
-    m_parent(std::move(parent)),
+    m_scene(parent->m_scene),
+    m_parent(parent),
     m_skin(std::move(skin))
 {
 }

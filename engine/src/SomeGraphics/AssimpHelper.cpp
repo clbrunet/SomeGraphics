@@ -1,8 +1,6 @@
 #include <cstring>
 
-#include <assimp/types.h>
-#include <glm/ext/matrix_float4x4.hpp>
-#include <glm/ext/vector_float3.hpp>
+#include "SomeGraphics/AssimpHelper.hpp"
 
 namespace sg::assimp_helper {
 
@@ -20,6 +18,11 @@ glm::mat4 mat4(const aiMatrix4x4& mat4)
 {
     return glm::mat4(mat4.a1, mat4.b1, mat4.c1, mat4.d1, mat4.a2, mat4.b2, mat4.c2, mat4.d2,
         mat4.a3, mat4.b3, mat4.c3, mat4.d3, mat4.a4, mat4.b4, mat4.c4, mat4.d4);
+}
+
+glm::quat quat(const aiQuaternion& quat)
+{
+    return glm::quat(quat.w, quat.x, quat.y, quat.z);
 }
 
 bool operator==(const aiString& ai_string, const std::string& string)
