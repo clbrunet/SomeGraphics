@@ -169,15 +169,15 @@ private:
 
     void render(const VertexArray& vertex_array) const;
 
-    static void GLAPIENTRY gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
+	static void GLAPIENTRY gl_debug_message_callback(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* user_param);
 
     #pragma pack(push, 1)
     struct LightUniformData {
         glm::vec3 position;
-        uint64_t : 32;
+        uint32_t : 32;
         glm::vec3 hdr_color;
-        uint64_t : 32;
+        uint32_t : 32;
     };
     #pragma pack(pop)
     static_assert(sizeof(LightUniformData) == 32);
@@ -190,7 +190,7 @@ private:
         unsigned lights_count;
         LightUniformData lights[MAX_LIGHTS_COUNT];
         unsigned shadow_maps_count;
-        uint64_t : 32;
+        uint32_t : 32;
         uint64_t : 64;
     };
     #pragma pack(pop)
@@ -206,7 +206,7 @@ private:
     struct MeshInfoUniformBlockData {
         glm::mat4 model;
         unsigned is_rigged;
-        uint64_t : 32;
+        uint32_t : 32;
         uint64_t : 64;
         glm::mat4 bone_transforms[Skin::MAX_BONES_COUNT];
     };

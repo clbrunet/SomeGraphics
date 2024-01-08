@@ -16,44 +16,82 @@ enum class VertexAttributeType {
 class VertexAttribute {
 public:
     VertexAttribute() = delete;
-    constexpr VertexAttribute(VertexAttributeType type)
+
+    constexpr VertexAttribute(VertexAttributeType type) :
+        m_count(count(type)),
+        m_type(VertexAttribute::type(type)),
+        m_size(size(type, m_count))
     {
-        switch (type) {
-            case VertexAttributeType::Uint:
-            case VertexAttributeType::Float:
-                m_count = 1;
-                break;
-            case VertexAttributeType::Vec2:
-                m_count = 2;
-                break;
-            case VertexAttributeType::Vec3:
-                m_count = 3;
-                break;
-        }
-        switch (type) {
-            case VertexAttributeType::Uint:
-                m_type = GL_UNSIGNED_INT;
-                m_size = m_count * sizeof(uint32_t);
-                break;
-            case VertexAttributeType::Float:
-            case VertexAttributeType::Vec2:
-            case VertexAttributeType::Vec3:
-                m_type = GL_FLOAT;
-                m_size = m_count * sizeof(float);
-                break;
-        }
     }
 
-    VertexAttribute(VertexAttribute&& other) = default;
-    VertexAttribute(const VertexAttribute& other) = default;
-    VertexAttribute& operator=(VertexAttribute&& other) = default;
-    VertexAttribute& operator=(const VertexAttribute& other) = default;
-    ~VertexAttribute() = default;
+    constexpr VertexAttribute(VertexAttribute&& other) = default;
+    constexpr VertexAttribute(const VertexAttribute& other) = default;
+    constexpr VertexAttribute& operator=(VertexAttribute&& other) = default;
+    constexpr VertexAttribute& operator=(const VertexAttribute& other) = default;
+    constexpr ~VertexAttribute() = default;
 
-    int count() const;
-    int size() const;
-    int type() const;
-    bool is_integer() const;
+
+    constexpr int count() const
+    {
+        return m_count;
+    }
+
+    constexpr static int count(VertexAttributeType type)
+    {
+        switch (type) {
+        case VertexAttributeType::Uint:
+        case VertexAttributeType::Float:
+            return 1;
+        case VertexAttributeType::Vec2:
+            return 2;
+        case VertexAttributeType::Vec3:
+            return 3;
+        }
+        return 0;
+    }
+
+    constexpr int type() const
+    {
+        return m_type;
+    }
+
+    constexpr static int type(VertexAttributeType type)
+    {
+
+        switch (type) {
+        case VertexAttributeType::Uint:
+            return GL_UNSIGNED_INT;
+        case VertexAttributeType::Float:
+        case VertexAttributeType::Vec2:
+        case VertexAttributeType::Vec3:
+            return GL_FLOAT;
+        }
+        return 0;
+    }
+
+    constexpr int size() const
+    {
+        return m_size;
+    }
+
+    constexpr static int size(VertexAttributeType type, int count)
+    {
+        switch (type) {
+        case VertexAttributeType::Uint:
+            return count * sizeof(uint32_t);
+        case VertexAttributeType::Float:
+        case VertexAttributeType::Vec2:
+        case VertexAttributeType::Vec3:
+            return count * sizeof(float);
+        }
+        return 0;
+    }
+
+    constexpr bool is_integer() const
+    {
+        return m_type == GL_UNSIGNED_INT;
+    }
+
 private:
     int m_count;
     GLenum m_type;

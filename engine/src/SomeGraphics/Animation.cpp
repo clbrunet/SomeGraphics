@@ -25,21 +25,21 @@ Animation Animation::from_ai_animation(const aiAnimation* ai_animation,
         positions.reserve(ai_node_anim->mNumPositionKeys);
         for (const aiVectorKey& position
             : std::span(ai_node_anim->mPositionKeys, ai_node_anim->mNumPositionKeys)) {
-            positions.emplace_back(position.mTime / ai_animation->mTicksPerSecond,
+            positions.emplace_back((float)(position.mTime / ai_animation->mTicksPerSecond),
                 assimp_helper::vec3(position.mValue));
         }
         std::vector<AnimationKey<glm::quat>> rotations;
         rotations.reserve(ai_node_anim->mNumPositionKeys);
         for (const aiQuatKey& rotation
             : std::span(ai_node_anim->mRotationKeys, ai_node_anim->mNumRotationKeys)) {
-            rotations.emplace_back(rotation.mTime / ai_animation->mTicksPerSecond,
+            rotations.emplace_back((float)(rotation.mTime / ai_animation->mTicksPerSecond),
                 assimp_helper::quat(rotation.mValue));
         }
         std::vector<AnimationKey<glm::vec3>> scales;
         scales.reserve(ai_node_anim->mNumScalingKeys);
         for (const aiVectorKey& scale
             : std::span(ai_node_anim->mScalingKeys, ai_node_anim->mNumScalingKeys)) {
-            scales.emplace_back(scale.mTime / ai_animation->mTicksPerSecond,
+            scales.emplace_back((float)(scale.mTime / ai_animation->mTicksPerSecond),
                 assimp_helper::vec3(scale.mValue));
         }
         entities.emplace_back(entity, positions, rotations, scales);

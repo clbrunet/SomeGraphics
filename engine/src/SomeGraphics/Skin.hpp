@@ -21,7 +21,7 @@ class Entity;
 
 struct Bone {
     std::weak_ptr<Entity> entity;
-    glm::mat4 skin_to_bone;
+    glm::mat4 skin_to_bone = glm::mat4(1.0f);
 };
 
 class Skin {
@@ -40,13 +40,13 @@ public:
     const Mesh& mesh() const;
     const std::unique_ptr<VertexArray>& vertex_array() const;
     const std::vector<SubMeshInfo>& sub_meshes_info() const;
-    const std::array<Bone, MAX_BONES_COUNT>& bones() const;
+    const std::vector<Bone>& bones() const;
 private:
     Mesh m_mesh;
-    std::array<Bone, MAX_BONES_COUNT> m_bones;
+    std::vector<Bone> m_bones;
 
     Skin(std::unique_ptr<VertexArray> vertex_array, std::vector<SubMeshInfo> sub_meshes_info,
-        const std::array<Bone, MAX_BONES_COUNT>& bones);
+        std::vector<Bone> bones);
 
     struct Vertex {
         Mesh::Vertex mesh_vertex;

@@ -17,7 +17,7 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
 {
     std::vector<Vertex> vertices;
     std::vector<uint8_t> sub_mesh_vertex_weight_counts;
-    std::array<Bone, MAX_BONES_COUNT> bones;
+    std::vector<Bone> bones(MAX_BONES_COUNT);
     std::vector<uint32_t> indices;
     std::vector<SubMeshInfo> sub_meshes_info;
     uint32_t indices_offset = 0;
@@ -48,7 +48,7 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
                 if (ai_weight.mWeight == 0.0f) {
                     continue;
                 }
-                Vertex& vertex = vertices[vertices_offset + ai_weight.mVertexId];
+                Vertex& vertex = vertices[(size_t)vertices_offset + ai_weight.mVertexId];
                 uint8_t& vertex_weight_count = sub_mesh_vertex_weight_counts[ai_weight.mVertexId];
                 if (vertex_weight_count >= 4) {
                     return std::nullopt;
@@ -76,7 +76,7 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
                 indices.emplace_back(ai_face.mIndices[k]);
             }
         }
-        sub_meshes_info.emplace_back(indices.size() - indices_offset,
+        sub_meshes_info.emplace_back((uint32_t)indices.size() - indices_offset,
             (uint8_t*)(indices_offset * sizeof(GLuint)), vertices_offset,
             std::move(material_opt.value()));
     }
@@ -100,15 +100,15 @@ const std::vector<SubMeshInfo>& Skin::sub_meshes_info() const
 {
     return m_mesh.sub_meshes_info();
 }
-const std::array<Bone, Skin::MAX_BONES_COUNT>& Skin::bones() const
+const std::vector<Bone>& Skin::bones() const
 {
     return m_bones;
 }
 
 Skin::Skin(std::unique_ptr<VertexArray> vertex_array, std::vector<SubMeshInfo> sub_meshes_info,
-    const std::array<Bone, MAX_BONES_COUNT>& bones) :
+    std::vector<Bone> bones) :
     m_mesh(std::move(vertex_array), std::move(sub_meshes_info)),
-    m_bones(bones)
+    m_bones(std::move(bones))
 {
 }
 

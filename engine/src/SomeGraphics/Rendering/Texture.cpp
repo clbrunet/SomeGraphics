@@ -89,10 +89,6 @@ Texture Texture::create_cubemap(glm::ivec2 dimensions, TextureFormat format)
     glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureParameteri(renderer_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTextureStorage2D(renderer_id, 1, sized_internal_format(format), dimensions.x, dimensions.y);
-    for (int i = 0; i < 6; i++) {
-        glTextureSubImage3D(renderer_id, 0, 0, 0, i, dimensions.x, dimensions.y,
-            1, internal_format(format), GL_FLOAT, nullptr);
-    }
     return Texture(renderer_id, ColorSpace::Unknown);
 }
 

@@ -69,7 +69,7 @@ std::optional<Mesh> Mesh::from_ai_node(std::string_view filename,
                 indices.emplace_back(ai_face.mIndices[k]);
             }
         }
-        sub_meshes_info.emplace_back(indices.size() - indices_offset,
+        sub_meshes_info.emplace_back((uint32_t)indices.size() - indices_offset,
             (uint8_t*)(indices_offset * sizeof(GLuint)), vertices_offset,
             std::move(material_opt.value()));
     }
