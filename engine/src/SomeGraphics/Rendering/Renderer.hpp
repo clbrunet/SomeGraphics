@@ -62,8 +62,8 @@ private:
     std::array<std::unique_ptr<DepthFrameBuffer>, MAX_SHADOW_MAPS_COUNT>
         m_shadow_pass_frame_buffers;
     std::unique_ptr<Program> m_shadow_mapping_program;
-    mutable uint8_t m_shadow_maps_count;
-    mutable std::array<ShadowPassMapInfo, MAX_SHADOW_MAPS_COUNT> m_shadow_map_infos;
+    mutable uint8_t m_shadow_maps_count = 0;
+    mutable std::array<ShadowPassMapInfo, MAX_SHADOW_MAPS_COUNT> m_shadow_map_infos = {};
     UniformBuffer m_globals_uniform_buffer;
     UniformBuffer m_mesh_info_uniform_buffer;
 
@@ -130,10 +130,10 @@ private:
     template<AnyMesh AnyMesh>
     void send_mesh_info(const AnyMesh& any_mesh, const glm::mat4& model_matrix) const
     {
-        MeshInfoUniformBlockData mesh_info;
-        mesh_info.model = model_matrix;
+        auto mesh_info = std::make_unique<MeshInfoUniformBlockData>();
+        mesh_info->model = model_matrix;
         if constexpr (std::is_same_v<AnyMesh, Skin>) {
-            mesh_info.is_rigged = true;
+            mesh_info->is_rigged = true;
             glm::mat4 model_matrix_inverse = glm::inverse(model_matrix);
             uint32_t i = 0;
             for (const Bone& bone : any_mesh.bones()) {
@@ -142,13 +142,13 @@ private:
                     continue;
                 }
                 glm::mat4 bone_entity_to_skin = model_matrix_inverse * bone_entity->model_matrix();
-                mesh_info.bone_transforms[i] = bone_entity_to_skin * bone.skin_to_bone;
+                mesh_info->bone_transforms[i] = bone_entity_to_skin * bone.skin_to_bone;
                 i++;
             }
         } else {
-            mesh_info.is_rigged = false;
+            mesh_info->is_rigged = false;
         }
-        m_mesh_info_uniform_buffer.update_data(mesh_info);
+        m_mesh_info_uniform_buffer.update_data(*mesh_info);
     }
 
     template<RenderPass render_pass>

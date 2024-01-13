@@ -26,6 +26,7 @@ public:
         m_index_buffer(std::make_unique<IndexBuffer>(indices))
     {
         glCreateVertexArrays(1, &m_renderer_id);
+        bind(); // required for glVertexArrayAttribIFormat to work on Intel GPUs
         uint32_t stride = 0;
         for (const VertexAttribute& attribute : attributes) {
             stride += attribute.size();

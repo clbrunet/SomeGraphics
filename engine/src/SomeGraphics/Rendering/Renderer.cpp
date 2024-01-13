@@ -41,6 +41,12 @@ Renderer::Renderer() :
         glDebugMessageCallback(gl_debug_message_callback, nullptr);
         glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DONT_CARE, GL_DONT_CARE,
             0, nullptr, GL_FALSE);
+        GLuint id = 131185;
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE,
+            1, &id, GL_FALSE);
+        id = 131218;
+        glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE,
+            1, &id, GL_FALSE);
     }
 #endif
     glEnable(GL_DEPTH_TEST);

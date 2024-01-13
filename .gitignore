@@ -31,5 +31,7 @@
 *.app
 
 build
+.vs
+CMakeSettings.json
 imgui.ini
 imgui_log.txt
