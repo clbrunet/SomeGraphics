@@ -55,7 +55,7 @@ public:
 
     const std::unique_ptr<VertexArray>& vertex_array() const;
     const std::vector<SubMeshInfo>& sub_meshes_info() const;
-
+#pragma pack(push, 1)
     struct Vertex {
         glm::vec3 position;
         glm::vec3 normal;
@@ -87,6 +87,7 @@ public:
             };
         }
     };
+#pragma pack(pop)
 private:
     std::unique_ptr<VertexArray> m_vertex_array;
     std::vector<SubMeshInfo> m_sub_meshes_info;

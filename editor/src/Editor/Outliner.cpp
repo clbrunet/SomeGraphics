@@ -11,38 +11,37 @@
 
 namespace sg {
 
-void Outliner::on_render(const Scene& scene, Selection& selection)
+void Outliner::render(const Scene& scene, Selection& selection)
 {
-    std::shared_ptr<Entity> selected_entity;
-    if (std::holds_alternative<std::weak_ptr<Entity>>(selection)) {
-        selected_entity = std::get<std::weak_ptr<Entity>>(selection).lock();
+    entt::entity selected_entity;
+    if (std::holds_alternative<entt::handle>(selection)) {
+        selected_entity = std::get<entt::handle>(selection).entity();
     }
     ImGui::Begin("Outliner");
-    for (const std::shared_ptr<Entity>& child : scene.root()->children()) {
+    scene.root().for_each_child([this, selected_entity, &selection](const Node& child) {
         render(child, selected_entity, selection);
-    }
+    });
     ImGui::End();
 }
 
-void Outliner::render(const std::shared_ptr<Entity>& entity,
-    const std::shared_ptr<Entity>& selected_entity, Selection& selection)
+void Outliner::render(const Node& node, entt::entity selected_entity, Selection& selection)
 {
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
         | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-    if (entity == selected_entity) {
+    if (node.entity() == selected_entity) {
         flags |= ImGuiTreeNodeFlags_Selected; 
     }
-    if (entity->children().size() == 0) {
+    if (!node.is_parent()) {
         flags |= ImGuiTreeNodeFlags_Leaf;
     }
-    bool open = ImGui::TreeNodeEx(entity.get(), flags,  "%s", entity->name().c_str());
+    bool open = ImGui::TreeNodeEx(&node, flags,  "%s", node.name().c_str());
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-        selection = entity;
+        selection = node.handle();
     }
     if (open) {
-        for (const std::shared_ptr<Entity>& child : entity->children()) {
+        node.for_each_child([this, selected_entity, &selection](const Node& child) {
             render(child, selected_entity, selection);
-        }
+        });
         ImGui::TreePop();
     }
 }

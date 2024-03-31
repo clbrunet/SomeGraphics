@@ -12,11 +12,13 @@
 #include "SomeGraphics/Rendering/Texture.hpp"
 #include "SomeGraphics/Rendering/Material.hpp"
 #include "SomeGraphics/Camera.hpp"
-#include "SomeGraphics/Mesh.hpp"
 #include "SomeGraphics/Skybox.hpp"
 #include "SomeGraphics/PostProcess.hpp"
 #include "SomeGraphics/Scene.hpp"
-#include "SomeGraphics/Entity.hpp"
+#include "SomeGraphics/Node.hpp"
+#include "SomeGraphics/Mesh.hpp"
+#include "SomeGraphics/Skin.hpp"
+#include "SomeGraphics/Light.hpp"
 #include "SomeGraphics/Animation.hpp"
 
 extern std::unique_ptr<sg::Application> create_app();

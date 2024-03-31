@@ -36,7 +36,7 @@ private:
 
     Skybox(std::shared_ptr<Program>&& program,
         std::unique_ptr<VertexArray>&& vertex_array, std::shared_ptr<Texture>&& cubemap);
-
+#pragma pack(push, 1)
     struct Vertex {
         glm::vec3 position;
 
@@ -58,6 +58,7 @@ private:
             };
         }
     };
+#pragma pack(pop)
 };
 
 }

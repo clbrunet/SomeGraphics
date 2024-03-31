@@ -18,12 +18,19 @@
 
 namespace sg {
 
-void Properties::on_render(const Renderer& renderer, Selection& selection) const
+void Properties::render(const Renderer& renderer, Selection& selection) const
 {
     ImGui::Begin("Properties");
     std::visit([this, &renderer, &selection](auto&& arg) {
         using T = std::decay_t<decltype(arg)>;
-        if constexpr (!(std::is_same_v<T, std::monostate>)) {
+        if constexpr (std::is_same_v<T, std::monostate>) {
+        } else if constexpr (std::is_same_v<T, entt::handle>) {
+            if (!arg.valid()) {
+                selection = std::monostate();
+            } else {
+                render(arg, renderer, selection);
+            }
+        } else {
             if (arg.expired()) {
                 selection = std::monostate();
             } else {
@@ -34,25 +41,27 @@ void Properties::on_render(const Renderer& renderer, Selection& selection) const
     ImGui::End();
 }
 
-void Properties::render(Entity& entity, const Renderer& renderer, Selection& selection) const
+void Properties::render(entt::handle handle, const Renderer& renderer, Selection& selection) const
 {
-    ImGui::Text("%s", entity.name().c_str());
+    Node& node = handle.get<Node>();
+    ImGui::Text("%s", node.name().c_str());
     if (ImGui::TreeNodeEx("Local Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-        render_local_transform(entity);
+        render_local_transform(node);
         ImGui::TreePop();
     }
-    if (entity.mesh() && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
-        render_mesh(*entity.mesh(), renderer, selection);
+    std::shared_ptr<Mesh>* mesh = handle.try_get<std::shared_ptr<Mesh>>();
+    if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_mesh(**mesh, renderer, selection);
         ImGui::TreePop();
     }
-    if (entity.skin()) {
-        if (ImGui::TreeNodeEx("Skinned mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
-            render_mesh(entity.skin()->mesh(), renderer, selection);
-            ImGui::TreePop();
-        }
+    std::shared_ptr<Skin>* skin = handle.try_get<std::shared_ptr<Skin>>();
+    if (skin && ImGui::TreeNodeEx("Skinned mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_mesh((**skin).mesh(), renderer, selection);
+        ImGui::TreePop();
     }
-    if (entity.light() && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
-        render_light(*entity.light());
+    Light* light = handle.try_get<Light>();
+    if (light && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_light(*light);
         ImGui::TreePop();
     }
 }
@@ -135,19 +144,19 @@ void Properties::render_mesh(const Mesh& mesh, const Renderer& renderer, Selecti
     }
 }
 
-void Properties::render_local_transform(Entity& entity) const
+void Properties::render_local_transform(Node& node) const
 {
-    glm::vec3 local_position = entity.local_position();
+    glm::vec3 local_position = node.local_position();
     if (ImGui::DragFloat3("Position", glm::value_ptr(local_position), 0.2f)) {
-        entity.set_local_position(local_position);
+        node.set_local_position(local_position);
     }
-    glm::vec3 local_rotation_degrees = glm::degrees(entity.local_rotation());
+    glm::vec3 local_rotation_degrees = glm::degrees(node.local_rotation());
     if (ImGui::DragFloat3("Rotation", glm::value_ptr((local_rotation_degrees)), 1.0f)) {
-        entity.set_local_rotation(glm::radians(local_rotation_degrees));
+        node.set_local_rotation(glm::radians(local_rotation_degrees));
     }
-    glm::vec3 local_scale = entity.local_scale();
+    glm::vec3 local_scale = node.local_scale();
     if (ImGui::DragFloat3("Scale", glm::value_ptr(local_scale), 0.1f)) {
-        entity.set_local_scale(local_scale);
+        node.set_local_scale(local_scale);
     }
 }
 

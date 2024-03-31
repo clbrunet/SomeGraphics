@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <assimp/scene.h>
+#include <entt/entt.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/gtx/string_cast.hpp>
 
@@ -17,10 +18,8 @@
 
 namespace sg {
 
-class Entity;
-
 struct Bone {
-    std::weak_ptr<Entity> entity;
+    entt::entity entity;
     glm::mat4 skin_to_bone = glm::mat4(1.0f);
 };
 
@@ -30,7 +29,7 @@ public:
 
     Skin() = delete;
     static std::optional<Skin> from_ai_node(std::string_view filename,
-        const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root);
+        const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root);
     Skin(Skin&& other) = default;
     Skin(const Skin& other) = delete;
     Skin& operator=(Skin&& other) = default;
@@ -47,7 +46,7 @@ private:
 
     Skin(std::unique_ptr<VertexArray> vertex_array, std::vector<SubMeshInfo> sub_meshes_info,
         std::vector<Bone> bones);
-
+#pragma pack(push, 1)
     struct Vertex {
         Mesh::Vertex mesh_vertex;
         uint32_t bone_indices;
@@ -79,6 +78,7 @@ private:
             };
         }
     };
+#pragma pack(pop)
 };
 
 }

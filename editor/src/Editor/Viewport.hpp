@@ -33,8 +33,8 @@ public:
     Viewport& operator=(const Viewport& other) = delete;
     ~Viewport() = default;
 
-    void on_update(const Window& window);
-    void on_render(const Renderer& renderer, const Scene& scene);
+    void update(const Window& window);
+    void render(const Renderer& renderer, const Scene& scene);
 private:
     bool m_is_hovered = false;
     bool m_is_free_flying = false;

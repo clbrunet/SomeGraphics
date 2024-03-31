@@ -31,7 +31,7 @@ public:
     static std::optional<std::shared_ptr<Mesh>> mesh_from_ai_node(std::string filename,
         const aiNode& ai_node, const aiScene& ai_scene);
     static std::optional<std::shared_ptr<Skin>> skin_from_ai_node(std::string filename,
-        const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root);
+        const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root);
 
     static void clear_unused();
     static void clear_unused_textures();

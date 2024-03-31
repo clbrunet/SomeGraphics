@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+#include <entt/entt.hpp>
+
 #include "SomeGraphics/ResourcesCache.hpp"
 
 namespace sg {
@@ -108,7 +110,7 @@ std::optional<std::shared_ptr<Mesh>> ResourcesCache::mesh_from_ai_node(std::stri
 }
 
 std::optional<std::shared_ptr<Skin>> ResourcesCache::skin_from_ai_node(std::string filename,
-        const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root)
+        const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root)
 {
     std::string key = std::move(filename.append(1, '/').append(ai_node.mName.C_Str()));
     std::map<std::string, std::weak_ptr<Skin>>::iterator it = skins_cache.find(key);

@@ -25,18 +25,18 @@ void Application::run()
     {
         m_window->poll_event();
         m_window->begin_frame();
-        on_update();
-        on_render();
+        update();
+        render();
         m_window->end_frame();
         m_window->swap_buffers();
     }
 }
 
-void Application::on_update()
+void Application::update()
 {
 }
 
-void Application::on_render()
+void Application::render()
 {
 }
 

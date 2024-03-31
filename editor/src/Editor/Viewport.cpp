@@ -29,7 +29,7 @@ Viewport::Viewport(const Renderer& renderer)
     m_skybox = std::move(skybox_opt.value());
 }
 
-void Viewport::on_update(const Window& window)
+void Viewport::update(const Window& window)
 {
     if (!m_is_hovered && !m_is_free_flying) {
         return;
@@ -46,10 +46,10 @@ void Viewport::on_update(const Window& window)
         window.set_cursor_visibility(false);
         return;
     }
-    m_editor_camera->on_update(window);
+    m_editor_camera->update(window);
 }
 
-void Viewport::on_render(const Renderer& renderer, const Scene& scene)
+void Viewport::render(const Renderer& renderer, const Scene& scene)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);

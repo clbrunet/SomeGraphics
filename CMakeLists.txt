@@ -13,6 +13,7 @@ if(MSVC)
   set(SOME_GRAPHICS_FLAGS
     "/W4"
     "/wd26439"
+    "/external:anglebrackets"
     "/analyze:external-"
   )
 else()

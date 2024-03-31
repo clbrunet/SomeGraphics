@@ -24,7 +24,7 @@ EditorCamera::EditorCamera(glm::vec3 position, const glm::vec2& euler_angles,
     assert(-90.0f <= euler_angles.x && euler_angles.x <= 90.0f);
 }
 
-void EditorCamera::on_update(const Window& window)
+void EditorCamera::update(const Window& window)
 {
     look(window);
     move(window);

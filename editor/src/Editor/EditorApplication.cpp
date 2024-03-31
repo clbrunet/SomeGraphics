@@ -22,20 +22,21 @@ EditorApplication::EditorApplication(std::string name) :
     Application(std::move(name), 1280, 720),
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
-    std::shared_ptr<Entity> entity
-        = Entity::load_model("editor/assets/models/rusted_iron_sphere.glb",
-            m_scene->root()).value();
-    entity->set_local_position(glm::vec3(-5.0f, 3.0f, -5.0f));
-    m_selection = std::move(entity);
-    Entity::load_model("editor/assets/models/axes.glb", m_scene->root());
-    Entity::load_model("editor/assets/models/cube.glb", m_scene->root());
-    entity = Entity::load_model("editor/assets/models/cerberus.glb", m_scene->root()).value();
-    entity->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
-    entity->set_local_scale(glm::vec3(0.03f));
-    entity = Entity::load_model("editor/assets/models/animated.glb", m_scene->root()).value();
-    entity->set_local_position(glm::vec3(5.0f, -7.0f, -4.0f));
-    entity->set_local_scale(glm::vec3(3.0f));
-    m_scene->add_light("Light1", m_scene->root())->light()->intensity = 200.0f;
+    Node* sphere = m_scene->load_model("editor/assets/models/rusted_iron_sphere.glb",
+            m_scene->root().entity());
+    sphere->set_local_position(glm::vec3(-5.0f, 3.0f, -5.0f));
+    m_selection = sphere->handle();
+    m_scene->load_model("editor/assets/models/axes.glb", m_scene->root().entity());
+    m_scene->load_model("editor/assets/models/cube.glb", m_scene->root().entity());
+    Node* cerberus = m_scene->load_model("editor/assets/models/cerberus.glb", m_scene->root().entity());
+    cerberus->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
+    cerberus->set_local_scale(glm::vec3(0.03f));
+    Node* animated = m_scene->load_model("editor/assets/models/animated.glb", m_scene->root().entity());
+    animated->set_local_position(glm::vec3(5.0f, -7.0f, -4.0f));
+    animated->set_local_scale(glm::vec3(3.0f));
+    Node& light = m_scene->create_node("Light", m_scene->root().entity());
+    light.handle().emplace<Light>(glm::vec3(1.0f), 200.0f);
+
     std::error_code ec;
     std::filesystem::copy_file("editor/assets/default_imgui.ini", "editor/assets/imgui.ini",
         std::filesystem::copy_options::skip_existing, ec);
@@ -44,18 +45,18 @@ EditorApplication::EditorApplication(std::string name) :
     io.LogFilename = "editor/assets/imgui_log.txt";
 }
 
-void EditorApplication::on_update()
+void EditorApplication::update()
 {
-    m_scene->on_update(m_window->delta_time());
-    m_viewport->on_update(*m_window);
+    m_scene->update(*m_window);
+    m_viewport->update(*m_window);
 }
 
-void EditorApplication::on_render()
+void EditorApplication::render()
 {
     ImGui::DockSpaceOverViewport();
-    m_viewport->on_render(*m_renderer, *m_scene);
-    m_outliner->on_render(*m_scene, m_selection);
-    m_properties->on_render(*m_renderer, m_selection);
+    m_viewport->render(*m_renderer, *m_scene);
+    m_outliner->render(*m_scene, m_selection);
+    m_properties->render(*m_renderer, m_selection);
 }
 
 }

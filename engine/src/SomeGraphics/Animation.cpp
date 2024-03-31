@@ -1,26 +1,26 @@
 #include <algorithm>
-#include <glm/ext/quaternion_common.hpp>
 #include <span>
 
+#include <glm/ext/quaternion_common.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 #include "SomeGraphics/Animation.hpp"
-#include "SomeGraphics/Entity.hpp"
+#include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/AssimpHelper.hpp"
 #include "SomeGraphics/Window.hpp"
 
 namespace sg {
 
-Animation Animation::from_ai_animation(const aiAnimation* ai_animation,
-        const std::shared_ptr<Entity>& asset_root)
+Animation Animation::from_ai_animation(const aiAnimation* ai_animation, entt::handle asset_root)
 {
     std::vector<EntityAnimation> entities;
     entities.reserve(ai_animation->mNumChannels);
     for (const aiNodeAnim* ai_node_anim
         : std::span(ai_animation->mChannels, ai_animation->mNumChannels)) {
-        auto entity_opt = Entity::search(ai_node_anim->mNodeName.C_Str(), asset_root);
-        if (!entity_opt.has_value()) {
+        auto entity = Scene::search(ai_node_anim->mNodeName.C_Str(), asset_root);
+        if (entity == entt::null) {
             continue;
         }
-        std::weak_ptr<Entity> entity = entity_opt.value();
         std::vector<AnimationKey<glm::vec3>> positions;
         positions.reserve(ai_node_anim->mNumPositionKeys);
         for (const aiVectorKey& position
@@ -45,27 +45,28 @@ Animation Animation::from_ai_animation(const aiAnimation* ai_animation,
         entities.emplace_back(entity, positions, rotations, scales);
     }
     return Animation((float)(ai_animation->mDuration / ai_animation->mTicksPerSecond),
-        std::move(entities));
+        *asset_root.registry(), std::move(entities));
 }
 
-Animation::Animation(float duration, std::vector<EntityAnimation> entities) :
+Animation::Animation(float duration, entt::registry& registry, std::vector<EntityAnimation> entities) :
     m_duration(duration),
+    m_registry(registry),
     m_entities(std::move(entities))
 {
 }
 
-void Animation::on_update(float delta_time)
+void Animation::update(float delta_time)
 {
     m_time += delta_time;
     if (m_time > m_duration) {
         m_time -= m_duration;
     }
     for (auto it = m_entities.begin(); it != m_entities.end();) {
-        if (it->entity.expired()) {
+        Node* node = m_registry.try_get<Node>(it->entity);
+        if (!node) {
             m_entities.erase(it);
             continue;
         }
-        Entity& entity = *it->entity.lock();
         auto is_next_key = [m_time = m_time](auto key) { return key.time > m_time; };
         auto get_interpolated_value = [&is_next_key, m_time = m_time](auto keys) {
             assert(!keys.empty());
@@ -85,13 +86,13 @@ void Animation::on_update(float delta_time)
             }
         };
         if (!it->positions.empty()) {
-            entity.set_local_position(get_interpolated_value(it->positions));
+            node->set_local_position(get_interpolated_value(it->positions));
         }
         if (!it->rotations.empty()) {
-            entity.set_local_rotation(glm::eulerAngles(get_interpolated_value(it->rotations)));
+            node->set_local_rotation(glm::eulerAngles(get_interpolated_value(it->rotations)));
         }
         if (!it->scales.empty()) {
-            entity.set_local_scale(get_interpolated_value(it->scales));
+            node->set_local_scale(get_interpolated_value(it->scales));
         }
         it++;
     }

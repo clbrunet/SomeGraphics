@@ -21,8 +21,8 @@ public:
     EditorApplication& operator=(const EditorApplication& other) = delete;
     ~EditorApplication() final override = default;
 
-    void on_update() final override;
-    void on_render() final override;
+    void update() final override;
+    void render() final override;
 private:
     std::unique_ptr<Scene> m_scene = std::make_unique<Scene>();
     Selection m_selection;

@@ -7,7 +7,6 @@
 namespace sg {
 
 class Scene;
-class Entity;
 
 class Outliner {
 public:
@@ -18,10 +17,9 @@ public:
     Outliner& operator=(const Outliner& other) = default;
     ~Outliner() = default;
 
-    void on_render(const Scene& scene, Selection& selection);
+    void render(const Scene& scene, Selection& selection);
 private:
-    void render(const std::shared_ptr<Entity>& entity,
-        const std::shared_ptr<Entity>& selected_entity, Selection& selection);
+    void render(const Node& node, entt::entity selected_entity, Selection& selection);
 };
 
 }

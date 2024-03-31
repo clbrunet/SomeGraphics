@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assimp/types.h>
+#include <assimp/scene.h>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/quaternion_float.hpp>
@@ -16,5 +17,7 @@ glm::mat4 mat4(const aiMatrix4x4& mat4);
 glm::quat quat(const aiQuaternion& quat);
 
 bool operator==(const aiString& ai_string, const std::string& string);
+
+bool ai_node_has_bones(const aiNode& ai_node, const aiScene& ai_scene);
 
 }

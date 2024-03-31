@@ -20,6 +20,8 @@ set(ASSIMP_INSTALL Off)
 set(ASSIMP_BUILD_GLTF_IMPORTER On)
 add_subdirectory("./ext/assimp" SYSTEM)
 
+add_subdirectory("./ext/entt" SYSTEM)
+
 file(GLOB_RECURSE SRCS "src/*.cpp")
 
 add_library(SomeGraphicsEngine STATIC ${SRCS})
@@ -40,4 +42,5 @@ target_link_libraries(SomeGraphicsEngine PUBLIC
   stb
   imgui
   assimp
+  entt
 )

@@ -18,7 +18,7 @@ public:
 
     Camera camera;
 
-    void on_update(const Window& window);
+    void update(const Window& window);
 private:
     static constexpr float SENSITIVITY = 0.2f;
     static constexpr float SPEED = 5.0f;

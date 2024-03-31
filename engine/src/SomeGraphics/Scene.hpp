@@ -2,8 +2,12 @@
 
 #include <memory>
 #include <vector>
+#include <optional>
 
-#include "SomeGraphics/Entity.hpp"
+#include <assimp/scene.h>
+#include <entt/entt.hpp>
+
+#include "SomeGraphics/Node.hpp"
 
 namespace sg {
 
@@ -19,17 +23,37 @@ public:
     Scene& operator=(const Scene& other) = delete;
     ~Scene() = default;
 
-    const std::shared_ptr<Entity>& root() const;
-    void add_entity(std::shared_ptr<Entity> entity);
-    std::shared_ptr<Entity> add_light(std::string name, std::shared_ptr<Entity> parent);
+    entt::registry registry;
 
-    void on_update(float delta_time);
+    [[nodiscard]] Node& root() { return m_root; };
+    [[nodiscard]] const Node& root() const { return m_root; };
 
-    const std::vector<std::shared_ptr<Entity>>& lights() const;
-    std::vector<Animation> animations;
+    Node& create_node(std::string name, entt::entity parent);
+    Node* load_model(const char* filename, entt::entity parent);
+    [[nodiscard]] static entt::entity search(std::string_view name, entt::handle handle);
+
+    void update(const Window& window);
 private:
-    std::shared_ptr<Entity> m_root = Entity::create_scene_root(*this);
-    mutable std::vector<std::shared_ptr<Entity>> m_lights;
+    Node& m_root = create_root();
+
+    [[nodiscard]] Node& create_root() {
+        entt::entity entity = registry.create();
+        return registry.emplace<Node>(entity, Node::create_scene_root(entt::handle(registry, entity)));
+    }
+
+    struct LoadModelSkinRefs {
+        const aiNode& ai_node;
+        entt::entity entity;
+
+        LoadModelSkinRefs(const aiNode& p_ai_node, entt::entity p_entity) :
+            ai_node(p_ai_node), entity(p_entity)
+        {
+        }
+    };
+
+    Node* load_model_first_pass(std::string_view filename,
+        const aiNode& ai_node, const aiScene& ai_scene, entt::entity parent,
+        std::vector<LoadModelSkinRefs>& skin_refs_vec);
 };
 
 }

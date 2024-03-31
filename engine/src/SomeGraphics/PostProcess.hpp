@@ -28,7 +28,7 @@ public:
 private:
     std::shared_ptr<Program> m_program;
     std::unique_ptr<VertexArray> m_vertex_array;
-
+    #pragma pack(push, 1)
     struct Vertex {
         glm::vec2 position;
         glm::vec2 texture_coordinates;
@@ -53,6 +53,7 @@ private:
             };
         }
     };
+#pragma pack(pop)
 };
 
 }

@@ -1,19 +1,18 @@
 #include <cstdint>
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <optional>
 #include <memory>
 
+#include "SomeGraphics/Scene.hpp"
 #include "SomeGraphics/Skin.hpp"
 #include "SomeGraphics/AssimpHelper.hpp"
 #include "SomeGraphics/ResourcesCache.hpp"
 #include "SomeGraphics/Rendering/VertexAttribute.hpp"
-#include "SomeGraphics/Entity.hpp"
 
 namespace sg {
 
 std::optional<Skin> Skin::from_ai_node(std::string_view filename,
-    const aiNode& ai_node, const aiScene& ai_scene, const std::shared_ptr<Entity>& asset_root)
+    const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root)
 {
     std::vector<Vertex> vertices;
     std::vector<uint8_t> sub_mesh_vertex_weight_counts;
@@ -59,14 +58,12 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
                 }
                 vertex_weight_count++;
             }
-            if (bones[j].entity.expired()) {
-                auto entity_opt = Entity::search(ai_bone.mName.C_Str(), asset_root);
-                if (!entity_opt.has_value()) {
-                    return std::nullopt;
-                }
-                bones[j].entity = entity_opt.value();
-                bones[j].skin_to_bone = assimp_helper::mat4(ai_bone.mOffsetMatrix);
+            entt::entity entity = Scene::search(ai_bone.mName.C_Str(), asset_root);
+            if (entity == entt::null) {
+                return std::nullopt;
             }
+            bones[j].entity = entity;
+            bones[j].skin_to_bone = assimp_helper::mat4(ai_bone.mOffsetMatrix);
         }
         sub_mesh_vertex_weight_counts.clear();
         indices_offset = (uint32_t)indices.size();

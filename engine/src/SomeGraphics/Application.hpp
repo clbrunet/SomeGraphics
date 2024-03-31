@@ -19,8 +19,8 @@ public:
     virtual ~Application();
 
     void run();
-    virtual void on_update();
-    virtual void on_render();
+    virtual void update();
+    virtual void render();
 protected:
     std::string m_name;
     std::unique_ptr<Window> m_window;

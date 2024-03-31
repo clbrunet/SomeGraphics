@@ -6,7 +6,6 @@
 
 namespace sg {
 
-class Entity;
 class Renderer;
 class Mesh;
 struct Light;
@@ -20,11 +19,11 @@ public:
     Properties& operator=(const Properties& other) = default;
     ~Properties() = default;
 
-    void on_render(const Renderer& renderer, Selection& selection) const;
+    void render(const Renderer& renderer, Selection& selection) const;
 private:
-    void render(Entity& entity, const Renderer& renderer, Selection& selection) const;
+    void render(entt::handle handle, const Renderer& renderer, Selection& selection) const;
     void render(Material& material, const Renderer& renderer, Selection& selection) const;
-    void render_local_transform(Entity& entity) const;
+    void render_local_transform(Node& node) const;
     void render_mesh(const Mesh& mesh, const Renderer& renderer, Selection& selection) const;
     void render_light(Light& light) const;
 };

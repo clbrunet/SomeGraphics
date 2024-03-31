@@ -3,11 +3,12 @@
 #include <variant>
 #include <memory>
 
+#include <entt/entt.hpp>
+
 namespace sg {
 
-class Entity;
 class Material;
 
-using Selection = std::variant<std::monostate, std::weak_ptr<Entity>, std::weak_ptr<Material>>;
+using Selection = std::variant<std::monostate, entt::handle, std::weak_ptr<Material>>;
 
 }

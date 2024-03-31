@@ -31,4 +31,14 @@ bool operator==(const aiString& ai_string, const std::string& string)
         && std::memcmp(ai_string.C_Str(), string.c_str(), ai_string.length) == 0;
 }
 
+bool ai_node_has_bones(const aiNode& ai_node, const aiScene& ai_scene)
+{
+    for (uint32_t i = 0; i < ai_node.mNumMeshes; i++) {
+        if (ai_scene.mMeshes[ai_node.mMeshes[i]]->HasBones()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 }
