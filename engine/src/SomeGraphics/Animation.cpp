@@ -11,14 +11,14 @@
 
 namespace sg {
 
-Animation Animation::from_ai_animation(const aiAnimation* ai_animation, entt::handle asset_root)
+Animation Animation::from_ai_animation(const aiAnimation* ai_animation, const Node& asset_root)
 {
     std::vector<EntityAnimation> entities;
     entities.reserve(ai_animation->mNumChannels);
     for (const aiNodeAnim* ai_node_anim
         : std::span(ai_animation->mChannels, ai_animation->mNumChannels)) {
-        auto entity = Scene::search(ai_node_anim->mNodeName.C_Str(), asset_root);
-        if (entity == entt::null) {
+        const Node* node = Scene::search(ai_node_anim->mNodeName.C_Str(), asset_root);
+        if (node == nullptr) {
             continue;
         }
         std::vector<AnimationKey<glm::vec3>> positions;
@@ -42,10 +42,10 @@ Animation Animation::from_ai_animation(const aiAnimation* ai_animation, entt::ha
             scales.emplace_back((float)(scale.mTime / ai_animation->mTicksPerSecond),
                 assimp_helper::vec3(scale.mValue));
         }
-        entities.emplace_back(entity, positions, rotations, scales);
+        entities.emplace_back(node->entity(), positions, rotations, scales);
     }
     return Animation((float)(ai_animation->mDuration / ai_animation->mTicksPerSecond),
-        *asset_root.registry(), std::move(entities));
+        asset_root.registry(), std::move(entities));
 }
 
 Animation::Animation(float duration, entt::registry& registry, std::vector<EntityAnimation> entities) :

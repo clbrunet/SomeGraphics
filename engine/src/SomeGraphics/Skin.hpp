@@ -18,6 +18,8 @@
 
 namespace sg {
 
+class Node;
+
 struct Bone {
     entt::entity entity;
     glm::mat4 skin_to_bone = glm::mat4(1.0f);
@@ -29,7 +31,7 @@ public:
 
     Skin() = delete;
     static std::optional<Skin> from_ai_node(std::string_view filename,
-        const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root);
+        const aiNode& ai_node, const aiScene& ai_scene, const Node& asset_root);
     Skin(Skin&& other) = default;
     Skin(const Skin& other) = delete;
     Skin& operator=(Skin&& other) = default;

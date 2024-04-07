@@ -12,7 +12,7 @@
 namespace sg {
 
 std::optional<Skin> Skin::from_ai_node(std::string_view filename,
-    const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root)
+    const aiNode& ai_node, const aiScene& ai_scene, const Node& asset_root)
 {
     std::vector<Vertex> vertices;
     std::vector<uint8_t> sub_mesh_vertex_weight_counts;
@@ -58,11 +58,11 @@ std::optional<Skin> Skin::from_ai_node(std::string_view filename,
                 }
                 vertex_weight_count++;
             }
-            entt::entity entity = Scene::search(ai_bone.mName.C_Str(), asset_root);
-            if (entity == entt::null) {
+            const Node* node = Scene::search(ai_bone.mName.C_Str(), asset_root);
+            if (node == nullptr) {
                 return std::nullopt;
             }
-            bones[j].entity = entity;
+            bones[j].entity = node->entity();
             bones[j].skin_to_bone = assimp_helper::mat4(ai_bone.mOffsetMatrix);
         }
         sub_mesh_vertex_weight_counts.clear();

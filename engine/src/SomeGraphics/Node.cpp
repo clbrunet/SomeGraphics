@@ -11,19 +11,19 @@ Node Node::create_scene_root(entt::handle handle)
     return root;
 }
 
-Node::Node(std::string name, entt::handle handle, entt::entity parent) :
+Node::Node(std::string name, entt::handle handle, Node& parent) :
 	m_name(std::move(name)),
     m_handle(handle),
-    m_parent(parent)
+    m_parent(&parent)
 {
     init_relationships();
 }
 
-Node::Node(std::string name, Transform local_transform, entt::handle handle, entt::entity parent) :
+Node::Node(std::string name, Transform local_transform, entt::handle handle, Node& parent) :
 	m_name(std::move(name)),
 	m_local_transform(std::move(local_transform)),
     m_handle(handle),
-	m_parent(parent)
+	m_parent(&parent)
 {
     init_relationships();
 }
@@ -84,8 +84,7 @@ void Node::set_local_scale(glm::vec3 local_scale)
 const glm::mat4& Node::model_matrix() const
 {
     if (m_is_model_matrix_dirty) {
-        m_model_matrix = m_handle.registry()->get<Node>(m_parent).model_matrix()
-            * m_local_transform.compute_matrix();
+        m_model_matrix = m_parent->model_matrix() * m_local_transform.compute_matrix();
         m_is_model_matrix_dirty = false;
     }
     return m_model_matrix;
@@ -93,14 +92,14 @@ const glm::mat4& Node::model_matrix() const
 
 bool Node::is_parent() const
 {
-    return m_first_child != entt::null;
+    return m_first_child != nullptr;
 }
 
 void Node::init_relationships()
 {
-    entt::entity& parent_first_child = m_handle.registry()->get<Node>(m_parent).m_first_child;
-    m_next = parent_first_child;
-    parent_first_child = m_handle.entity();
+    Node*& parent_first_child = m_parent->m_first_child;
+    m_next_sibling = parent_first_child;
+    parent_first_child = this;
 }
 
 void Node::set_model_matrix_dirty()

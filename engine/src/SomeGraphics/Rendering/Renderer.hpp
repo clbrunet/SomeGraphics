@@ -69,31 +69,18 @@ private:
     UniformBuffer m_mesh_info_uniform_buffer;
 
     template<RenderPass render_pass>
-    void render(entt::entity entity, const Scene& scene, const Camera& camera) const
+    void render(const Scene& scene) const
     {
-        const std::shared_ptr<Mesh>* mesh = scene.registry.try_get<std::shared_ptr<Mesh>>(entity);
-        const std::shared_ptr<Skin>* skin = scene.registry.try_get<std::shared_ptr<Skin>>(entity);
-        if (mesh || skin) {
-            const glm::mat4& model_matrix = scene.registry.get<Node>(entity).model_matrix();
+        auto render_any_mesh = [this, &scene](auto entity, auto& any_mesh) {
+            const glm::mat4& model_matrix = scene.registry().get<Node>(entity).model_matrix();
             if constexpr (render_pass == RenderPass::Shadow) {
-                if (mesh) {
-                    render_shadow(**mesh, model_matrix, scene);
-                }
-                if (skin) {
-                    render_shadow(**skin, model_matrix, scene);
-                }
+                render_shadow(*any_mesh, model_matrix, scene);
             } else {
-                if (mesh) {
-                    render(**mesh, model_matrix, scene);
-                }
-                if (skin) {
-                    render(**skin, model_matrix, scene);
-                }
+                render(*any_mesh, model_matrix, scene);
             }
-        }
-        scene.registry.get<Node>(entity).for_each_child([this, &scene, &camera](const Node& node) {
-            render<render_pass>(node.entity(), scene, camera);
-        });
+        };
+        scene.registry().view<std::shared_ptr<Mesh>>().each(render_any_mesh);
+        scene.registry().view<std::shared_ptr<Skin>>().each(render_any_mesh);
     }
 
     template<AnyMesh AnyMesh>
@@ -143,12 +130,14 @@ private:
             glm::mat4 model_matrix_inverse = glm::inverse(model_matrix);
             uint32_t i = 0;
             for (const Bone& bone : any_mesh.bones()) {
-                const Node* node = scene.registry.try_get<const Node>(bone.entity);
+                const Node* node = scene.registry().try_get<const Node>(bone.entity);
                 if (!node) {
+                    mesh_info->bone_transforms[i] = glm::mat4(1.0f);
+                    i++;
                     continue;
                 }
-                glm::mat4 bone_entity_to_skin = model_matrix_inverse * node->model_matrix();
-                mesh_info->bone_transforms[i] = bone_entity_to_skin * bone.skin_to_bone;
+                glm::mat4 bone_node_to_skin = model_matrix_inverse * node->model_matrix();
+                mesh_info->bone_transforms[i] = bone_node_to_skin * bone.skin_to_bone;
                 i++;
             }
         } else {

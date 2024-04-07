@@ -11,6 +11,7 @@
 namespace sg {
 
 class Window;
+class Node;
 
 template<typename Value>
 struct AnimationKey {
@@ -43,7 +44,7 @@ struct EntityAnimation {
 
 class Animation {
 public:
-    static Animation from_ai_animation(const aiAnimation* ai_animation, entt::handle asset_root);
+    static Animation from_ai_animation(const aiAnimation* ai_animation, const Node& asset_root);
     Animation() = delete;
     Animation(float duration, entt::registry& registry, std::vector<EntityAnimation> entities);
     Animation(Animation&& other) = default;

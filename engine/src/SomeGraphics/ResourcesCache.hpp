@@ -17,6 +17,8 @@
 
 namespace sg {
 
+class Node;
+
 class ResourcesCache {
 public:
     static std::shared_ptr<Texture> white_1px_texture();
@@ -31,7 +33,7 @@ public:
     static std::optional<std::shared_ptr<Mesh>> mesh_from_ai_node(std::string filename,
         const aiNode& ai_node, const aiScene& ai_scene);
     static std::optional<std::shared_ptr<Skin>> skin_from_ai_node(std::string filename,
-        const aiNode& ai_node, const aiScene& ai_scene, entt::handle asset_root);
+        const aiNode& ai_node, const aiScene& ai_scene, const Node& asset_root);
 
     static void clear_unused();
     static void clear_unused_textures();
@@ -57,8 +59,7 @@ private:
     template<typename CachedType>
     static void clear_unused(std::map<std::string, std::weak_ptr<CachedType>> cache)
     {
-        auto cit = cache.cbegin();
-        for (; cit != cache.cend(); ) {
+        for (auto cit = cache.cbegin(); cit != cache.cend(); ) {
             if (cit->second.expired()) {
                 cit = cache.erase(cit);
             } else {

@@ -23,18 +23,18 @@ EditorApplication::EditorApplication(std::string name) :
     m_viewport(std::make_unique<Viewport>(*m_renderer))
 {
     Node* sphere = m_scene->load_model("editor/assets/models/rusted_iron_sphere.glb",
-            m_scene->root().entity());
+            m_scene->root());
     sphere->set_local_position(glm::vec3(-5.0f, 3.0f, -5.0f));
     m_selection = sphere->handle();
-    m_scene->load_model("editor/assets/models/axes.glb", m_scene->root().entity());
-    m_scene->load_model("editor/assets/models/cube.glb", m_scene->root().entity());
-    Node* cerberus = m_scene->load_model("editor/assets/models/cerberus.glb", m_scene->root().entity());
+    m_scene->load_model("editor/assets/models/axes.glb", m_scene->root());
+    m_scene->load_model("editor/assets/models/cube.glb", m_scene->root());
+    Node* cerberus = m_scene->load_model("editor/assets/models/cerberus.glb", m_scene->root());
     cerberus->set_local_position(glm::vec3(-5.0f, -3.0f, 1.0f));
     cerberus->set_local_scale(glm::vec3(0.03f));
-    Node* animated = m_scene->load_model("editor/assets/models/animated.glb", m_scene->root().entity());
+    Node* animated = m_scene->load_model("editor/assets/models/animated.glb", m_scene->root());
     animated->set_local_position(glm::vec3(5.0f, -7.0f, -4.0f));
     animated->set_local_scale(glm::vec3(3.0f));
-    Node& light = m_scene->create_node("Light", m_scene->root().entity());
+    Node& light = m_scene->create_node("Light", m_scene->root());
     light.handle().emplace<Light>(glm::vec3(1.0f), 200.0f);
 
     std::error_code ec;

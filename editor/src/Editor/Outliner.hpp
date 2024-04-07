@@ -19,7 +19,7 @@ public:
 
     void render(const Scene& scene, Selection& selection);
 private:
-    void render(const Node& node, entt::entity selected_entity, Selection& selection);
+    void render(const Node& node, const Node* selected_node, Selection& selection);
 };
 
 }

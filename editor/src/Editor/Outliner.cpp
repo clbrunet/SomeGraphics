@@ -13,22 +13,22 @@ namespace sg {
 
 void Outliner::render(const Scene& scene, Selection& selection)
 {
-    entt::entity selected_entity;
+    const Node* selected_node = nullptr;
     if (std::holds_alternative<entt::handle>(selection)) {
-        selected_entity = std::get<entt::handle>(selection).entity();
+        selected_node = std::get<entt::handle>(selection).try_get<Node>();
     }
     ImGui::Begin("Outliner");
-    scene.root().for_each_child([this, selected_entity, &selection](const Node& child) {
-        render(child, selected_entity, selection);
+    scene.root().for_each_child([this, selected_node, &selection](const Node& child) {
+        render(child, selected_node, selection);
     });
     ImGui::End();
 }
 
-void Outliner::render(const Node& node, entt::entity selected_entity, Selection& selection)
+void Outliner::render(const Node& node, const Node* selected_node, Selection& selection)
 {
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
         | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-    if (node.entity() == selected_entity) {
+    if (&node == selected_node) {
         flags |= ImGuiTreeNodeFlags_Selected; 
     }
     if (!node.is_parent()) {
@@ -39,8 +39,8 @@ void Outliner::render(const Node& node, entt::entity selected_entity, Selection&
         selection = node.handle();
     }
     if (open) {
-        node.for_each_child([this, selected_entity, &selection](const Node& child) {
-            render(child, selected_entity, selection);
+        node.for_each_child([this, selected_node, &selection](const Node& child) {
+            render(child, selected_node, selection);
         });
         ImGui::TreePop();
     }

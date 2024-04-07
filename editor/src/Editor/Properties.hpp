@@ -21,7 +21,7 @@ public:
 
     void render(const Renderer& renderer, Selection& selection) const;
 private:
-    void render(entt::handle handle, const Renderer& renderer, Selection& selection) const;
+    void render(Node& node, const Renderer& renderer, Selection& selection) const;
     void render(Material& material, const Renderer& renderer, Selection& selection) const;
     void render_local_transform(Node& node) const;
     void render_mesh(const Mesh& mesh, const Renderer& renderer, Selection& selection) const;

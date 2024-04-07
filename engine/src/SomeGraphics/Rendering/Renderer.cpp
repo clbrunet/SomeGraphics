@@ -86,7 +86,7 @@ void Renderer::render(const Scene& scene, const Camera& camera,
 {
     int frame_buffer_renderer_id;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frame_buffer_renderer_id);
-    auto lights = scene.registry.view<Light>();
+    auto lights = scene.registry().view<Light>();
     m_shadow_maps_count = (uint8_t)glm::min(lights.size(), m_shadow_pass_frame_buffers.size());
     for (uint8_t i = 0; i < m_shadow_maps_count; i++) {
         const DepthFrameBuffer& frame_buffer = *m_shadow_pass_frame_buffers[i];
@@ -96,7 +96,7 @@ void Renderer::render(const Scene& scene, const Camera& camera,
             frame_buffer.attach_face(face);
             glClear(GL_DEPTH_BUFFER_BIT);
         }
-        glm::vec3 light_position = scene.registry.get<Node>(lights[i]).model_matrix()[3];
+        glm::vec3 light_position = scene.registry().get<Node>(lights[i]).model_matrix()[3];
         m_shadow_map_infos[i].light_position = light_position;
         static const glm::mat4 projection
             = glm::perspective(glm::radians(90.0f), 1.0f, 0.01f, 30.0f);
@@ -117,7 +117,7 @@ void Renderer::render(const Scene& scene, const Camera& camera,
     }
     set_viewport(glm::ivec2(1024, 1024));
     m_shadow_mapping_program->use();
-    render<RenderPass::Shadow>(scene.root().entity(), scene, camera);
+    render<RenderPass::Shadow>(scene);
     set_viewport(viewport_dimensions);
     uint8_t lights_count = (uint8_t)glm::min(lights.size(), (size_t)MAX_LIGHTS_COUNT);
     GlobalsUniformBlockData globals = {
@@ -130,7 +130,7 @@ void Renderer::render(const Scene& scene, const Camera& camera,
     for (uint8_t i = 0; i < lights_count; i++) {
         auto [light] = lights.get(lights[i]);
         globals.lights[i] = {
-            .position = scene.registry.get<Node>(lights[i]).model_matrix()[3],
+            .position = scene.registry().get<Node>(lights[i]).model_matrix()[3],
             .hdr_color =  light.color * light.intensity,
         };
     }
@@ -139,7 +139,7 @@ void Renderer::render(const Scene& scene, const Camera& camera,
         m_shadow_pass_frame_buffers[i]->depth_texture().bind_to_unit(15 - i);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_renderer_id);
-    render<RenderPass::Shading>(scene.root().entity(), scene, camera);
+    render<RenderPass::Shading>(scene);
 }
 
 void Renderer::render(const Skybox& skybox, const Camera& camera) const

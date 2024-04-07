@@ -11,8 +11,8 @@ namespace sg {
 class Node {
 public:
     static Node create_scene_root(entt::handle handle);
-    Node(std::string name, entt::handle handle, entt::entity parent);
-    Node(std::string name, Transform local_transform, entt::handle handle, entt::entity parent);
+    Node(std::string name, entt::handle handle, Node& parent);
+    Node(std::string name, Transform local_transform, entt::handle handle, Node& parent);
     Node(Node&& other) = default;
     Node(const Node& other) = delete;
     Node& operator=(Node&& other) = default;
@@ -36,33 +36,34 @@ public:
 
     void for_each_child(auto fn)
     {
-        entt::entity entity = m_first_child;
-        while (entity != entt::null) {
-            Node& node = m_handle.registry()->get<Node>(entity);
-            fn(node);
-            entity = node.m_next;
+        for (Node* node = m_first_child; node != nullptr; node = node->m_next_sibling) {
+            fn(*node);
         }
     }
 
     void for_each_child(auto fn) const
     {
-        entt::entity entity = m_first_child;
-        while (entity != entt::null) {
-            const Node& node = m_handle.registry()->get<const Node>(entity);
-            fn(node);
-            entity = node.m_next;
+        for (const Node* node = m_first_child; node != nullptr; node = node->m_next_sibling) {
+            fn(*node);
         }
     }
 
     Node* find_child(auto predicate)
     {
-        entt::entity entity = m_first_child;
-        while (entity != entt::null) {
-            Node& node = m_handle.registry()->get<Node>(entity);
-            if (predicate(node)) {
-                return &node;
+        for (Node* node = m_first_child; node != nullptr; node = node->m_next_sibling) {
+            if (predicate(*node)) {
+                return node;
             }
-            entity = node.m_next;
+        }
+        return nullptr;
+    }
+
+    const Node* find_child(auto predicate) const
+    {
+        for (const Node* node = m_first_child; node != nullptr; node = node->m_next_sibling) {
+            if (predicate(*node)) {
+                return node;
+            }
         }
         return nullptr;
     }
@@ -72,9 +73,9 @@ private:
     mutable glm::mat4 m_model_matrix = glm::mat4(1.0f);
     mutable bool m_is_model_matrix_dirty = true;
     entt::handle m_handle;
-    entt::entity m_parent;
-    entt::entity m_first_child = entt::null;
-    entt::entity m_next = entt::null;
+    Node* m_parent = nullptr;
+    Node* m_first_child = nullptr;
+    Node* m_next_sibling = nullptr;
 
     Node() = default;
     void init_relationships();

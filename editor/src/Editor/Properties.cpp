@@ -28,7 +28,7 @@ void Properties::render(const Renderer& renderer, Selection& selection) const
             if (!arg.valid()) {
                 selection = std::monostate();
             } else {
-                render(arg, renderer, selection);
+                render(arg.get<Node>(), renderer, selection);
             }
         } else {
             if (arg.expired()) {
@@ -41,25 +41,24 @@ void Properties::render(const Renderer& renderer, Selection& selection) const
     ImGui::End();
 }
 
-void Properties::render(entt::handle handle, const Renderer& renderer, Selection& selection) const
+void Properties::render(Node& node, const Renderer& renderer, Selection& selection) const
 {
-    Node& node = handle.get<Node>();
     ImGui::Text("%s", node.name().c_str());
     if (ImGui::TreeNodeEx("Local Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
         render_local_transform(node);
         ImGui::TreePop();
     }
-    std::shared_ptr<Mesh>* mesh = handle.try_get<std::shared_ptr<Mesh>>();
+    std::shared_ptr<Mesh>* mesh = node.handle().try_get<std::shared_ptr<Mesh>>();
     if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
         render_mesh(**mesh, renderer, selection);
         ImGui::TreePop();
     }
-    std::shared_ptr<Skin>* skin = handle.try_get<std::shared_ptr<Skin>>();
+    std::shared_ptr<Skin>* skin = node.handle().try_get<std::shared_ptr<Skin>>();
     if (skin && ImGui::TreeNodeEx("Skinned mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
         render_mesh((**skin).mesh(), renderer, selection);
         ImGui::TreePop();
     }
-    Light* light = handle.try_get<Light>();
+    Light* light = node.handle().try_get<Light>();
     if (light && ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen)) {
         render_light(*light);
         ImGui::TreePop();
