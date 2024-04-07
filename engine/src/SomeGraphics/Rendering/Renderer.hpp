@@ -125,6 +125,7 @@ private:
     {
         auto mesh_info = std::make_unique<MeshInfoUniformBlockData>();
         mesh_info->model = model_matrix;
+        mesh_info->normal_matrix = glm::mat3x4(glm::inverse(glm::transpose(glm::mat3(model_matrix))));
         if constexpr (std::is_same_v<AnyMesh, Skin>) {
             mesh_info->is_rigged = true;
             glm::mat4 model_matrix_inverse = glm::inverse(model_matrix);
@@ -200,16 +201,18 @@ private:
     #pragma pack(push, 1)
     struct MeshInfoUniformBlockData {
         glm::mat4 model;
+        glm::mat3x4 normal_matrix;
         unsigned is_rigged;
         uint32_t : 32;
         uint64_t : 64;
         glm::mat4 bone_transforms[Skin::MAX_BONES_COUNT];
     };
     #pragma pack(pop)
-    static_assert(sizeof(MeshInfoUniformBlockData) == 16464);
+    static_assert(sizeof(MeshInfoUniformBlockData) == 16512);
     static_assert(offsetof(MeshInfoUniformBlockData, model) == 0);
-    static_assert(offsetof(MeshInfoUniformBlockData, is_rigged) == 64);
-    static_assert(offsetof(MeshInfoUniformBlockData, bone_transforms) == 80);
+    static_assert(offsetof(MeshInfoUniformBlockData, normal_matrix) == 64);
+    static_assert(offsetof(MeshInfoUniformBlockData, is_rigged) == 112);
+    static_assert(offsetof(MeshInfoUniformBlockData, bone_transforms) == 128);
 };
 
 }

@@ -18,6 +18,7 @@ layout(std140, binding = 0) uniform Globals {
 
 layout(std140, binding = 1) uniform MeshInfo {
     mat4 u_model;
+    mat3 u_normal_matrix;
     bool u_is_rigged;
     mat4 u_bone_transforms[MAX_BONES_COUNT];
 };
@@ -55,8 +56,8 @@ void main()
     }
     vec4 position = u_model * local_position;
     v_position = vec3(position);
-    vec3 N = normalize(vec3(u_model * vec4(local_normal, 0.0)));
-    vec3 T = normalize(vec3(u_model * vec4(local_tangent, 0.0)));
+    vec3 N = normalize(u_normal_matrix * local_normal);
+    vec3 T = normalize(u_normal_matrix * local_tangent);
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
     v_TBN = mat3(T, B, N);

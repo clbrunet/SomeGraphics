@@ -62,8 +62,15 @@ void EditorCamera::move(const Window& window)
     if (direction == glm::vec3(0.0f)) {
         return;
     }
+    float speed_modifier = 1.f;
+    if (window.is_key_pressed(GLFW_KEY_LEFT_SHIFT)) {
+        speed_modifier *= 2.f;
+    }
+    if (window.is_key_pressed(GLFW_KEY_LEFT_ALT)) {
+        speed_modifier /= 2.f;
+    }
     camera.set_position(camera.position() + window.delta_time()
-        * SPEED * (camera.rotation() * glm::normalize(direction)));
+        * BASE_SPEED * speed_modifier * (camera.rotation() * glm::normalize(direction)));
 }
 
 }

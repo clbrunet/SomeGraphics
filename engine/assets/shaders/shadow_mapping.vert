@@ -4,6 +4,7 @@ const uint MAX_BONES_COUNT = 256;
 
 layout(std140, binding = 1) uniform MeshInfo {
     mat4 u_model;
+    mat3 u_normal_matrix;
     bool u_is_rigged;
     mat4 u_bone_transforms[MAX_BONES_COUNT];
 };

@@ -21,7 +21,7 @@ public:
     void update(const Window& window);
 private:
     static constexpr float SENSITIVITY = 0.2f;
-    static constexpr float SPEED = 5.0f;
+    static constexpr float BASE_SPEED = 5.0f;
     float m_pitch = 0.0f;
     float m_yaw = 0.0f;
 
