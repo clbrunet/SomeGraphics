@@ -53,12 +53,22 @@ public:
     Animation& operator=(const Animation& other) = default;
     ~Animation() = default;
 
+    bool is_playing() const;
+    void set_is_playing(bool is_playing);
+
+    float duration() const;
+    float time() const;
+    void set_time(float time);
+
     void update(float delta_time);
 private:
+    bool m_is_playing = true;
     float m_duration;
     entt::registry& m_registry;
     std::vector<EntityAnimation> m_entities;
     float m_time = 0.0f;
+
+    void update_entities();
 };
 
 }

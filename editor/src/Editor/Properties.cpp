@@ -63,6 +63,11 @@ void Properties::render(Node& node, const Renderer& renderer, Selection& selecti
         render_light(*light);
         ImGui::TreePop();
     }
+    Animation* animation = node.handle().try_get<Animation>();
+    if (animation && ImGui::TreeNodeEx("Animation", ImGuiTreeNodeFlags_DefaultOpen)) {
+        render_animation(*animation);
+        ImGui::TreePop();
+    }
 }
 
 void Properties::render(Material& material, const Renderer& renderer,
@@ -164,6 +169,18 @@ void Properties::render_light(Light& light) const
     ImGui::ColorEdit3("Color", glm::value_ptr(light.color));
     ImGui::DragFloat("Intensity", &light.intensity, 0.1f, 0.0f,
         FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+}
+
+void Properties::render_animation(Animation& animation) const
+{
+    bool is_playing = animation.is_playing();
+    if (ImGui::Checkbox("Is playing", &is_playing)) {
+        animation.set_is_playing(is_playing);
+    }
+    float progression = animation.time() / animation.duration();
+    if (ImGui::SliderFloat("Progression", &progression, 0.f, 1.f, "")) {
+        animation.set_time(progression * animation.duration());
+    }
 }
 
 }

@@ -9,6 +9,7 @@ namespace sg {
 class Renderer;
 class Mesh;
 struct Light;
+class Animation;
 
 class Properties {
 public:
@@ -26,6 +27,7 @@ private:
     void render_local_transform(Node& node) const;
     void render_mesh(const Mesh& mesh, const Renderer& renderer, Selection& selection) const;
     void render_light(Light& light) const;
+    void render_animation(Animation& animation) const;
 };
 
 }

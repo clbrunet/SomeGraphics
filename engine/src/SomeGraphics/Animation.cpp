@@ -55,12 +55,46 @@ Animation::Animation(float duration, entt::registry& registry, std::vector<Entit
 {
 }
 
+bool Animation::is_playing() const
+{
+    return m_is_playing;
+}
+
+void Animation::set_is_playing(bool is_playing)
+{
+    m_is_playing = is_playing;
+}
+
+float Animation::duration() const
+{
+    return m_duration;
+}
+
+float Animation::time() const
+{
+    return m_time;
+}
+
+void Animation::set_time(float time)
+{
+    m_time = time;
+    update_entities();
+}
+
 void Animation::update(float delta_time)
 {
+    if (!m_is_playing) {
+        return;
+    }
     m_time += delta_time;
     if (m_time > m_duration) {
         m_time -= m_duration;
     }
+    update_entities();
+}
+
+void Animation::update_entities()
+{
     for (auto it = m_entities.begin(); it != m_entities.end();) {
         Node* node = m_registry.try_get<Node>(it->entity);
         if (!node) {
