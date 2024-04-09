@@ -182,7 +182,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
         const StbImageWrapper& image = *images[i];
         if (image.width() != first_image.width() || image.height() != first_image.height()
             || image.channels_count() != 3) {
-            assert(!"Cubemap textures must all have the same dimensions and must be in 3 channels");
+            assert(!(bool)"Cubemap textures must all have the same dimensions and must be in 3 channels");
         }
     }
 #endif
@@ -193,7 +193,7 @@ Texture::Texture(const StbImageWrapper& right, const StbImageWrapper& left,
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureParameteri(m_renderer_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTextureStorage2D(m_renderer_id, 1, GL_SRGB8, right.width(), right.height());
-    for (int i = 0; i < 6; i++) {
+    for (uint32_t i = 0; i < 6; i++) {
         const StbImageWrapper& image = *images[i];
         glTextureSubImage3D(m_renderer_id, 0, 0, 0, i, image.width(), image.height(),
             1, GL_RGB, GL_UNSIGNED_BYTE, image.pixels());

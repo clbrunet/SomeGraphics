@@ -31,12 +31,12 @@ public:
     constexpr ~VertexAttribute() = default;
 
 
-    constexpr int count() const
+    constexpr uint32_t count() const
     {
         return m_count;
     }
 
-    constexpr static int count(VertexAttributeType type)
+    constexpr static uint32_t count(VertexAttributeType type)
     {
         switch (type) {
         case VertexAttributeType::Uint:
@@ -50,12 +50,12 @@ public:
         return 0;
     }
 
-    constexpr int type() const
+    constexpr uint32_t type() const
     {
         return m_type;
     }
 
-    constexpr static int type(VertexAttributeType type)
+    constexpr static GLenum type(VertexAttributeType type)
     {
 
         switch (type) {
@@ -69,12 +69,12 @@ public:
         return 0;
     }
 
-    constexpr int size() const
+    constexpr uint32_t size() const
     {
         return m_size;
     }
 
-    constexpr static int size(VertexAttributeType type, int count)
+    constexpr static uint32_t size(VertexAttributeType type, uint32_t count)
     {
         switch (type) {
         case VertexAttributeType::Uint:
@@ -93,9 +93,9 @@ public:
     }
 
 private:
-    int m_count;
+    uint32_t m_count;
     GLenum m_type;
-    int m_size;
+    uint32_t m_size;
 };
 
 }

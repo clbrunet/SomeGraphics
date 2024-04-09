@@ -27,7 +27,7 @@ std::optional<std::unique_ptr<Shader>> Shader::create(GLenum type, const char* f
     }
     int info_log_length;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_length);
-    std::vector<char> info_log(info_log_length);
+    std::vector<char> info_log((uint32_t)info_log_length);
     glGetShaderInfoLog(shader, info_log_length, nullptr, info_log.data());
     glDeleteShader(shader);
     std::clog << "Shader '" << filename << "' compilation error :\n";

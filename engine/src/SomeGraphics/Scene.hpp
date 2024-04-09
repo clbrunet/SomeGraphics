@@ -19,7 +19,7 @@ public:
     Scene() = default;
     Scene(Scene&& other) = default;
     Scene(const Scene& other) = delete;
-    Scene& operator=(Scene&& other) = default;
+    Scene& operator=(Scene&& other) = delete;
     Scene& operator=(const Scene& other) = delete;
     ~Scene() = default;
 

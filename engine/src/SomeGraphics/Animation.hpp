@@ -48,9 +48,9 @@ public:
     Animation() = delete;
     Animation(float duration, entt::registry& registry, std::vector<EntityAnimation> entities);
     Animation(Animation&& other) = default;
-    Animation(const Animation& other) = default;
-    Animation& operator=(Animation&& other) = default;
-    Animation& operator=(const Animation& other) = default;
+    Animation(const Animation& other) = delete;
+    Animation& operator=(Animation&& other) = delete;
+    Animation& operator=(const Animation& other) = delete;
     ~Animation() = default;
 
     bool is_playing() const;

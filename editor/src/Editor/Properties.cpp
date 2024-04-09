@@ -28,7 +28,7 @@ void Properties::render(const Renderer& renderer, Selection& selection) const
             if (!arg.valid()) {
                 selection = std::monostate();
             } else {
-                render(arg.get<Node>(), renderer, selection);
+                render(arg.template get<Node>(), renderer, selection);
             }
         } else {
             if (arg.expired()) {

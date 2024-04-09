@@ -71,7 +71,7 @@ private:
     template<RenderPass render_pass>
     void render(const Scene& scene) const
     {
-        auto render_any_mesh = [this, &scene](auto entity, auto& any_mesh) {
+        auto render_any_mesh = [&](auto entity, auto& any_mesh) {
             const glm::mat4& model_matrix = scene.registry().get<Node>(entity).model_matrix();
             if constexpr (render_pass == RenderPass::Shadow) {
                 render_shadow(*any_mesh, model_matrix, scene);

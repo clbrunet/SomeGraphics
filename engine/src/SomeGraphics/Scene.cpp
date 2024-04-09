@@ -97,7 +97,7 @@ Node* Scene::load_model_first_pass(std::string_view filename, const aiNode& ai_n
     if (is_skin) {
         skin_refs_vec.emplace_back(ai_node, node);
     }
-    for (int i = ai_node.mNumChildren - 1; i >= 0; i--) {
+    for (int i = (int)ai_node.mNumChildren - 1; i >= 0; i--) {
         if (!load_model_first_pass(filename, *ai_node.mChildren[i], ai_scene, node, skin_refs_vec)) {
             handle.destroy();
             return nullptr;

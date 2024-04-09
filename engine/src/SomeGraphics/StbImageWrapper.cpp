@@ -11,27 +11,27 @@ std::optional<StbImageWrapper> StbImageWrapper::load(const char* filename,
 {
     int width, height, channels_count_in_file;
     uint8_t* pixels = stbi_load(filename, &width, &height,
-        &channels_count_in_file, channels_count_desired);
+        &channels_count_in_file, (int)channels_count_desired);
     if (pixels == nullptr) {
         std::cerr << "Image '" << filename << "' loading error\n";
         return std::nullopt;
     }
-    return StbImageWrapper(pixels, width, height,
-        channels_count_desired == 0 ? channels_count_in_file : channels_count_desired);
+    return StbImageWrapper(pixels, (uint32_t)width, (uint32_t)height,
+        channels_count_desired == 0 ? (uint32_t)channels_count_in_file : channels_count_desired);
 }
 
 std::optional<StbImageWrapper> StbImageWrapper::load_from_memory(const uint8_t* buffer,
     uint32_t size, uint32_t channels_count_desired)
 {
     int width, height, channels_count_in_buffer;
-	uint8_t* pixels = stbi_load_from_memory((const stbi_uc*)buffer, size, &width, &height,
-        &channels_count_in_buffer, channels_count_desired);
+	uint8_t* pixels = stbi_load_from_memory((const stbi_uc*)buffer, (int)size, &width, &height,
+        &channels_count_in_buffer, (int)channels_count_desired);
     if (pixels == nullptr) {
         std::cerr << "Image at memory " << buffer << " loading error\n";
         return std::nullopt;
     }
-    return StbImageWrapper(pixels, width, height,
-        channels_count_desired == 0 ? channels_count_in_buffer : channels_count_desired);
+    return StbImageWrapper(pixels, (uint32_t)width, (uint32_t)height,
+        channels_count_desired == 0 ? (uint32_t)channels_count_in_buffer : channels_count_desired);
 }
 
 StbImageWrapper::StbImageWrapper(StbImageWrapper&& other)
